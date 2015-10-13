@@ -84,7 +84,7 @@ start    equ   *
          os9   F$SSvc
          ldx   <D.PrcDBT
          os9   F$All64
-         bcs   L0081
+         bcs   fatalerr                 failed to allocate
          stx   <D.PrcDBT
          sty   <D.Proc
          tfr   s,d
@@ -94,31 +94,44 @@ start    equ   *
          lda   #SysState
          sta   P$State,y
          ldu   <D.Init
-         bsr   ChdDir
-         bcc   L006A
+
+* ChdDir should identify system device, result in a call to IOCall which links and
+* initialises IOMan then calls JmpBoot to load and validate the boot file
+         bsr   ChdDir                   U = address of init module
+         bcc   L006A                    success
+
+* Maybe we failed because we didn't have all the modules we needed? Load and
+* validate the boot file and then try again.
          lbsr  JmpBoot
          bsr   ChdDir
-L006A    bsr   OpenCons
-         bcc   L0073
+
+L006A    bsr   OpenCons                 U = address of init module, still
+         bcc   L0073                    success
+
+* Maybe we were able to get this far without needing anything from the boot file, but now
+* we need it for the console device
          lbsr  JmpBoot
          bsr   OpenCons
+
+* Hmm. No check for success. Probably should "bcs fatalerr" here?
+
 L0073    ldd   InitStr,u
          leax  d,u
          lda   #$01
          clrb
          ldy   #$0000
          os9   F$Chain
-L0081    jmp   [$FFFE]
+fatalerr jmp   [$FFFE]
 
-*
+* change directory
 * U = address of init module
-ChdDir   clrb
+ChdDir   clrb                           clear carry
          ldd   <SysStr,u		get system device
-         beq   ChdDir10			branch if none
-         leax  d,u
-         lda   #READ.+EXEC.
-         os9   I$ChgDir			else change directory to it
-ChdDir10 rts
+         beq   ChdDir10			branch if none - carry still clear
+         leax  d,u                      address of the path list
+         lda   #READ.+EXEC.             access mode
+         os9   I$ChgDir			change directory to it
+ChdDir10 rts                            carry set -> error
 
 * open console device
 * U = address of init module
@@ -715,8 +728,12 @@ LinkIOM  leax  IOMgr,pcr
          os9   F$Link
          rts
 
+* Attempt to load bootfile and validate the modules it contains
 *
+* Entry:
 * U = address of init module
+* Exit:
+* CC Carry set on Error
 JmpBoot  pshs  u
          comb
          tst   <D.Boot                 already booted?
