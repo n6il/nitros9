@@ -9,12 +9,12 @@
 *   1      2003/08/18  Boisy G. Pitre
 * Separated clock2 modules for source clarity.
 
-         nam   Clock2    
+         nam   Clock2
          ttl   Software Clock Driver
 
-         ifp1            
-         use   defsfile  
-         endc            
+         ifp1
+         use   defsfile
+         endc
 
 tylg     set   Sbrtn+Objct
 atrv     set   ReEnt+rev
@@ -26,16 +26,16 @@ RTC.Base equ   0          Have to have one defined.
 
          mod   len,name,Sbrtn+Objct,ReEnt+0,JmpTable,RTC.Base
 
-name     fcs   "Clock2"  
+name     fcs   "Clock2"
          fcb   edition
 
-JmpTable                 
-         rts
-         nop             
-         nop             
-         bra   GetTime   
-         nop             
-         rts
+JmpTable
+         rts              Init
+         nop
+         nop
+         bra   GetTime    Read
+         nop
+         rts              Write
 
 GetTime  lda   <D.Min     grab current minute
          inca             minute+1
@@ -69,11 +69,11 @@ UpdHour  std   <D.Day     save day,hour
          clra             minute=00
 UpdMin   clrb             seconds=00
          std   <D.Min     save min,secs
-UpdTExit rts             
+UpdTExit rts
 
 months   fcb   31,28,31,30,31,30,31,31,30,31,30,31 Days in each month
 
-         emod            
-len      equ   *         
-         end             
+         emod
+len      equ   *
+         end
 
