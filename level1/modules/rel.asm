@@ -49,13 +49,17 @@ name     fcs   /REL/
 
          IFGT  Level-1
 
-L001F    fcb   $6C MMU, IRQ, Vector page, SCS
-         fcb   $00 map type 0
-         fcb   $00 no FIRQ
-         fcb   $00 no IRQ
-         fdb   $0900 timer
-         fcb   $00 unused
-         fcb   $00 unused
+*************************************************************************
+* Level2/level3
+*************************************************************************
+
+L001F    fcb   $6C      MMU, IRQ, Vector page, SCS
+         fcb   $00      map type 0
+         fcb   $00      no FIRQ
+         fcb   $00      no IRQ
+         fdb   $0900    timer
+         fcb   $00      unused
+         fcb   $00      unused
          IFEQ  TkPerSec-50
          fcb   $0B	50Hz refresh, alphanumeric display, 8 lines/char row
          ELSE
@@ -92,6 +96,10 @@ crash    lda   #'*        signal a crash error
          jsr   <D.BtBug   and dump this out, too
          clrb
          fcb   $8C        skip 2 bytes
+
+*************************************************************************
+* Entry point for level2/3
+*************************************************************************
 
 reset    equ   *          later on, have reset different from start?
 start    ldb   #$FF       negative - do complete boot
@@ -277,12 +285,17 @@ L003F    clr   >$FF91     go to map type 0 - called by CC3Go from map 1
 
 Pad      fill  $39,$127-*
 
-         ELSE
+         ELSE                          match IFGT Level-1
 
-Start    clr   PIA0Base+3
+*************************************************************************
+* Entry point for level1
+*************************************************************************
+
+Start
+         clr   PIA0Base+3
 
          IFNE  (tano+d64+dalpha)
-         clr   PIA0Base+1		added for Dragon, works on CoCo
+         clr   PIA0Base+1              added for Dragon, works on CoCo
          ENDC
          IFNE  H6309
          ldmd  #3                      native mode
@@ -315,7 +328,7 @@ L263B    sta   ,x+
          leay  -1,y
          bne   L263B
 
-* Copy "OS9 BOOT" to screen area
+* Copy "NITROS9 BOOT" to screen area
          ldx   #ScStart+$10A
          leay  <BootMsg,pcr
          ldb   #BootMLen
@@ -332,6 +345,10 @@ L2649    lda   ,y+
          ENDC
 
          beq   L266E
+
+* Copy boot track from $2600 to $EE00 - not quite all of it though. The whole boot
+* track is $1200 bytes and would take us right up to $FFFF. We actually copy up to
+* $FE80.
          leau  >Begin-XX.Size,pcr
          ldx   #Bt.Size
          ldy   #Bt.Start
@@ -339,7 +356,12 @@ L2663    lda   ,u+
          sta   ,y+
          leax  -1,x
          bne   L2663
+
+* go to L266E but in high memory
          jmp   >Offset+L266E
+
+* now executing in high memory. Compute the absolute address of the entry
+* point of the next module (which must be krn) and go there.
 L266E    leax  <eom,pcr
          ldd   M$Exec,x
          jmp   d,x
@@ -352,7 +374,7 @@ BootMsg
          fcc   /BOOT/
 BootMLen equ   *-BootMsg
 
-         ENDC
+         ENDC                   match IFGT Level-1
 
          emod
 eom      equ   *
