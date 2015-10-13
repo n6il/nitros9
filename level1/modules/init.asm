@@ -44,13 +44,26 @@ atrv     set   ReEnt+rev
 rev      set   $00
 edition  set   1
 
+*
+* Usually, the last two words here would be the module entry
+* address and the dynamic data size requirement. Neither value is
+* needed for this module so they are pressed into service to show
+* MaxMem and PollCnt. For example:
+* $0FE0,$0015 means
+* MaxMem = $0FE000
+* PollCnt = $0015
+*
          mod   eom,name,tylg,atrv,$0FE0,$0015
 
 ***** USER MODIFIABLE DEFINITIONS HERE *****
 
-* Init table
+*
+* refer to
+* "Configuration Module Entry Offsets"
+* in os9.d
+*
 start    equ   *
-         fcb   $27        number of IRQ polling entires
+         fcb   $27        entries in device table
          fdb   DefProg    offset to program to fork
          fdb   DefDev     offset to default disk device
          fdb   DefCons    offset to default console device
@@ -68,7 +81,7 @@ start    equ   *
          fcb   $00        feature byte #2
          fdb   OSStr
          fdb   InstStr
-         fcb   0,0,0,0  reserved
+         fcb   0,0,0,0    reserved
 
          IFGT  Level-1
 * CC3IO section
@@ -91,7 +104,7 @@ DefBoot  fcs   "Boot"
 * messages !
 *
 
-	     IFEQ	dalpha
+         IFEQ  dalpha
 OSStr    equ   *
          fcc   "NitrOS-9/"
          IFNE  H6309
@@ -138,22 +151,23 @@ InstStr  equ   *
          fcc    "Atari XL/XE"
          ELSE
          fcc    "Unknown Machine"
-         ENDC
-         ENDC
-         ENDC
-         ENDC
-         ENDC
-         ENDC
-         ENDC
-         ENDC
-         ENDC
-         fcb   0
-		 ELSE
+         ENDC                             match IFNE atari
+         ENDC                             match IFNE dalpha
+         ENDC                             match IFNE d64
+         ENDC                             match IFNE tano
+         ENDC                             match IFNE coco3
+         ENDC                             match IFNE coco2b
+         ENDC                             match IFNE coco2
+         ENDC                             match IFNE delux
+         ENDC                             match IFNE coco1
+         fcb   0     null-terminate the name string
+         ELSE
+* DragonAlpha
 OSStr    equ   *
 InstStr  equ   *
-		 fcb	0
-		 ENDC
+         fcb   0     null-length string
+         ENDC                             match IFEQ dalpha
 
-         emod  
+         emod
 eom      equ   *
-         end   
+         end
