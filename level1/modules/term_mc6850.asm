@@ -35,35 +35,35 @@ rev      set   $00
          fdb   $FF68      physical controller address
          ENDC
 
-         fcb   initsize-*-1 initilization table size
-         fcb   DT.SCF     device type:0=scf,1=rbf,2=pipe,3=scf
-         fcb   $00        case:0=up&lower,1=upper only
-         fcb   $01        backspace:0=bsp,1=bsp then sp & bsp
-         fcb   $00        delete:0=bsp over line,1=return
-         fcb   $01        echo:0=no echo
-         fcb   $01        auto line feed:0=off
-         fcb   $00        end of line null count
-         fcb   $01        pause:0=no end of page pause
-         fcb   24         lines per page
-         fcb   C$BSP      backspace character
-         fcb   C$DEL      delete line character
-         fcb   C$CR       end of record character
-         fcb   C$EOF      end of file character
-         fcb   C$RPRT     reprint line character
-         fcb   C$RPET     duplicate last line character
-         fcb   C$PAUS     pause character
-         fcb   C$INTR     interrupt character
-         fcb   C$QUIT     quit character
-         fcb   C$BSP      backspace echo character
-         fcb   C$BELL     line overflow character (bell)
-         fcb   PARNONE    parity
-         fcb   STOP1+WORD8+B9600 stop bits/word size/baud rate
-         fdb   name       copy of descriptor name address
-         fcb   C$XON      acia xon char
-         fcb   C$XOFF     acia xoff char
-         fcb   80         (szx) number of columns for display
-         fcb   24         (szy) number of rows for display
-         fcb   $00        Extended type
+         fcb   initsize-*-1 initialization table size
+         fcb   DT.SCF     IT.DVC device type:0=scf,1=rbf,2=pipe,3=scf
+         fcb   $00        IT.UPC case:0=up&lower,1=upper only
+         fcb   $01        IT.BSO backspace:0=bsp,1=bsp then sp & bsp
+         fcb   $00        IT.DLO delete:0=bsp over line,1=return
+         fcb   $01        IT.EKO echo:0=no echo
+         fcb   $01        IT.ALF auto line feed:0=off
+         fcb   $00        IT.NUL end of line null count
+         fcb   $01        IT.PAU pause:0=no end of page pause
+         fcb   24         IT.PAG lines per page
+         fcb   C$BSP      IT.BSP backspace character
+         fcb   C$DEL      IT.DEL delete line character
+         fcb   C$CR       IT.EOR end of record character
+         fcb   C$EOF      IT.EOF end of file character
+         fcb   C$RPRT     IT.RPR reprint line character
+         fcb   C$RPET     IT.DUP duplicate last line character
+         fcb   C$PAUS     IT.PSC pause character
+         fcb   C$INTR     IT.INT interrupt character
+         fcb   C$QUIT     IT.QUT quit character
+         fcb   C$BSP      IT.BSE backspace echo character
+         fcb   C$BELL     IT.OVF line overflow character (bell)
+         fcb   PARNONE    IT.PAR parity
+         fcb   STOP1+WORD8+B9600 IT.BAU stop bits/word size/baud rate
+         fdb   name       IT.D2P copy of descriptor name address
+         fcb   C$XON      IT.XON acia xon char
+         fcb   C$XOFF     IT.XOFF acia xoff char
+         fcb   80         IT.COL (szx) number of columns for display
+         fcb   24         IT.ROW (szy) number of rows for display
+         fcb   $00        IT.XTYP 0 => NOT extended type
 initsize equ   *
 
          IFDEF TNum       from makefile
@@ -83,4 +83,3 @@ drvnam   fcs   /mc6850/
          emod
 eom      equ   *
          end
-
