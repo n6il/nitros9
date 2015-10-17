@@ -292,6 +292,21 @@ Pad      fill  $39,$127-*
 *************************************************************************
 
 Start
+         IFNE  mc09
+* currently we have NO STACK
+
+         leax  <BootMsg,pcr
+outbsy   lda   VDUSTA
+         bita  #2
+         beq   outbsy
+         lda   ,x+
+         beq   done
+         sta   VDUDAT
+         bra   outbsy
+
+done
+         ELSE                          match IFNE mc09
+
          clr   PIA0Base+3
 
          IFNE  (tano+d64+dalpha)
@@ -346,6 +361,8 @@ L2649    lda   ,y+
 
          beq   L266E
 
+         ENDC              match IFNE mc09
+
 * Copy boot track from $2600 to $EE00 - not quite all of it though. The whole boot
 * track is $1200 bytes and would take us right up to $FFFF. We actually copy up to
 * $FE80.
@@ -367,12 +384,16 @@ L266E    leax  <eom,pcr
          jmp   d,x
 
 BootMsg
+         IFNE  mc09
+         fcn   / Boot /
+         ELSE
          IFNDEF dalpha		save some bytes on Dragon Alpha
          fcc   /NITROSy/
          fcb   $60
          ENDC
          fcc   /BOOT/
 BootMLen equ   *-BootMsg
+         ENDC                   match IFNE mc09
 
          ENDC                   match IFGT Level-1
 
