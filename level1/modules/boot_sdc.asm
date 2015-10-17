@@ -65,7 +65,12 @@ name           fcs       /Boot/
 *       Carry Clear = OK, Set = Error
 *       B  = error (Carry Set)
 *
-HWInit         orcc      #$50               mask interrupts
+HWInit
+         IFNE  mc09
+               clrb
+               rts
+         ELSE
+               orcc      #$50               mask interrupts
                lda       #$D0               stop any emulated FDC command
                sta       CMDREG,y
                pshs      d,x,y,u            delay
@@ -73,7 +78,7 @@ HWInit         orcc      #$50               mask interrupts
                lda       STATREG,y          clear INTRQ
 
                *** Fall Thru ***
-
+         ENDC
 *--------------------------------------------------------------------------
 * HWTerm - Terminate the device
 *
@@ -85,7 +90,10 @@ HWInit         orcc      #$50               mask interrupts
 *       B = error (Carry Set)
 *
 HWTerm         clrb                         no error
+         IFNE  mc09
+         ELSE
                stb       CONTROL,y          disable command mode
+         ENDC
                rts
 
 
@@ -104,8 +112,51 @@ HWTerm         clrb                         no error
 *
 *    Exit:
 *       X  = ptr to data (i.e. ptr in blockloc,u)
+*       Carry set => ERROR
 *
-HWRead         lda       #$43               start command mode
+* multicomp09:
+* for now, the image starts at SDcard block $02.8000
+* so simply need to add that offset to the incoming
+* LSN and load it into the hardware. Simples!
+HWRead
+         IFNE  mc09
+               bsr       LDSDADRS           set up address
+* WAIT FOR PREVIOUS COMMAND (IF ANY) TO COMPLETE
+RDBIZ          LDA SDCTL
+               CMPA #$80
+               BNE RDBIZ
+
+* ISSUE THE READ COMMAND TO THE SDCARD CONTROLLER
+               CLRA
+               STA  SDCTL
+
+* TRANSFER 512 BYTES, WAITING FOR EACH IN TURN. ONLY WANT 256
+* OF THEM - DISCARD THE REST
+
+               ldx   blockloc,u             get address of buffer to fill
+               pshs  x
+               CLRB             ZERO IS LIKE 256
+SDRBIZ         LDA SDCTL
+               CMPA #$E0
+               BNE SDRBIZ       BYTE NOT READY
+               LDA SDDATA       GET BYTE
+               STA ,X+          STORE IN SECTOR BUFFER
+               DECB
+               BNE SDRBIZ       NEXT
+
+SDRBIZ2        LDA SDCTL        B IS ALREADY ZERO (LIKE 256)
+               CMPA #$E0
+               BNE SDRBIZ2      BYTE NOT READY
+               LDA SDDATA       GET BYTE (BUT DO NOTHING WITH IT)
+               DECB
+               BNE SDRBIZ2      NEXT
+
+               puls x
+               clra             carry clear -> successful completion
+               RTS
+
+         ELSE
+               lda       #$43               start command mode
                sta       CONTROL,y
                stb       LSNREG,y           put LSN into registers
                stx       LSNREG+1,y
@@ -128,7 +179,30 @@ rdLoop         ldu       DATAREG,y          read word data from controller
                puls      x,u                restore X and U
 rdExit         sta       CONTROL,y          end command mode
                rts
+         ENDC
 
+         IFNE  mc09
+*******************************************************************
+* SET SDLBA2 SDLBA1 SDLBA0 FOR NEXT SD OPERATION
+* add $02.8000 to {B,XH,XL} and load into the hardware
+* registers.
+* Can destroy A, B, X, CC
+* Assumption: the lowest byte of the adder ($02.8000 here) will
+* always be 0 and so never need fixup
+LDSDADRS       pshs b
+               tfr  x,d
+               stb  SDLBA0      ls byte is done.
+
+               ldb  #$02
+
+               adda #$80
+               sta  SDLBA1      middle byte is done
+
+               adcb #$00        add carry from middle byte
+               addb ,s+         add and drop stacked b
+               stb  SDLBA2
+               rts
+         ELSE
 
 *--------------------------------------------------------------------------
 * Wait for controller status to indicate either "Not Busy" or "Ready".
@@ -150,6 +224,7 @@ waitLp         bsr       waitRet            extra cycles for timeout
                bitb      #2                 test READY
                beq       waitLp             loop if not ready for transfer
 waitRet        rts                          return
+         ENDC
 
 
 *--------------------------------------------------------------------------

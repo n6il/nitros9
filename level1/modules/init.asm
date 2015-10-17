@@ -150,7 +150,14 @@ InstStr  equ   *
          IFNE   atari
          fcc    "Atari XL/XE"
          ELSE
+         IFNE   mc09
+         fcb    $1B                       text in bright blue
+         fcc    "[94mMulticomp09"
+         fcb    $1B
+         fcc    "[0m"
+         ELSE
          fcc    "Unknown Machine"
+         ENDC                             match IFNE mc09
          ENDC                             match IFNE atari
          ENDC                             match IFNE dalpha
          ENDC                             match IFNE d64
