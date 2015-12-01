@@ -1,3 +1,48 @@
 @DEBUG
 Syntax: Debug
 Usage : Interactive Debugger
+
+Debug command summary:
+
+[SPACE]expression     Evaluate expression; display result in
+                      hex and decimal form.
+.                     Display Dot address and contents.
+..                    Restore last Dot address; display address
+                      and contents.
+.expression           Set Dot to result of expression; display
+                      address and contents.
+=expression           Set memory at Dot to result of expression.
+-                     Decrement Dot; display address and
+                      contents.
+[ENTER]               Increment Dot; display address and
+                      contents.
+
+:                     Display all registers' contents.
+:register             Display specified register's contents.
+:register expression  Set specified register to result of
+                      expression.
+
+E module-name         Prepare for execution.
+G                     Go to the program.
+G expression          Go to the program at the address specified
+                      by the result of expression.
+L module-name         Link to module-name; display address.
+
+B                     Display all breakpoints.
+B expression          Set a breakpoint at the address specified
+                      by expression.
+K                     Kill (remove) all breakpoints.
+K expression          Kill breakpoint at the address specified
+                      by expression.
+
+M expr1 expr2         Display memory from expr1 to expr2.
+C expr1 expr2         Clear and test memory from expr1 to expr2.
+S expr2 expr2         Search memory from Dot to expr1 for
+                      value expr2.
+
+$text                 Call OS-9 shell.
+
+Q                     Quit (exit) debug.
+
+The full manual is here:
+https://sourceforge.net/p/nitros9/wiki/Interactive_Debugger
