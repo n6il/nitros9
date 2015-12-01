@@ -12,7 +12,7 @@ BASIC09FILES	= basic09.asm runb.asm gfx.asm inkey.asm syscall.asm
 CMDS		= asm attr backup binex build calldbg cmp cobbler copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir dirsort disasm \
 		display dmode dsave dump echo edit error exbin format \
-		free grfdrv help ident iniz irqs link list load login makdir \
+		free grfdrv help ident iniz irqs link list load login makdir mc09rtc \
 		megaread mdir merge mfree minted mpi os9gen padrom park printerr procs prompt pwd pxd \
 		rename save setime shellplus shell_21 sleep \
 		tee tmode touch tsmon tuneport unlink verify xmode

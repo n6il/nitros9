@@ -1,0 +1,12 @@
+@MC09RTC
+Syntax: mc09rtc [<opts>]
+Usage : Read or write DS1302 RTC connected to Multicomp09 GPIO hardware.
+Opts  :
+  -r = read RTC -- update system time from RTC
+       use this in your startup file to set the system time at boot
+  -w = write RTC -- update RTC from system time
+       use this from the shell to initialise the RTC
+  -d = dump system time, RTC time and RAM
+
+futures/maybe:
+  add options to write bits/bytes of the RAM

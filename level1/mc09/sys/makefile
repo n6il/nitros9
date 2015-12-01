@@ -11,7 +11,7 @@ HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \
 		dir.hp dirsort.hp disasm.hp display.hp dmode.hp dsave.hp dump.hp echo.hp \
 		edit.hp error.hp ex.hp exbin.hp format.hp free.hp gfx.hp \
 		help.hp ident.hp iniz.hp inkey.hp irqs.hp kill.hp link.hp \
-		list.hp load.hp login.hp makdir.hp \
+		list.hp load.hp login.hp makdir.hp mc09rtc.hp \
 		mdir.hp megaread.hp merge.hp minted.hp mpi.hp mfree.hp os9gen.hp \
 		padrom.hp park.hp procs.hp prompt.hp pwd.hp pxd.hp \
 	 	rename.hp save.hp setime.hp \

@@ -152,9 +152,18 @@ UARTDAT1       EQU $FFD3
 UARTSTA2       EQU $FFD4
 UARTDAT2       EQU $FFD5
 
+********************************************************************
 * GPIO device
+* SEE VHDL HEADER FOR PROG GUIDE
 GPIOADR        EQU $FFD6
 GPIODAT        EQU $FFD7
+
+* values supported by GPIOADR register
+GPDAT0         EQU 0
+GPDDR1         EQU 1
+GPDAT2         EQU 2
+GPDDR3         EQU 3
+
 
 ********************************************************************
 * SDCARD CONTROL REGISTERS
