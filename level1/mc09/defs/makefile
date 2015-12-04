@@ -4,7 +4,7 @@ DEPENDS		= ./makefile
 
 DEFOPTS		= --preprocess -DLevel=1
 DEFSDIR		= ../../../defs
-DEFS		= defsfile os9.d rbf.d scf.d mc09.d mc09vtio.d
+DEFS		= defsfile os9.d rbf.d scf.d mc09.d
 ALLOBJS		= $(DEFS)
 
 all:	$(ALLOBJS)
@@ -23,9 +23,6 @@ scf.d: $(DEFSDIR)/scf.d
 
 mc09.d: $(DEFSDIR)/mc09.d
 	$(AS) $(DEFOPTS) -DMC09.D=0 $< > $@
-
-mc09vtio.d: $(DEFSDIR)/mc09vtio.d
-	$(AS) $(DEFOPTS) -DMC09VTIO.D=0 $< > $@
 
 clean:
 	$(RM) $(DEFS)
