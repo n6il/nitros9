@@ -299,6 +299,9 @@
 **            Required changing a bsr L0306 to lbsr L0306 near L02A7
 ** 09/25/03 - Many changes for 6809 only code. Use <$B5 to store regW
 **            Probably could use some trimming. RG
+** 02/26/07 - Changed Line routine to improve symmetry. The changes will permit
+**            the removal of the FastH and FastV routines if desired. The new
+**            Normal Line will correctly draw horizontal or vertical lines. RG
 *****************************************************************************
 * NOTE: The 'WHITE SCREEN' BUG MAY BE (IF WE'RE LUCKY) ALLEVIATED BY CLR'ING
 * OFFSET 1E IN THE STATIC MEM FOR THE WINDOW, FORCING THE WINDOWING DRIVERS
@@ -5519,87 +5522,127 @@ L1F18    ldb   #1             Bump screen address by 1
          ldb   <$0079         Get start single pixel mask (1,2 or 4 bits set)
          rts   
 
+* Routine to move left for Normal Line L177D. Needed to get correct symmetry
+LeftMV   pshs  d
+         ldd   <$0047
+         subd  #1
+         std   <$0047
+         puls  d
+Lmore    lslb
+         bcs   Lmore2
+         jmp   [>GrfMem+gr007A]
+Lmore2   leax  -1,x
+         ldb   <$007C
+         rts
+
+* A dX or dY of 1 will step the line in the middle. The ends of the line
+* are not swapped. The initial error is a function of dX or dY.
+* A flag for left/right movement <$12 is used.
 * Normal line routine
-L1724    ldd   <$004B       current X
-         cmpd  <$0047       HBX, LBX
-         bge   L1734
-         lbsr  L16AA        swap x-coordinates around
-         ldd   <$004D       current Y
-         bsr   L171D        swap Y coordinates around
-         ldd   <$004B       get high X
-L1734    subd  <$0047       subtract out low X
-         std   <$0013       save x-count to do
-         ldb   <$0063       BPL
+L1724    clr   <$0012       flag for X swap
+         ldd   <$004B       current X
+         subd  <$0047       new X
+         std   <$0013       save dX
+         bpl   L1734
+         com   <$0012       flag left movement
+         IFNE  H6309
+         negd               make change positive
+         ELSE
+         nega
+         negb
+         sbca  #0
+         ENDC
+         std   <$0013       force dX>0
+L1734    ldb   <$0063       BPL bytes/line
          clra  
          std   <$0017       save 16-bit bytes per line
-         ldd   <$004D       high Y
-         subd  <$0049       subtract out low Y
-         std   <$0015       save y-count to do
+         ldd   <$004D       current Y
+         subd  <$0049       subtract working Y
+         std   <$0015       save dY
          bpl   L1753        if positive
          IFNE  H6309
-         negd
+         negd               make change positive
          ELSE
-         coma
-         comb
-         addd  #1
+         nega
+         negb
+         sbca  #0
          ENDC
-         std   <$0015       invert y-count if negative (make it positive)
-         ldd   <$0017       invert BPL, too.  Why?
+         std   <$0015       force dY>0
+         ldd   <$0017       up/down movement; up=+ down=-
          IFNE  H6309
          negd
          ELSE
-         coma
-         comb
-         addd  #1
+         nega
+         negb
+         sbca  #0
          ENDC
-         std   <$0017
-* ATD: If we get _really_ fancy, have this do a DIVD for X and Y, and
-* figure out how many sub-lines to do, and call the main line to do each.
-* that way any horizontal/vertical sections will use optimized routines
-* above
-* vertical sections can call L16F4 directly, I think...
-*
-L1753    equ   *
-         IFNE  H6309
-         clrd
+         std   <$0017       now points the correct direction
+
+L1753    ldd    <$0013      compare dX with dY to find larger
+         cmpd   <$0015
+         bcs    Ylarge
+         IFNE   H6309
+         asrd               error = dX/2
+         bra    Lvector
+Ylarge   ldd    <$0015
+         negd
+         asrd               error = -dY/2
          ELSE
-         clra
-         clrb
+         asra
+         rorb
+         bra    Lvector
+Ylarge   ldd    <$0015
+         nega
+         negb
+         sbca   #0
+         asra
+         rorb
          ENDC
-         std   <$0075       counter
-         lbsr  L1EF1          Set up <$77 bit shift vector & <$79 pixel mask
+Lvector  std   <$0075       error term
+         lbsr  L1EF1        Set up <$77 right bit shift vector & <$79 pixel mask
+* for symmetry
+         lbsr  L1F1D        Set up <$7A left bit shift vector & <$79 pixel mask
          lbsr  L1E9D          Calculate screen addr into X & pixel mask into B
          stb   <$0074         Save pixel mask
 L1760    ldb   <$0074         Get pixel mask
          lda   <$0061         Get color mask
          jsr   ,u
-         ldd   <$0075       grab counter
-         bpl   L177D        if positive
-         addd  <$0013       add in number of X-pixels to do
-         std   <$0075       save it
+L1788    ldd   <$0047       finished with X movement?
+         cmpd  <$004B
+         bne   L1788b
+         ldd   <$0049       finished with Y movement?
+         cmpd  <$004D
+         bne   L1788b
+         rts                finished fo leave
+L1788b   ldd   <$0075       get error
+         bpl   L177D        if >=0
+         addd  <$0013       add in dX
+         std   <$0075       save new working error
          ldd   <$0017       get BPL
          IFNE  H6309
-         addr  d,x          go up/down
+         addr  d,x
+         bcs   L1779        test direction not result
          ELSE
-         leax  d,x
-         ENDC
+         leax  d,x          will not change regCC N
          bmi   L1779
-         inc   <$004A       go down one y-line
-         bra   L1788
+         ENDC       
+         inc   <$004A       go down one Y-line
+         bra   L1760
 
 L1779    dec   <$004A       decrement y-count
-         bra   L1788
+         bra   L1760
 
 L177D    subd  <$0015       take out one BPL
          std   <$0075       save new count
          ldb   <$0074       grab pixel mask
-         bsr   L1F08        go right one pixel
-         stb   <$0074       save new pixel mask
-L1788    ldd   <$0047       grab X-start
-         cmpd  <$004B       at X-end yet?
-         ble   L1760        no, continue
-         rts   
-
+         tst   <$12         flag for left/right movement
+         bne   L177D2
+         lbsr   L1F08       go right one pixel
+L177D3   stb   <$0074       save new pixel mask
+         bra   L1760        loop to draw it
+L177D2   lbsr  LeftMV       go left one pixel
+         bra   L177D3
+           
 * Box entry point
 * The optimizations here work because the special-purpose horizintal and
 * vertical line routines only check start X,Y and end X OR Y, not BOTH of
@@ -6475,6 +6518,9 @@ L1C4F    lbsr  L1884        ATD: +11C:-6B  exit if screen is text
          beq   L1CB7          Yes, exit if no stack overflow occurred
          clr   ,-s          save y-direction=0: done FFILLing
          lbsr  L1EF1          Setup start pixel mask & vector for right dir.
+         bsr   L1F1D
+         ldx   <$0072
+         lbra  L1CC6
 * Setup up bit mask & branch table for flood filling in the left direction
 L1F1D    lda   <$0060         Get screen type
          ldx   #GrfStrt+L1F2C-2  Point to table
@@ -6483,9 +6529,8 @@ L1F1D    lda   <$0060         Get screen type
          sta   <$007C         Preserve bit mask
          abx                  Store vector to bit shift routine
          stx   <$007A         save for later
-         ldx   <$0072         Get phys screen address to pixel we are doing
-         lbra  L1CC6          Skip ahead
-
+         rts
+         
 * Bit shift table to shift to the left 3,1 or 0 times
 * Used by FFill when filling to the left
 L1F2C    fcb   $01,L1F45-(L1F2C-2)  $1b  640 2-color
