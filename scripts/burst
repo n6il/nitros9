@@ -11,13 +11,13 @@ if [ -z "$TAG" ]; then
 fi
 
 cd $HTDOCS
-mkdir latest-$TAG
-cd latest-$TAG
+mkdir snapshot-$TAG
+cd snapshot-$TAG
 unzip -o ../$NAME-$TAG.zip
 echo "Options +Indexes" > .htaccess
 
 cd $HTDOCS
-rm latest
-ln -s latest-$TAG latest
+rm snapshot
+ln -s snapshot-$TAG snapshot
 rm $NAME.zip
 ln -s $NAME-$TAG.zip $NAME.zip
