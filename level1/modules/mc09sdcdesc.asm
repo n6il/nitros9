@@ -8,6 +8,11 @@
 * ------------------------------------------------------------------
 *          2015/08/31  ncrook
 * Created from 1773 descriptor template
+*          2016/01/07  ncrook
+* Bill Nobel pointed out the impact of reusing the Interlv and SAS
+* bytes, so I have allocated 2 new bytes for SDOFFSET. Also, set the
+* track and sector count correctly because these are needed for
+* calculations by RBF during writes.
 
          nam   mc09sddesc
          ttl   Multicomp09 SDCC Device Descriptor Template
@@ -18,15 +23,11 @@ tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
 
-* [NAC HACK 2015Sep04] this data structure is described in the TechRef so
-* I assume it is Required. The DNum/Type are swapped in the TechRef (Type
-* is first) Error here or there?
+* All of these values can be provided on the build line in the Makefile
+* overriding the defaults below
          IFNDEF DNum
 DNum     set   0
          ENDC
-* [NAC HACK 2015Sep02] not sure whether the fact I'm emulating a floppy means
-* that I need all this stuff, eg for interacting with LSN0? Reconsider later
-* and maybe strip it all out
          IFNE  D35
 Type     set   TYP.CCF+TYP.3
          ELSE
@@ -62,6 +63,9 @@ SAS      set   8
          fcb   HW.Page    extended controller address
          fdb   $FFD8      physical controller (base) address
          fcb   initsize-*-1 initialization table size
+* In "The NitrOS-9 Technical Reference" describes this initialisation table.
+* The first byte is at offset IT.DTP from the start of the module but is copied
+* to PD.DTP in the path descriptor.
          fcb   DT.RBF     device type:0=scf,1=rbf,2=pipe,3=scf
          fcb   DNum       drive number
          fcb   Step       step rate
@@ -72,11 +76,19 @@ SAS      set   8
          fcb   Verify     verify disk writes:0=on
          fdb   SectTrk    # of sectors per track
          fdb   SectTrk0   # of sectors per track (track 0)
-         fdb   OFFSET     high 16 bits of 24-bit block address on
-*                         SDcard where this disk image starts.
-**nac removed but (for now) keep the entry the same size
-**nac         fcb   Interlv    sector interleave factor
-**nac         fcb   SAS        minimum size of sector allocation
+         fcb   Interlv    sector interleave factor
+         fcb   SAS        minimum size of sector allocation
+         fcb   0          IT.TFM
+         fdb   0          IT.Exten
+         fcb   0          IT.STOff
+* SDcard driver-specific additions to the device descriptor go
+* here. They do NOT get copied into the path descriptor; they
+* cannot because there is NO ROOM. The driver has to access these
+* values directly in the descriptor (see rbsuper/superdesc for how)
+
+* High 16 bits of the 24-bit SDcard block address corresponding
+* to the start of this disk image.
+         fdb   SDOFFSET
 initsize equ   *
 
          IFNE  DD
