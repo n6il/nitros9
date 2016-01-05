@@ -35,9 +35,9 @@ size     equ   .
 name     fcs   /mc09sd/
          fcb   edition
 
+
 * [NAC HACK 2015Sep04] probably ought to have timeouts on each of the
 * wait loops.
-
 
 * [NAC HACK 2015Sep04] based on tech ref and rb1773 we're supposed to
 * get the base address from the device data structure and then access all
@@ -60,7 +60,7 @@ name     fcs   /mc09sd/
 * Multicomp09 SDCC does not require any initialisation
 * [NAC HACK 2015Sep02] futures: new card detection and re-init when
 * the hardware supports it.
-* BUT the tech ref xplains there's other stuff we need to do.
+* BUT the tech ref xplains the other stuff we need to do.
 Init     equ   *
 
          ldd   #$FF*256+N.Drives  'invalid' value & # of drives
@@ -71,7 +71,7 @@ Init1    sta   ,x             DD.TOT MSB to bogus value
          decb                 done all drives yet?
          bne   Init1          no, init them all
 
-* unlike rb1773 we do not need a sector buffer (AFAIK) so we're done.
+* unlike rb1773 we do not need a sector buffer so we're done.
 
          clrb                 clear carry
          rts
@@ -116,24 +116,10 @@ SetStat  clrb                 clear carry
 
 
 *******************************************************************
-* Term
+* Jump table for the public routines of this module. 3 bytes per
+* entry, so any bra must be padded with a NOP. Save a few bytes by
+* falling through to the last entry (Term).
 *
-* Entry:
-*    U  = address of device memory area
-*
-* Exit:
-*    CC = carry set on error
-*    B  = error code
-*
-* There is no memory allocated so nothing to do here, either. I almost
-* feel bad..
-Term     clrb
-         rts
-
-
-*******************************************************************
-* Jump table for the public routines of this module. 3 bytes per entry,
-* so any bra must be padded with a NOP.
 start    bra   Init
          nop
          bra   Read
@@ -144,8 +130,25 @@ start    bra   Init
          nop
          bra   SetStat
          nop
-         bra   Term
-         nop
+
+* FALL-THROUGH to the Term subroutine
+
+*******************************************************************
+* Term
+*
+* Entry:
+*    U  = address of device memory area
+*
+* Exit:
+*    CC = carry set on error
+*    B  = error code
+*
+* There is no memory allocated so nothing to do here, either. I
+* almost feel bad..
+*
+Term     clrb
+         rts
+
 
 *******************************************************************
 * Read
@@ -160,7 +163,7 @@ start    bra   Init
 *    CC = carry set on error
 *    B  = error code
 *
-* The SDcard base block for this disk is at Y+$2D
+* The SDcard base block for this disk is retrieved by LdSDAdrs.
 *
 Read     bsr   LdSDAdrs       set up address in controller
          ldx   PD.BUF,y       Get physical sector buffer ptr
@@ -227,8 +230,8 @@ RdDBiz2  lda   SDCTL      b is already zero (like 256)
 *    CC = carry set on error
 *    B  = error code
 *
-* [NAC HACK 2015Sep04] LdSDArs should take care of selecting the right offset
-* based on the drive that's selected.
+* The SDcard base block for this disk is retrieved by LdSDAdrs.
+*
 Write
          bsr   LdSDAdrs       set up address in controller
          ldx   PD.BUF,y       Get physical sector buffer ptr
@@ -269,14 +272,19 @@ WrDBiz2  lda   SDCTL          b is zero (like 256)
 
 *******************************************************************
 * SET SDLBA2 SDLBA1 SDLBA0 FOR NEXT SD OPERATION
-* 1. The 16-bit value stored at $2D,Y is the upper 16 bits of the
-*    base block address of the disk image on the SDcard
+* 1. The device descriptor holds a value that is the upper 16 bits
+*    of the base block address of the disk image on the SDcard
 * 2. If this value is QQQQ, add QQQQ00 to {B,XH,XL} to form the
-*    value inot the hardware registers.
-* 2. Load lsn0cp with the number of bytes to be copied into the
+*    value into the hardware registers.
+* 3. Load lsn0cp with the number of bytes to be copied into the
 *    LSN0 buffer - if {B,XH,XL} == 0, this DD.SIZ. Otherwise,
-*    it is 0. Loaded for every operation, only used for Read.
+*    it is 0. Loaded for every operation, only *used* for Read.
 *
+* Entry:
+*    B  = MSB of LSN
+*    X  = LSB of LSN
+*    Y  = address of path descriptor
+*    U  = address of device memory area
 * Can destroy A, B, X, CC
 *
 * It is a constraint that the disk image is aligned so that the
@@ -285,7 +293,18 @@ WrDBiz2  lda   SDCTL          b is zero (like 256)
 *
 * [NAC HACK 2015Sep04] hack! the hardware addresses should be
 * offsets from the base address stored in the device's data structure.
-LdSDAdrs clr   lsn0cp,u       default: copy nothing
+*
+* PD.DEV,Y is the device table pointer. From this, get the
+* descriptor pointer at V$DESC. From there, use the IT.xxx
+* offsets to get to data in the device descriptor. This is
+* long-winded because the value we need is outside of the area
+* that gets copied into the path descriptor.
+*
+LdSDAdrs pshs  y
+         ldy   PD.DEV,y       device table pointer
+         ldy   V$DESC,y       descriptor pointer
+
+         clr   lsn0cp,u       default: copy nothing
          pshs  b
 
          pshs  x              copy of X to pull off byte by byte
@@ -298,17 +317,16 @@ LdSDAdrs clr   lsn0cp,u       default: copy nothing
 notlsn0  tfr   x,d
          stb   SDLBA0         ls byte is done.
 
-         ldb   $2D,y          bits 23:16 of drive base
+         ldb   IT.SOFF1,y     bits 23:16 of drive base
 
-         adda  $2E,y          add bits 15:8 of drive base
+         adda  IT.SOFF2,y     add bits 15:8 of drive base
          sta   SDLBA1         middle byte is done
 
          adcb  #$00           add carry from middle byte
          addb  ,s+            add and drop stacked b
          stb   SDLBA2
-         rts
+         puls  y,pc
 
          emod
 eom      equ   *
          end
-

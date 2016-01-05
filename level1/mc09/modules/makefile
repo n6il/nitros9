@@ -188,25 +188,23 @@ d1_80d.dd: rb1773desc.asm
 d2_80d.dd: rb1773desc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=2
 
-# OFFSET is the high 16 bits of the 24-bit block address
-# where the disk image starts on the SDcard. It must match
-# the value used in the create_sd_image script. Needs to be
-# expressed in DECIMAL here (at least, I don't know how to pass
-# it in and have it treated as hex)
+# SDOFFSET is the high 16 bits of the 24-bit block address at
+# which the disk image starts on the SDcard. It must match
+# the value used in the create_sd_image script.
 dds0_80d.dd: mc09sdcdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=0 -DDD=1 -DOFFSET=640
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=0 -DSDOFFSET=0x0280 -DDD=1
 
 s0_80d.dd: mc09sdcdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=0        -DOFFSET=640
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=0 -DSDOFFSET=0x0280
 
 s1_80d.dd: mc09sdcdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=1        -DOFFSET=656
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=1 -DSDOFFSET=0x0290
 
 s2_80d.dd: mc09sdcdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=2        -DOFFSET=672
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=2 -DSDOFFSET=0x02A0
 
 s3_80d.dd: mc09sdcdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=3        -DOFFSET=688
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=3 -DSDOFFSET=0x02B0
 
 # Serial ports for mc09
 term_mc6850_t0.dt: term_mc6850.asm
