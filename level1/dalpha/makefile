@@ -106,7 +106,7 @@ all:
 
 # Clean all components
 clean:	dskclean
-	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
+	$(foreach dir,$(DIRS),$(MAKE) -C $(dir) clean &&) :
 	
 dskclean:
 	$(RM) $(DSKS) $(LDSKS)

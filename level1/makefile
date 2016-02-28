@@ -16,7 +16,7 @@ all:
 
 # Clean all components
 clean:
-	$(foreach dir, $(dirs), ($(CD) $(dir); make clean);)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) clean &&) :
 
 # Make DSK images
 dsk:
@@ -28,7 +28,7 @@ dskcopy:
 
 # Clean DSK images
 dskclean:
-	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dskclean &&) :
 
 # Info
 info:
