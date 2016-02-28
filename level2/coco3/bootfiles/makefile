@@ -13,6 +13,10 @@ KERNEL_BECKER	= $(MD)/rel_80 $(MD)/boot_dw_becker $(MD)/krn
 KERNEL_COCOSDC	= $(MD)/rel_80 $(MD)/boot_sdc $(MD)/krn
 KERNEL_IDE	= $(MD)/rel_80 $(MD)/boot_ide $(MD)/krn
 KERNEL_DIDE	= $(MD)/rel_80 $(MD)/boot_dide $(MD)/krn
+# these not used yet:
+KERNEL_RAMPAK	= $(MD)/rel_80 $(MD)/boot_rampak $(MD)/krn
+KERNEL_KENTON	= $(MD)/rel_80 $(MD)/boot_kenton $(MD)/krn
+KERNEL_TC3	= $(MD)/rel_80 $(MD)/boot_tc3 $(MD)/krn
 
 FLOPPY_40D = $(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd
 FLOPPY_80D = $(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_80d.dd $(MD)/d2_80d.dd

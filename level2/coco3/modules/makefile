@@ -78,14 +78,6 @@ PIPE		= pipeman.mn pipeman_named.mn \
 
 RFM		= rfm.mn rfmdrv.dr ddy0.dd y0.dd y1.dd y2.dd y3.dd
 
-# The following macros represent a collection of modules for various
-# kernel tracks and bootfile configurations.
-#
-KERNEL_1773	= rel_32 boot_1773 krn
-KERNEL_RAMPAK	= rel_32 $(TPB)/boot_rampak krn
-KERNEL_KENTON	= rel_32 $(TPB)/boot_kenton krn
-KERNEL_IDE	= rel_32 $(TPB)/boot_ide krn
-
 ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE) $(RFM)
 
 all:	$(ALLOBJS)
