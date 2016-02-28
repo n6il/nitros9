@@ -80,39 +80,3 @@ nightly:
 	@$(ECHO) "section of the makefile."
 endif
 
-# This section is to run a nightly test.
-# This requires you to setup a environment variable
-# called TESTSSHSERVER.
-# example would be: TESTSSHSERVER='testuser@localhost'
-# another example: TESTSSHSERVER='testuser@test.testhost.com'
-#
-# You are also required to setup a target path for your file
-# and the environment variable that is being used in this
-# section is called TESTSSHDIR
-ifdef	TESTSSHSERVER
-ifdef	TESTSSHDIR
-nightlytest: clean hgupdate dskcopy
-	$(MAKE) info > $(DSKDIR)/ReadMe
-	$(ARCHIVE) nitros9project $(DSKDIR)/*
-	scp nitros9project.zip $(TESTSSHSERVER):$(TESTSSHDIR)/nitros9project-$(shell date +%Y%m%d).zip
-	ssh $(TESTSSHSERVER) "./burst nitros9project $(shell date +%Y%m%d)"
-else
-nightlytest:
-	@$(ECHO) ""
-	@$(ECHO) ""
-	@$(ECHO) "You need to set the TESTSSHDIR variable"
-	@$(ECHO) "You may wish to refer to the nightlytest"
-	@$(ECHO) "section of the makefile to see what"
-	@$(ECHO) "needs to be setup first before using"
-	@$(ECHO) "this option"
-endif
-else
-nightlytest:
-	@$(ECHO) ""
-	@$(ECHO) ""
-	@$(ECHO) "You need to set the TESTSSHSERVER variable"
-	@$(ECHO) "You may wish to refer to the nightlytest"
-	@$(ECHO) "section of the makefile to see what"
-	@$(ECHO) "needs to be setup first before using"
-	@$(ECHO) "this option."
-endif
