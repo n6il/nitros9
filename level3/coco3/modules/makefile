@@ -95,7 +95,7 @@ all:	$(ALLOBJS)
 # Kernel
 krn krnp2:
 	$(CD) kernel; make $@
-	$(OS9COPY) kernel/$@ .
+	$(CP) kernel/$@ .
 
 # Special cases
 
