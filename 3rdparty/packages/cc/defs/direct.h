@@ -18,7 +18,7 @@ struct fildes {
 
 struct ddsect {
      char      dd_tot[3];
-     char      dd_tsk;
+     char      dd_tks;
      unsigned  dd_map;
      unsigned  dd_bit;
      char      dd_dir[3];
