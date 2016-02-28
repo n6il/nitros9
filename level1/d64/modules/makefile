@@ -84,7 +84,7 @@ all:	$(ALLOBJS)
 # Kernel
 krn krnp2:
 	$(CD) kernel; make $@
-	$(OS9COPY) kernel/$@ .
+	$(CP) kernel/$@ .
 
 boot_d64:	boot_d64.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=0 -DSTEP=$(STEP)

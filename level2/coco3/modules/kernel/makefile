@@ -20,7 +20,7 @@ SYSCALLS	= fallimg.asm fallram.asm falltsk.asm faproc.asm fcmpnam.asm \
 		fsswi.asm fstime.asm fsuser.asm funlink.asm funload.asm
 
 #ALLOBJS		= $(KERNEL) $(KERNEL_CCB) $(KERNELP2)
-ALLOBJS		= $(KERNEL) $(KERNELP2)
+ALLOBJS		= $(KERNEL) $(KERNELP2) $(KERNEL_CCB)
 
 all:	$(ALLOBJS)
 
