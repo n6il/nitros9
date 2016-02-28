@@ -4,7 +4,6 @@ NITROS9DIR = $(PWD)
 endif
 
 export NITROS9DIR
-
 include rules.mak
 
 dirs	=  $(NOSLIB) $(LEVEL1) $(LEVEL2) $(LEVEL3) $(3RDPARTY)
@@ -36,11 +35,6 @@ clean:
 	$(RM) $(DSKDIR)/ReadMe
 	$(RM) $(DSKDIR)/index.html
 
-# Do CVS update
-hgupdate:
-	hg pull
-	hg update
-
 # Make DSK images
 dsk:	all
 	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dsk &&) :
@@ -50,7 +44,6 @@ dskcopy:	all
 	mkdir -p $(DSKDIR)
 	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dskcopy &&) :
 	$(MKDSKINDEX) $(DSKDIR) > $(DSKDIR)/index.html
-
 
 # Clean DSK images
 dskclean:
@@ -65,7 +58,7 @@ info:
 # The "burst" script is found in the scripts folder and must
 # on your ssh account at sourceforge.net
 ifdef	SOURCEUSER
-nightly: clean hgupdate dskcopy
+nightly: clean dskcopy
 	$(MAKE) info > $(DSKDIR)/ReadMe
 	$(ARCHIVE) nitros9project $(DSKDIR)/*
 	scp nitros9project.zip $(SOURCEUSER),nitros9@web.sourceforge.net:/home/project-web/nitros9/htdocs/nitros9project-$(shell date +%Y%m%d).zip 
@@ -79,4 +72,3 @@ nightly:
 	@$(ECHO) "You may wish to refer to the nightly"
 	@$(ECHO) "section of the makefile."
 endif
-
