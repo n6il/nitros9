@@ -1,12 +1,4 @@
-ifeq ($(CPU),)
-    CPU = 6809
-endif
-
-PORT = coco3
-MACHINE = Tandy Color Computer 3
-include $(NITROS9DIR)/rules.mak
-
-LEVEL		= 3
+include port.mak
 
 DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)
