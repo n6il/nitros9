@@ -18,9 +18,8 @@ WWWROOT		= $(shell $(CD) wwwroot; make --no-print-directory showobjs)
 DEFS		= $(shell $(CD) defs; make --no-print-directory showobjs)
 STARTUP		= startup
 
-PACKAGENAME	= $(DISTROVER).zip
-DSK		     = $(DISTROVER).dsk
-DSK_DEMO       = ataridemo.dsk
+DSK		= $(DISTROVER).dsk
+DSK_DEMO	= ataridemo.dsk
 
 DSKS		= $(DSK) $(DSK_DEMO)
 
@@ -38,18 +37,12 @@ clean:	dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 
 dskclean:
-	$(RM) $(PACKAGENAME) $(DSKS)
+	$(RM) $(DSKS)
 
-dsk: all $(PACKAGENAME)
+dsk: all $(DSKS)
 
-dskcopy: dsk
+dskcopy: $(DSKS)
 	$(CP) $(DSKS) $(DSKDIR)
-
-scp: dsk
-	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
-
-$(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
-	$(ARCHIVE) $@ $^
 
 #	$(OS9GEN) $@ -b=$(BOOTFILE)	
 $(DSK):

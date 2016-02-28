@@ -38,7 +38,6 @@ SYSTEXT		= $(shell $(CD) sys; make --no-print-directory showtextobjs)
 STARTUP		= startup
 SYSGO		= sysgo_dd
 
-PACKAGENAME	= $(DISTROVER).zip
 DSKDW		= $(DISTROVER)_dw.dsk
 LDSKDW		= $(DISTRONAME)_dw.dsk
 DSK360K_1	= $(DISTROVER)_40d_1.dsk
@@ -70,18 +69,12 @@ clean: dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 
 dskclean:
-	$(RM) $(PACKAGENAME) $(DSKS) $(LDSKS)
+	$(RM) $(DSKS) $(LDSKS)
 
-dsk: all $(PACKAGENAME)
+dsk: all $(DSKS)
 
-dskcopy: dsk
+dskcopy: $(DSKS)
 	$(CP) $(DSKS) $(DSKDIR)
-
-scp: dsk
-	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
-
-$(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
-	$(ARCHIVE) $@ $^
 
 $(DSKDW):
 	$(RM) $@
