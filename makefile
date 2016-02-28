@@ -56,20 +56,6 @@ dskcopy:	all
 dskclean:
 	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dskclean &&) :
 
-# DriveWire DSK images
-dwdsk = $(LEVEL1)/coco/nos96809l1coco1_dw.dsk $(LEVEL1)/coco/nos96809l1coco2_dw.dsk \
-	$(LEVEL2)/coco3/nos96809l2_dw.dsk $(LEVEL2)/coco3_6309/nos96309l2_dw.dsk
-
-dw:	dsk
-	$(ARCHIVE) nitros9_drivewire3.zip $(dwdsk)
-
-# DriveWire Becker DSK Images
-beckerdsk	= $(LEVEL1)/coco/nos96809l1coco_becker.dsk \
-	$(LEVEL2)/coco3/nos96809l2_becker.dsk $(LEVEL2)/coco3_6309/nos96309l2_becker.dsk
-
-becker:	dsk
-	$(ARCHIVE) nitros9_becker.zip $(beckerdsk)
-
 info:
 	@$(foreach dir,$(dirs), $(MAKE) --no-print-directory -C $(dir) info &&) :
 	

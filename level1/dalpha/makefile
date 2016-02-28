@@ -85,7 +85,6 @@ SYS		= $(shell $(CD) sys; make --no-print-directory showobjs)
 DEFS		= $(shell $(CD) defs; make --no-print-directory showobjs)
 ROOTFILES	= startup
 
-PACKAGENAME	= $(DISTROVER).zip
 DSK360K_1       = $(DISTROVER)_80s_1.dsk
 LDSK360K_1      = $(DISTRONAME)_80s_1.dsk
 DSK360K_2       = $(DISTROVER)_80s_2.dsk
@@ -110,18 +109,12 @@ clean:	dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 	
 dskclean:
-	$(RM) $(PACKAGENAME) $(DSKS) $(LDSKS)
+	$(RM) $(DSKS) $(LDSKS)
 
-dsk: all $(PACKAGENAME)
+dsk: all $(DSKS)
 
-dskcopy: dsk
+dskcopy: $(DSKS)
 	$(CP) $(DSKS) $(DSKDIR)
-
-scp: dsk
-	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
-
-$(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
-	$(ARCHIVE) $@ $^
 
 #Dragon Alpha internal drives are Single sided 80 track
 

@@ -50,7 +50,6 @@ STARTUP_DW	= startup.dw
 SYSGO		= sysgo_dd
 CCBKRN		= ccbkrn
 
-PACKAGENAME	= $(DISTROVER).zip
 DSKDW		= $(DISTROVER)_dw.dsk
 LDSKDW		= $(DISTRONAME)_dw.dsk
 DSKDWHEADLESS	= $(DISTROVER)_dw_headless.dsk
@@ -101,18 +100,12 @@ clean: dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 
 dskclean:
-	$(RM) $(PACKAGENAME) $(DSKS) $(LDSKS)
+	$(RM) $(DSKS) $(LDSKS)
 
-dsk: all $(PACKAGENAME)
+dsk: all $(DSKS)
 
-dskcopy: dsk
+dskcopy: $(DSKS)
 	$(CP) $(DSKS) $(DSKDIR)
-
-scp: dsk
-	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
-
-$(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
-	$(ARCHIVE) $@ $^
 
 $(DSKDW):
 	$(RM) $@
