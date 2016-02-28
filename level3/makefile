@@ -1,5 +1,5 @@
 include $(NITROS9DIR)/rules.mak
-LEVEL	= 3
+
 dirs	= coco3 coco3_6309
 ifdef PORTS
 dirs	= $(PORTS)
@@ -9,27 +9,27 @@ endif
 all:
 	@$(ECHO) "**************************************************"
 	@$(ECHO) "*                                                *"
-	@$(ECHO) "*             NitrOS-9 Level $(LEVEL) Ports             *"
+	@$(ECHO) "*             NitrOS-9 Level 3 Ports             *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
-	$(foreach dir, $(dirs), $(MAKE) -C $(dir) &&) :
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) &&) :
 
 # Clean all components
 clean:
-	$(foreach dir, $(dirs), ($(CD) $(dir); make clean);)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) clean &&) :
 
 # Make DSK images
 dsk:
-	$(foreach dir, $(dirs), $(MAKE) -C $(dir) dsk &&) :
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dsk &&) :
 
 # Copy DSK images
 dskcopy:
-	$(foreach dir, $(dirs), $(MAKE) -C $(dir) dskcopy &&) :
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dskcopy &&) :
 
 # Clean DSK images
 dskclean:
-	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dskclean &&) :
 
 # Info
 info:
-	@$(foreach dir, $(dirs), $(MAKE) -C $(dir) info; $(ECHO);)
+	@$(foreach dir,$(dirs),$(MAKE) -C $(dir) info; $(ECHO);)
