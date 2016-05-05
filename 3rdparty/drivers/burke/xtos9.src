@@ -212,8 +212,10 @@ JmpTbl  lbra    INIT
 *
 PostIni pshs    Y,X,D
 
+    ifne    (Drives-1)              ;If more than 1 drive
         ldb     PD.DRV,Y
         lbsr    GOBPtr              ;Point Y to extra variables
+    endc
         clrb                        ;Force no carry (success)
         ldb     (PRKLSN-OBSTART+0),Y
         orb     (PRKLSN-OBSTART+1),Y
