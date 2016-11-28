@@ -39,11 +39,11 @@ FMapBlk2 stx   ,y++         save block # to buffer
          pshs  d
          ENDC
          lsla               Multiply start block # by 32
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-         clrb  
+         lsla
+         lsla
+         lsla
+         lsla
+         clrb
          std   R$U,u        save address of first block
          IFNE  H6309
          tfr   w,d          Restore offset
@@ -53,8 +53,8 @@ FMapBlk2 stx   ,y++         save block # to buffer
          leau  ,s           move DAT image into process descriptor
          os9   F$SetImg     Change process dsc to reflect new blocks
 L0BA6    leas  <$10,s       Eat DAT image copy & return
-         rts   
+         rts
 
 L0BAA    comb               Illegal Block address error
          ldb   #E$IBA
-         rts   
+         rts

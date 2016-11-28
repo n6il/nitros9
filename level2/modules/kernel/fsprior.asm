@@ -24,5 +24,4 @@ L07B7    lda   R$B,u        get new priority
          rts                return
 L07BD    comb               set carry for error
          ldb   #E$BPrcID
-L07C0    rts   
-
+L07C0    rts

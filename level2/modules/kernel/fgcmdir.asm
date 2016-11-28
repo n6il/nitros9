@@ -98,10 +98,10 @@ L0C87    leay  2,y
 L0C95    pshs  u
          ldu   <D.ModDir
          bra   L0CA4
-L0C9B    cmpy  MD$MPDAT,u	same DAT ptrs?
-         bne   L0CA2		no, skip
-         stx   MD$MPDAT,u	else update ptrs
-L0CA2    leau  MD$ESize,u	next entry
-L0CA4    cmpu  <D.ModEnd	last entry?
-         bne   L0C9B		no
-         puls  u,pc		else yes... return
+L0C9B    cmpy  MD$MPDAT,u   same DAT ptrs?
+         bne   L0CA2        no, skip
+         stx   MD$MPDAT,u   else update ptrs
+L0CA2    leau  MD$ESize,u   next entry
+L0CA4    cmpu  <D.ModEnd    last entry?
+         bne   L0C9B        no
+         puls  u,pc         else yes... return

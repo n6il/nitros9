@@ -31,4 +31,4 @@ FGModDr  ldd   <D.ModDir+2 Get end ptr of module directory
          bra   L0978      --- saves 4 bytes, adds 3 cycles
 ***         ldu   R$X,u       Get caller's buffer ptr
 ***         os9   F$Move      Copy module directory in caller's buffer
-***         rts   
+***         rts

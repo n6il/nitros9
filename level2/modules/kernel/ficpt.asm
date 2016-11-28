@@ -2,7 +2,7 @@
 * System Call: F$Icpt
 *
 * Function: Sets the function to be called when a signal arrives.
-*          
+*
 *
 * Input:  X = Address of intercept routine
 *         U = Address of intercept routine data area

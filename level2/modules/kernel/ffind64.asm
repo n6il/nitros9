@@ -108,7 +108,7 @@ L0AAC    tst   d,y          Is this 64 byte block allocated?
 
 * Index entry has a totally unused 256 byte page
 L0AB4    orcc  #Carry       Set flag (didn't find one)
-L0AB6    leay  d,y          
+L0AB6    leay  d,y
          puls  a            Get which index entry we were checking
          bcc   L0AE1        If we found a blank entry, go allocate it
          inca               Didn't, move to next index entry
@@ -177,8 +177,8 @@ L0AF0    leas  3,s
 FRet64   lda   R$A,u
          ldx   R$X,u
          pshs  u,y,x,d
-         clrb  
-         tsta  
+         clrb
+         tsta
          beq   L0B22
          IFNE  H6309
          lsrd               (Divide by 4)
@@ -194,15 +194,15 @@ FRet64   lda   R$A,u
          beq   L0B20
          tfr   d,y
          clr   ,y
-         clrb  
+         clrb
          tfr   d,u
-         clra  
+         clra
 L0B10    tst   d,u
          bne   L0B20
          addb  #$40
          bne   L0B10
-         inca  
-         os9   F$SRtMem 
+         inca
+         os9   F$SRtMem
          lda   ,s
          clr   a,x
 L0B20    clr   ,s+

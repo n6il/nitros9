@@ -25,7 +25,7 @@ srchblk  cmpx  <D.BlkMap+2  Hit end of map yet?
 *       don't need to calc A
 L0983    tfr   y,d          Copy start of requested block mem ptr to D (B)
          lda   ,s           Get # blocks requested
-         stb   ,s           Save start block # 
+         stb   ,s           Save start block #
 L098D    inc   ,y+          Flag blocks as used
          deca                (for all blocks allocated)
          bne   L098D        Do until done

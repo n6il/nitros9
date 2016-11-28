@@ -28,7 +28,7 @@ L03B7    ldx   <D.Proc      get pointer to current process
          tfm   x+,u+        move it
          ELSE
          ldy   #$00FC
-L03C3    ldd   ,x++		copy bytes
+L03C3    ldd   ,x++         copy bytes
          std   ,u++
          leay  -2,y
          bne   L03C3
@@ -59,12 +59,12 @@ L03CB    ldu   2,s          get new descriptor pointer
          os9   F$UnLink     unlink from the primary module
          ldb   P$PagCnt,x   grab the page count
          addb  #$1F         round up to the nearest block
-         lsrb  
-         lsrb  
-         lsrb  
-         lsrb  
+         lsrb
+         lsrb
+         lsrb
+         lsrb
          lsrb               get number of blocks used
-         lda   #$08         
+         lda   #$08
          IFNE  H6309
          subr  b,a          A=number of blocks unused
          ELSE
@@ -72,11 +72,11 @@ L03CB    ldu   2,s          get new descriptor pointer
          suba  ,s+
          ENDC
          leay  <P$DATImg,x  set up the initial DAT image
-         lslb  
+         lslb
          leay  b,y          go to the offset
          ldu   #DAT.Free    mark the blocks as free
 L040C    stu   ,y++         do all of them
-         deca  
+         deca
          bne   L040C
          ldu   2,s          get new process descriptor pointer
          stu   <D.Proc      make it the new process
@@ -94,21 +94,21 @@ L040C    stu   ,y++         do all of them
 * as the old process, not that it matters...
 
          IFNE  H6309
-         fcb   $24,$00		TODO: Identify this!
+         fcb   $24,$00      TODO: Identify this!
          ENDC
          ldu   <D.Proc      get nre process
          lda   P$Task,u     new task number
          ldb   P$Task,x     old task number
          leau  >(P$Stack-R$Size),x  set up the stack for the new process
-         leax  ,y           
+         leax  ,y
          ldu   R$X,u        where to copy from
          IFNE  H6309
          cmpr  x,u          check From/To addresses
          ELSE
-         pshs  x		src ptr
-         cmpu  ,s++		dest ptr
+         pshs  x            src ptr
+         cmpu  ,s++         dest ptr
          ENDC
-         puls  y		size
+         puls  y            size
          bhi   L0471        To < From: do F$Move
          beq   L0474        To == From, skip F$Move
 
@@ -133,8 +133,8 @@ L040C    stu   ,y++         do all of them
 * The areas to copy overlap: do special move routine
          pshs  d,x,y,u      save regs
          IFNE  H6309
-         addr  y,x         go to the END of the area to copy FROM
-         addr  y,u         end of area to copy TO
+         addr  y,x          go to the END of the area to copy FROM
+         addr  y,u          end of area to copy TO
          ELSE
          tfr   y,d
          leax  d,x
@@ -145,11 +145,11 @@ L040C    stu   ,y++         do all of them
 * in the same address space.
 L0457    ldb   ,s           grab ??
          leax  -1,x         back up one
-         os9   F$LDABX  
+         os9   F$LDABX
          exg   x,u
          ldb   1,s
          leax  -1,x         back up another one
-         os9   F$STABX  
+         os9   F$STABX
          exg   x,u
          leay  -1,y
          bne   L0457
@@ -208,7 +208,7 @@ L04B1    pshs   d,x,y,u     preserve everything
          bcc    L04D7       no error, keep going
          leas   4,s         purge stack
          puls   x,y,u,pc    restore & return
-* 
+*
 L04D7    stu    2,s         save pointer to module
          pshs   a,y         save module type & entry point
          ldu    $0B,s       restore register stack pointer
@@ -262,12 +262,11 @@ L050E    os9    F$Mem       try & get the data memory
          std    6,s
          lda    #Entire
          sta    R$CC,y      save condition code
-         clra  
+         clra
          sta    R$DP,y      save direct page
-         clrb  
+         clrb
          std    R$U,y       save data area start
          stx    R$PC,y      save program entry point
 L053E    puls   d           restore process pointer
          std    <D.Proc     save it as current
          puls   d,x,y,u,pc
-

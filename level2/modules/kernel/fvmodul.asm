@@ -9,28 +9,28 @@
 *
 * Error:  CC = C bit set; B = error code
 *
-FVModul  pshs   u           preserve register stack pointer
-         ldx    R$X,u       get block offset
-         ldy    R$D,u       get DAT image pointer
-         bsr    L0463       validate it
-         ldx    ,s          get register stack pointer
-         stu    R$U,x       save address of module directory entry
-         puls   u,pc        restore & return
+FVModul  pshs   u            preserve register stack pointer
+         ldx    R$X,u        get block offset
+         ldy    R$D,u        get DAT image pointer
+         bsr    L0463        validate it
+         ldx    ,s           get register stack pointer
+         stu    R$U,x        save address of module directory entry
+         puls   u,pc         restore & return
 
 * Validate module - shortcut for calls within OS9p1 go here (ex. OS9Boot)
 * Entry: X=Module block offset
 *        Y=Module DAT image pointer
-L0463    pshs   x,y         save block offset & DAT Image ptr
-         lbsr   L0586       Go check module ID & header parity
-         bcs    L0495       Error, exit
-         ldd    #M$Type     Get offset to module type
-         lbsr   L0B02       get it
-         andb   #LangMask   Just keep language mask
-         pshs   d           Preserve ??? & language
-         ldd    #M$Name     get offset to module name
+L0463    pshs   x,y          save block offset & DAT Image ptr
+         lbsr   L0586        Go check module ID & header parity
+         bcs    L0495        Error, exit
+         ldd    #M$Type      Get offset to module type
+         lbsr   L0B02        get it
+         andb   #LangMask    Just keep language mask
+         pshs   d            Preserve ??? & language
+         ldd    #M$Name      get offset to module name
          lbsr   L0B02
-         leax   d,x         Point X to module name
-         puls   a           Restore type/language
+         leax   d,x          Point X to module name
+         puls   a            Restore type/language
          lbsr   L068D
          puls   a
          bcs    L0497
@@ -41,9 +41,9 @@ L0463    pshs   x,y         save block offset & DAT Image ptr
          pshs   a
          subb   ,s+
          ENDC
-         blo    L0497         If wrapped, skip ahead
+         blo    L0497        If wrapped, skip ahead
          ldb    #E$KwnMod
-         fcb    $8C        skip 2 bytes
+         fcb    $8C          skip 2 bytes
 L0491    ldb    #E$DirFul
 L0493    orcc   #Carry
 L0495    puls   x,y,pc
@@ -60,32 +60,32 @@ L0497    ldx    ,s
          clrb
          ENDC
          std    MD$Link,u
-         ldd    #M$Size     Get offset to size of module
+         ldd    #M$Size      Get offset to size of module
          lbsr   L0B02
          IFNE   H6309
-         addr   x,d         Add it to module ptr
+         addr   x,d          Add it to module ptr
          ELSE
          pshs   x
          addd   ,s++
          ENDC
          std    MD$MBSiz,u
          ldy    [MD$MPDAT,u] get pointer to module DAT
-         ldx    <D.ModDir   get module directory pointer
-         pshs   u           save module pointer
-         fcb    $8C        skip 2 bytes
+         ldx    <D.ModDir    get module directory pointer
+         pshs   u            save module pointer
+         fcb    $8C          skip 2 bytes
 
-L04BC    leax   MD$ESize,x  move to next entry
+L04BC    leax   MD$ESize,x   move to next entry
 L04BE    cmpx   <D.ModEnd
          bcc    L04CD
-         cmpx   ,s          match?
-         beq    L04BC       no, keep looking
+         cmpx   ,s           match?
+         beq    L04BC        no, keep looking
          cmpy   [MD$MPDAT,x] DAT match?
-         bne    L04BC       no, keep looking
+         bne    L04BC        no, keep looking
          bsr    L04F2
 
 L04CD    puls   u
          ldx    <D.BlkMap    Get ptr to block map
-         ldd    MD$MBSiz,u     Get size of module
+         ldd    MD$MBSiz,u   Get size of module
          addd   #$1FFF       Round up to nearest 8K block
          lsra                Divide by 32
          lsra
@@ -100,14 +100,14 @@ L04DE    ldd    ,y++
          oim    #ModBlock,d,x
          dece
          ELSE
-L04DE    pshs   a,x		save block size, blkmap
-         ldd    ,y++		D = image block #
-         leax   d,x		X = blkmap ptr
-         ldb    ,x		get block marker
-         orb    #ModBlock	set module in block
-         stb    ,x		marker
+L04DE    pshs   a,x         save block size, blkmap
+         ldd    ,y++        D = image block #
+         leax   d,x         X = blkmap ptr
+         ldb    ,x          get block marker
+         orb    #ModBlock   set module in block
+         stb    ,x          marker
          puls   x,a
-         deca			count--
+         deca               count--
          ENDC
          bne    L04DE       no, keep going
 
@@ -127,12 +127,12 @@ L04FA    ldy    ,w
 L0503    ldy    2,s
          ELSE
          pshs   x
-         clra             D=0000
+         clra               D=0000
          clrb
-L04FA    ldy   ,x         last entry?
-         beq   L0503      ..yes
-         std   ,x++       no, clear
-         bra   L04FA      and loop
+L04FA    ldy   ,x           last entry?
+         beq   L0503        ..yes
+         std   ,x++         no, clear
+         bra   L04FA        and loop
 L0503    puls  x
          ldy    2,s
          ENDC
@@ -165,7 +165,7 @@ L0524    pshs   x,y,u
          tfr    a,b
          pshs   b
 *         incb
-         comb             one byte shorter than incb;lslg;negb
+         comb               one byte shorter than incb;lslg;negb
          lslb
 *         negb
          sex
@@ -201,29 +201,29 @@ L054E    ldx    <D.ModDAT
          sty    $07,s
 L056E    stx    <D.ModDAT
          IFNE   H6309
-         ldd    $05,s         Get source ptr
+         ldd    $05,s       Get source ptr
          stx    $05,s
          ldf    2,s
          clre
          rolw
          tfm    d+,x+
-         stw    ,x            Save 0
+         stw    ,x          Save 0
          ELSE
          ldy   5,s
-         ldb   2,s        B=block count
-         stx   5,s        return dir datimg ptr
-L0577    ldu   ,y++       copy images
-         stu   ,x++       to new mod dat entry
+         ldb   2,s          B=block count
+         stx   5,s          return dir datimg ptr
+L0577    ldu   ,y++         copy images
+         stu   ,x++         to new mod dat entry
          decb
          bne   L0577
-         clr   ,x         zero flag     
+         clr   ,x           zero flag
          clr   1,x
          ENDC
          rts
 
 * Default interrupt handling routine on first booting OS9p1
 S.Poll   orcc  #Carry
-         rts   
+         rts
 
 * Check module ID & calculate module header parity & CRC
 * Entry: X=Block offset of module
@@ -251,15 +251,15 @@ L05A2    lbsr  LDAXY        get a byte from module
          bne   L05A2        no, keep going
          ince               valid parity?
          ELSE
-         leas  -1,s       make var
+         leas  -1,s         make var
          ldd   #($4A*256+M$Revs) Get initial value & count (7 bytes of header)
-L05A2    sta   ,s         save crc
-         lbsr  LDAXY      get next byte
-         eora  ,s         do crc      
-         decb             more?
-         bne   L05A2      ..loop
-         leas  1,s        drop var
-         inca             $FF+1 = 00
+L05A2    sta   ,s           save crc
+         lbsr  LDAXY        get next byte
+         eora  ,s           do crc
+         decb               more?
+         bne   L05A2        ..loop
+         leas  1,s          drop var
+         inca               $FF+1 = 00
          ENDC
          beq   L05B5        yes, skip ahead
          ldb   #E$BMHP      get module header parity error
@@ -301,7 +301,7 @@ L05CB    equ   *
          bne   L05D8        no, keep going
          pshs  x            give up some time to system
          ldx   #1
-         os9   F$Sleep  
+         os9   F$Sleep
          puls  x            restore module pointer
 L05D8    lbsr  LDAXY        get a byte from module into A
          bsr   CRCCalc      add it to running CRC
@@ -336,7 +336,7 @@ CRCCalc  eora  ,u
          pshs  a
          ldd   1,u
          std   ,u
-         clra  
+         clra
          ldb   ,s
          IFNE  H6309
          lsld
@@ -346,7 +346,7 @@ CRCCalc  eora  ,u
          ENDC
          eora  1,u
          std   1,u
-         clrb  
+         clrb
          lda   ,s
          IFNE  H6309
          lsrd
@@ -362,17 +362,17 @@ CRCCalc  eora  ,u
          ENDC
          std   1,u
          lda   ,s
-         lsla  
+         lsla
          eora  ,s
          sta   ,s
-         lsla  
-         lsla  
+         lsla
+         lsla
          eora  ,s
          sta   ,s
-         lsla  
-         lsla  
-         lsla  
-         lsla  
+         lsla
+         lsla
+         lsla
+         lsla
          eora  ,s+
          bpl   L0635
          IFNE  H6309
@@ -385,7 +385,7 @@ CRCCalc  eora  ,u
          eorb  2,u
          stb   2,u
          ENDC
-L0635    rts   
+L0635    rts
 
 
 **************************************************
@@ -408,9 +408,9 @@ FCRC     ldd   R$Y,u        get # bytes to do
          leas  -3,s         allocate a 3 byte buffer
          ldx   <D.Proc      point to current process descriptor
          lda   P$Task,x     get its task number
-         ldb   <D.SysTsk    get the system task number 
+         ldb   <D.SysTsk    get the system task number
          ldx   R$U,u        point to user's 24 bit CRC accumulator
-         ldy   #3           number of bytes to move 
+         ldy   #3           number of bytes to move
          leau  ,s           point to our temp buffer
          pshs  d,x,y        save [D]=task #'s,[X]=Buff,[Y]=3
          lbsr  L0B2C        move CRC accumulator to temp buffer
@@ -432,9 +432,9 @@ L065D    lbsr  LDAXY        get byte from callers buffer
          ENDC
          bne   L065D        no, keep going
          puls  d,x,y        restore pointers
-         exg   a,b          swap around the task numbers 
+         exg   a,b          swap around the task numbers
          exg   x,u          and the pointers
          lbsr  L0B2C        move accumulator back to user
          leas  7,s          clean up stack
 L0677    clrb               no error
-         rts   
+         rts

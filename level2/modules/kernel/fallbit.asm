@@ -37,7 +37,7 @@ DoAllBit equ   *
          sta   ,-s          preserve current mask
          bmi   SkpBit       If high bit set, skip ahead
          IFGT  Level-1
-         os9   F$LDABX      go get original value from bit map 
+         os9   F$LDABX      go get original value from bit map
          ELSE
          lda   ,x
          ENDC
@@ -100,7 +100,7 @@ BitStEx  equ   *
          ENDC
          leas  1,s          eat the working copy of the mask
 BitEx    clrb               no error & return
-         rts   
+         rts
 
 * Calculate address of first byte we want, and which bit in that byte, from
 *   a bit allocation map given the address of the map & the bit # we want to
@@ -233,7 +233,7 @@ BitDone  equ   *
          ENDC
          leas  1,s          eat working copy of mask
 L08E0    clrb               eat error & return
-         rts   
+         rts
 
 
 **************************************************
@@ -364,4 +364,4 @@ BadSkip  std   R$D,u        put starting bit # of block into callers D register
          ELSE
          leas  $09,s
          ENDC
-         rts   
+         rts

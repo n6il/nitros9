@@ -27,8 +27,8 @@ L0C40    pshs  cc,a,x,u
          puls  cc,a,x,u
 
          stb   R$A,u        Save into caller's A & return
-         clrb             set to no errors
-         rts   
+         clrb               set to no errors
+         rts
 
 * Get pointer to task DAT image
 * Entry: B=Task #

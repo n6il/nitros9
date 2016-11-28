@@ -18,5 +18,5 @@ GoCRCon  lda    #$1         CRC checking on
          sta    <D.CRC      turn CRC checking on
 CRCRep   lda    <D.CRC      get current CRC flag for return
 CRCRep2  sta    R$A,u       save it to their register stack
-         clrb               no error 
+         clrb               no error
          rts                and exit

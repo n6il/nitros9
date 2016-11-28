@@ -22,7 +22,7 @@ L0A30    rts                  Return
 L0A31    tfr   b,a            Copy # blocks requested to A
 * This gets called directly from within F$Link
 L0A33    suba  #$09           Invert within 8
-         nega  
+         nega
          pshs  x,d            Save X, block # & block count
          ldd   #$FFFF         -1'
 L0A56    pshs  d
@@ -61,12 +61,12 @@ FSFreeLB ldb   R$B,u          Get block count
          ldy   R$Y,u          Get ptr to DAT Image
          bsr   L0A4B          Go find block #'s
          bra   L0A2C          Do error checking & exit (since never called,
-* not worried about speed)          
+* not worried about speed)
 
 L0A4B    lda   #$FF           Value to start loop at block 0
          pshs  x,d            Preserve X,flag & block count
 *         lda   #$01           # to add to go to next block (positive here)
-         nega             -(-1)=+1
+         nega                 -(-1)=+1
          subb  #9             Drop block count to -8 to -1 (invert within 8)
          negb                 Negate so it is a positive # again
          bra   L0A56          Go into main find loop
@@ -89,7 +89,7 @@ FFreeLB  ldd   R$D,u
          ldu   R$U,u
 L0A8C    pshs  d,x,y,u
          leay  <P$DATImg,x
-         lsla  
+         lsla
          leay  a,y
          IFNE  H6309
          clra
@@ -107,5 +107,5 @@ L0ALoop  lda   ,u+
          ora   #ImgChg
          sta   P$State,x
          ENDC
-         clrb  
+         clrb
          puls  d,x,y,u,pc

@@ -32,4 +32,4 @@ L0B2E    pshs  d,x          Preserve regs
 L0B40    puls  d,x          Get regs back
          comb               Exit with Bad process ID error
          ldb   #E$BPrcID
-         rts   
+         rts

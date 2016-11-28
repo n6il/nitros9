@@ -128,11 +128,11 @@ L0BF2    clrb               clear errors
 *        14,s=total byte count of move
 * Registers: X=Source pointer
 *            U=Destination pointer
-L0BXA    pshs  cc         
-         ldd   [<$07,s]    
-         pshs  b  
-         ldd   [<$0C,s]    
-         pshs  b  
+L0BXA    pshs  cc
+         ldd   [<$07,s]
+         pshs  b
+         ldd   [<$0C,s]
+         pshs  b
          ldd   <$11,s
          cmpd  $03,s
          bls   L0B82
@@ -149,13 +149,13 @@ L0B84    std   $0F,s
          lda   $0E,s  +++
          sty   >$FFA5
 ***** NO STACK USE BETWEEN HERE.....
-		 tfr   d,y    +++
+                 tfr   d,y    +++
          andb  #$07
          beq   L0B99
 L0B92    lda   ,x+
          sta   ,u+
-         decb     
-         bne   L0B92       
+         decb
+         bne   L0B92
 L0B99
          tfr   y,d    +++
 *         ldb   $0E,s  ---
@@ -166,8 +166,8 @@ L0B99
          lsra        +++
          lsra        +++
          beq   L0BBC
-*         pshs  b      ---  
-         exg   x,u  
+*         pshs  b      ---
+         exg   x,u
 L0BA4
 *         pulu  y,b,a  ---
 *         std   ,x     ---
@@ -179,64 +179,64 @@ L0BA4
 *         dec   ,s     ---
 *         bne   L0BA4  ---
 *         leas  $01,s  ---
-		 pulu  y      +++
-		 sty   ,x++   +++ 
-		 pulu  y      +++
-		 sty   ,x++   +++
-		 pulu  y      +++
- 		 sty   ,x++   +++
-		 pulu  y      +++
-		 sty   ,x++   +++
-		 deca         +++
-		 bne   L0BA4  +++
+         pulu  y      +++
+         sty   ,x++   +++
+         pulu  y      +++
+         sty   ,x++   +++
+         pulu  y      +++
+         sty   ,x++   +++
+         pulu  y      +++
+         sty   ,x++   +++
+         deca         +++
+         bne   L0BA4  +++
          exg   x,u
 L0BBC    ldy   <D.SysDAT
          lda   $0B,y
-         ldb   $0D,y       
+         ldb   $0D,y
          std   >$FFA5
 ***** AND HERE...........
-         puls  cc   
-         ldd   $0E,s 
+         puls  cc
+         ldd   $0E,s
          subd  $0C,s
-         beq   L0BEF       
+         beq   L0BEF
          std   $0E,s
-         ldd   ,s   
+         ldd   ,s
          subd  $0C,s
-         bne   L0BD7 
+         bne   L0BD7
          ldd   #DAT.BlSz
          leax  >-DAT.BlSz,x
          inc   $0B,s
          inc   $0B,s
-L0BD7    std   ,s       
-         ldd   $02,s 
+L0BD7    std   ,s
+         ldd   $02,s
          subd  $0C,s
          bne   L0BEA
          ldd   #DAT.BlSz
          leau  >-DAT.BlSz,u
          inc   $07,s
-         inc   $07,s       
-L0BEA    std   $02,s 
+         inc   $07,s
+L0BEA    std   $02,s
          lbra  L0BXA
 L0BEF    leas  <$10,s
-L0BF2    clrb       
+L0BF2    clrb
          puls  pc,u,y,x,b,a
          ENDC
-L0BF3    tfr   u,y        save a copy of U for later
+L0BF3    tfr   u,y          save a copy of U for later
 * Calculate offset within DAT image
 * Entry: B=Task #
 *        X=Pointer to data
 * Exit : A=Offset into DAT image
 *        X=Offset within block from original pointer
 * Possible bug:  No one ever checks if the DAT image, in fact, exists.
-L0BF5    ldu   <D.TskIPt  get task image ptr table
+L0BF5    ldu   <D.TskIPt    get task image ptr table
          lslb
-         ldu   b,u        get ptr to this task's DAT image
+         ldu   b,u          get ptr to this task's DAT image
          tfr   x,d          copy logical address to D
          anda  #%11100000   Keep only which 8K bank it's in
          beq   L0C07        Bank 0, no further calcs needed
-         clrb             force it to start on an 8K boundary
+         clrb               force it to start on an 8K boundary
          IFNE  H6309
-         subr  d,x        now X=offset into the block
+         subr  d,x          now X=offset into the block
          ELSE
          pshs  d
          tfr   x,d
@@ -249,4 +249,3 @@ L0BF5    ldu   <D.TskIPt  get task image ptr table
          lsra               is 2 bytes)
          lsra
 L0C07    rts
-

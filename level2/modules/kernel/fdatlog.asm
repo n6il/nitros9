@@ -15,17 +15,17 @@ FDATLog  ldb   R$B,u          Get logical Block #
          bsr   CmpLBlk        Go modify X to be Logical address
          stx   R$X,u          Save in callers X register
          clrb                 No error & return
-         rts   
+         rts
 
 * Compute logical address given B=Logical Block # & X=offset into block
 * Exits with B being logical block & X=logical address
 CmpLBlk  pshs  b              Preserve logical block #
          tfr   b,a            Move log. block # to A
          lsla                 Multiply logical block by 32
-         lsla  
-         lsla  
-         lsla  
-         lsla  
+         lsla
+         lsla
+         lsla
+         lsla
          clrb                 D=8k offset value
          IFNE  H6309
          addr  d,x            X=logical address in 64k workspace

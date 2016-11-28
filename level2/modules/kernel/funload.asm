@@ -8,7 +8,7 @@
 *
 * Output: None
 *
-* Error:  CC = C bit set; B = error code       
+* Error:  CC = C bit set; B = error code
 *
 FUnLoad  pshs  u            preserve register stack pointer
          lda   R$A,u        get module type
@@ -25,9 +25,9 @@ FUnLoad  pshs  u            preserve register stack pointer
          decw               subtract 1
          stw   MD$Link,u    save it back
          ELSE
-         ldx   MD$Link,u	get module link count
-         beq   L0A21		branch if zero
-         leax  -1,x		else decrement
+         ldx   MD$Link,u    get module link count
+         beq   L0A21        branch if zero
+         leax  -1,x         else decrement
          stx   MD$Link,u
          ENDC
          bne   L0A4E        not zero, don't remove from memory, return
@@ -38,7 +38,7 @@ L0A21    cmpa  #FlMgr       is it a I/O module?
 
 * Special handling for I/O module deletion
          clra
-         ldx   [MD$MPDAT,u]         get 1st 2 blocks in DAT image of module
+         ldx   [MD$MPDAT,u] get 1st 2 blocks in DAT image of module
          ldy   <D.SysDAT    get pointer to system DAT image
 L0A2B    adda  #2
          cmpa  #DAT.ImSz    done entire DAT?
@@ -46,10 +46,10 @@ L0A2B    adda  #2
          cmpx  a,y          find block?
          bne   L0A2B        no, keep looking
          lsla               multiply by 16 to calculate the offset
-         lsla  
-         lsla  
-         lsla  
-         clrb  
+         lsla
+         lsla
+         lsla
+         clrb
          addd  MD$MPtr,u    add in the pointer
          tfr   d,x          copy it to X
          os9   F$IODel      delete the device from memory

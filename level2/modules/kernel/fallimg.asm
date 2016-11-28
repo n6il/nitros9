@@ -17,11 +17,11 @@ FAllImg  ldd   R$D,u        get starting block # & # of blocks
 *
 * 6309 NOTE: IF W IS USED HERE, TRY TO PRESERVE IT AS F$SRQMEM WILL
 *   PROBABLY END UP USING IT
-L09BE    pshs  d,x,y,u      
-         lsla  
+L09BE    pshs  d,x,y,u
+         lsla
          leay  P$DATImg,x
          leay  a,y
-         clra  
+         clra
          tfr   d,x
          ldu   <D.BlkMap
          pshs  d,x,y,u
@@ -51,7 +51,7 @@ L09F2    cmpu  <D.BlkMap+2
 L09F7    ldb   #E$MemFul
          leas  6,s
          stb   1,s
-         comb  
+         comb
          puls  d,x,y,u,pc
 
 L0A00    puls  x,y,u
@@ -74,5 +74,5 @@ L0A16    leax  -1,x
          ora   #ImgChg
          sta   P$State,x
          ENDC
-         clrb  
+         clrb
          puls  d,x,y,u,pc

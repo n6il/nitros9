@@ -36,4 +36,4 @@ DelRAM.1 equ   *
          decb             count down a block
          bne   DelRAM.1   continue
 DelRAM.2 clrb             and exit
-         rts   
+         rts
