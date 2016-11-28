@@ -22,7 +22,7 @@
 *   9r5    2003/08/18  Boisy G. Pitre
 * Separated clock into Clock and Clock2 for modularity.
 
-         nam   Clock     
+         nam   Clock
          ttl   Clock for OS-9 Level Two/NitrOS-9
 
 TkPerTS  equ   2          ticks per time slice
@@ -31,13 +31,13 @@ GI.Toggl equ   %00000001  GIME CART* IRQ enable bit, for CC3
 * TC9 needs to reset more interrupt sources
 *GI.Toggl equ %00000111 GIME SERINT*, KEYINT*, CART* IRQ enable bits
 
-         IFP1            
-         use   defsfile  
-         use   cocovtio.d  
-         ENDC            
+         IFP1
+         use   defsfile
+         use   cocovtio.d
+         ENDC
 
-Edtn     equ   9         
-Vrsn     equ   5         
+Edtn     equ   9
+Vrsn     equ   5
 
 *------------------------------------------------------------
 *
@@ -45,19 +45,19 @@ Vrsn     equ   5
 *
          mod   len,name,Systm+Objct,ReEnt+Vrsn,Init,0
 
-name     fcs   "Clock"   
-         fcb   Edtn      
+name     fcs   "Clock"
+         fcb   Edtn
 
 *
 * Table to set up Service Calls:
 *
-NewSvc   fcb   F$Time    
+NewSvc   fcb   F$Time
          fdb   F.Time-*-2
-         fcb   F$VIRQ    
+         fcb   F$VIRQ
          fdb   F.VIRQ-*-2
-         fcb   F$Alarm   
+         fcb   F$Alarm
          fdb   F.ALARM-*-2
-         fcb   F$STime   
+         fcb   F$STime
          fdb   F.STime-*-2
          fcb   $80        end of service call installation table
 
@@ -68,24 +68,24 @@ NewSvc   fcb   F$Time
 *         Stack is set up by the kernel between here and SvcVIRQ.
 *
 SvcIRQ   lda   >IRQEnR    Get GIME IRQ Status and save it.
-         ora   <D.IRQS   
-         sta   <D.IRQS   
+         ora   <D.IRQS
+         sta   <D.IRQS
          bita  #$08       Check for clock interrupt
-         beq   NoClock   
+         beq   NoClock
          anda  #^$08      Drop clock interrupt
-         sta   <D.IRQS   
+         sta   <D.IRQS
          ldx   <D.VIRQ    Set VIRQ routine to be executed
          clr   <D.QIRQ    ---x IS clock IRQ
-         bra   ContIRQ   
+         bra   ContIRQ
 
 NoClock  leax  DoPoll,pcr If not clock IRQ, just poll IRQ source
-         IFNE  H6309     
+         IFNE  H6309
          oim              #$FF,<D.QIRQ    ---x set flag to NOT clock IRQ
-         ELSE            
-         lda   #$FF      
-         sta   <D.QIRQ   
-         ENDC            
-ContIRQ  stx   <D.SvcIRQ 
+         ELSE
+         lda   #$FF
+         sta   <D.QIRQ
+         ENDC
+ContIRQ  stx   <D.SvcIRQ
          jmp   [D.XIRQ]   Chain through Kernel to continue IRQ handling
 
 *------------------------------------------------------------
@@ -99,97 +99,97 @@ ContIRQ  stx   <D.SvcIRQ
 * - At end of minute, check alarm
 *
 SvcVIRQ  clra             Flag if we find any VIRQs to service
-         pshs  a         
+         pshs  a
          ldy   <D.CLTb    Get address of VIRQ table
-         bra   virqent   
+         bra   virqent
 
-virqloop equ   *         
-         IFGT  Level-2   
+virqloop equ   *
+         IFGT  Level-2
          ldd   2,y        Get Level 3 extended map type
-         orcc  #IntMasks 
-         sta   >$0643    
-         stb   >$0645    
-         std   >$FFA1    
+         orcc  #IntMasks
+         sta   >$0643
+         stb   >$0645
+         std   >DAT.Regs+1
          andcc  #^IntMasks
-         ENDC            
+         ENDC
 
          ldd   Vi.Cnt,x   Decrement tick count
-         IFNE  H6309     
+         IFNE  H6309
          decd             --- subd #1
-         ELSE            
-         subd  #$0001    
-         ENDC            
+         ELSE
+         subd  #$0001
+         ENDC
          bne   notzero    Is this one done?
          lda   Vi.Stat,x  Should we reset?
-         bmi   doreset   
+         bmi   doreset
          lbsr  DelVIRQ    No, delete this entry
 doreset  ora   #$01       Mark this VIRQ as triggered.
-         sta   Vi.Stat,x 
+         sta   Vi.Stat,x
          lda   #$80       Add VIRQ as interrupt source
-         sta   ,s        
+         sta   ,s
          ldd   Vi.Rst,x   Reset from Reset count.
-notzero  std   Vi.Cnt,x  
-virqent  ldx   ,y++      
-         bne   virqloop  
+notzero  std   Vi.Cnt,x
+virqent  ldx   ,y++
+         bne   virqloop
 
-         IFGT  Level-2   
-         puls  d         
-         orcc  #Carry    
-         stb   >$0643    
-         stb   >$FFA1    
-         incb            
-         stb   >$0645    
-         stb   >$FFA1    
+         IFGT  Level-2
+         puls  d
+         orcc  #Carry
+         stb   >$0643
+         stb   >DAT.Regs+1
+         incb
+         stb   >$0645
+         stb   >DAT.Regs+1
          andcc  #^IntMasks
-         ELSE            
+         ELSE
          puls  a          Get VIRQ status flag: high bit set if VIRQ
-         ENDC            
+         ENDC
 
          ora   <D.IRQS    Check to see if other hardware IRQ pending.
          bita  #%10110111 Any V/IRQ interrupts pending?
-         beq   toggle    
-         IFGT  Level-2   
+         beq   toggle
+         IFGT  Level-2
          lbsr  DoPoll     Yes, go service them.
-         ELSE            
+         ELSE
          bsr   DoPoll     Yes, go service them.
-         ENDC            
-         bra   KbdCheck  
-toggle   equ   *         
-         IFGT  Level-2   
+         ENDC
+         bra   KbdCheck
+toggle   equ   *
+         IFGT  Level-2
          lbsr  DoToggle   No, toggle GIME anyway
-         ELSE            
+         ELSE
          bsr   DoToggle   No, toggle GIME anyway
-         ENDC            
+         ENDC
 
-KbdCheck equ   *         
-         IFGT  Level-2   
+KbdCheck equ   *
+         IFGT  Level-2
          lda   >$0643     grab current map type
-         ldb   >$0645    
-         pshs  d          save it
-         orcc  #IntMasks  IRQs off
-         lda   >$0660     SCF local memory ---x
-         sta   >$0643     into DAT image ---x
-         sta   >$FFA1     and into RAM ---x
-         inca            
-         sta   >$0645    
-         sta   >$FFA2     map in SCF, CC3IO, WindInt, etc.
-         ENDC            
+         ldb   >$0645
+         pshs  d           save it
+         orcc  #IntMasks   IRQs off
+         lda   >$0660      SCF local memory ---x
+         sta   >$0643      into DAT image ---x
+         sta   >DAT.Regs+1 and into RAM ---x
+         inca
+         sta   >$0645
+         sta   >DAT.Regs+2 map in SCF, CC3IO, WindInt, etc.
+         ENDC
 
          jsr   [>D.AltIRQ] go update mouse, gfx cursor, keyboard, etc.
 
-         IFGT  Level-2   
-         puls  d          restore original map type ---x
-         orcc  #IntMasks 
-         sta   >$0643     into system DAT image ---x
-         stb   >$0645    
-         std   >$FFA1     and into RAM ---x
-         andcc  #$AF      
-         ENDC            
+         IFGT  Level-2
+         puls  d           restore original map type ---x
+         orcc  #IntMasks
+         sta   >$0643      into system DAT image ---x
+         stb   >$0645
+         std   >DAT.Regs+1 and into RAM ---x
+         andcc  #$AF
+         ENDC
 
          dec   <D.Tick    End of second?
          bne   VIRQend    No, skip time update and alarm check
          lda   #TkPerSec  Reset tick count
-         sta   <D.Tick   
+         sta   <D.Tick
 
 * ATD: Modified to call real time clocks on every minute ONLY.
          inc   <D.Sec     go up one second
@@ -207,28 +207,28 @@ KbdCheck equ   *
 NoGet    ldd   >WGlobal+G.AlPID
          ble   VIRQend    Quit if no Alarm set
          ldd   >WGlobal+G.AlPckt+3 Does Hour/Minute agree?
-         cmpd  <D.Hour   
-         bne   VIRQend   
+         cmpd  <D.Hour
+         bne   VIRQend
          ldd   >WGlobal+G.AlPckt+1 Does Month/Day agree?
-         cmpd  <D.Month  
-         bne   VIRQend   
+         cmpd  <D.Month
+         bne   VIRQend
          ldb   >WGlobal+G.AlPckt+0 Does Year agree?
-         cmpb  <D.Year   
-         bne   VIRQend   
+         cmpb  <D.Year
+         bne   VIRQend
          ldd   >WGlobal+G.AlPID
-         cmpd  #1        
-         beq   checkbel  
-         os9   F$Send    
-         bra   endalarm  
+         cmpd  #1
+         beq   checkbel
+         os9   F$Send
+         bra   endalarm
 checkbel ldb   <D.Sec     Sound bell for 15 seconds
-         andb  #$F0      
-         beq   dobell    
-endalarm ldd   #$FFFF    
+         andb  #$F0
+         beq   dobell
+endalarm ldd   #$FFFF
          std   >WGlobal+G.AlPID
-         bra   VIRQend   
+         bra   VIRQend
 dobell   ldx   >WGlobal+G.BelVec
-         beq   VIRQend   
-         jsr   ,x        
+         beq   VIRQend
+         jsr   ,x
 VIRQend  jmp   [>D.Clock] Jump to kernel's timeslice routine
 
 *------------------------------------------------------------
@@ -238,144 +238,144 @@ VIRQend  jmp   [>D.Clock] Jump to kernel's timeslice routine
 *
 * Call [D.Poll] until all interrupts have been handled
 *
-Dopoll                   
-         IFGT  Level-2   
+Dopoll
+         IFGT  Level-2
          lda   >$0643     Level 3: get map type
-         ldb   >$0645    
+         ldb   >$0645
          pshs  d          save for later
-         ENDC            
-Dopoll.i                 
+         ENDC
+Dopoll.i
          jsr   [>D.Poll]  Call poll routine
          bcc   DoPoll.i   Until error (error -> no interrupt found)
 
-         IFGT  Level-2   
-         puls  d         
-         orcc  #IntMasks 
-         sta   >$0643    
-         stb   >$0645    
-         std   >$FFA1    
+         IFGT  Level-2
+         puls  d
+         orcc  #IntMasks
+         sta   >$0643
+         stb   >$0645
+         std   >DAT.Regs+1
          andcc  #^IntMasks
-         ENDC            
+         ENDC
 
 *
 * Reset GIME to avoid missed IRQs
 *
 DoToggle lda   #^GI.Toggl Mask off CART* bit
-         anda  <D.IRQS   
-         sta   <D.IRQS   
+         anda  <D.IRQS
+         sta   <D.IRQS
          lda   <D.IRQER   Get current enable register status
-         tfr   a,b       
+         tfr   a,b
          anda  #^GI.Toggl Mask off CART* bit
          orb   #GI.Toggl  --- ensure that 60Hz IRQ's are always enabled
          sta   >IRQEnR    Disable CART
          stb   >IRQEnR    Enable CART
-         clrb            
-         rts             
+         clrb
+         rts
 
 
 *------------------------------------------------------------
 *
 * Handle F$VIRQ system call
 *
-F.VIRQ   pshs  cc        
+F.VIRQ   pshs  cc
          orcc  #IntMasks  Disable interrupts
          ldy   <D.CLTb    Address of VIRQ table
          ldx   <D.Init    Address of INIT
          ldb   PollCnt,x  Number of polling table entries from INIT
          ldx   R$X,u      Zero means delete entry
-         beq   RemVIRQ   
-         IFGT  Level-2   
+         beq   RemVIRQ
+         IFGT  Level-2
          bra   FindVIRQ   ---x
 
 v.loop   leay  4,y        ---x
-         ENDC            
+         ENDC
 FindVIRQ ldx   ,y++       Is VIRQ entry null?
          beq   AddVIRQ    If yes, add entry here
-         decb            
-         bne   FindVIRQ  
-         puls  cc        
-         comb            
-         ldb   #E$Poll   
-         rts             
+         decb
+         bne   FindVIRQ
+         puls  cc
+         comb
+         ldb   #E$Poll
+         rts
 
-AddVIRQ                  
-         IFGT  Level-2   
-         ldx   R$Y,u     
-         stx   ,y        
-         lda   >$0643    
-         ldb   >$0645    
-         std   2,y       
-         ELSE            
+AddVIRQ
+         IFGT  Level-2
+         ldx   R$Y,u
+         stx   ,y
+         lda   >$0643
+         ldb   >$0645
+         std   2,y
+         ELSE
          leay  -2,y       point to first null VIRQ entry
-         ldx   R$Y,u     
-         stx   ,y        
-         ENDC            
-         ldy   R$D,u     
-         sty   ,x        
-         bra   virqexit  
+         ldx   R$Y,u
+         stx   ,y
+         ENDC
+         ldy   R$D,u
+         sty   ,x
+         bra   virqexit
 
-         IFGT  Level-2   
-v.chk    leay  4,y       
-RemVIRQ  ldx   ,y        
-         ELSE            
-RemVIRQ  ldx   ,y++      
-         ENDC            
-         beq   virqexit  
-         cmpx  R$Y,u     
-         bne   RemVIRQ   
-         bsr   DelVIRQ   
-virqexit puls  cc        
-         clrb            
-         rts             
+         IFGT  Level-2
+v.chk    leay  4,y
+RemVIRQ  ldx   ,y
+         ELSE
+RemVIRQ  ldx   ,y++
+         ENDC
+         beq   virqexit
+         cmpx  R$Y,u
+         bne   RemVIRQ
+         bsr   DelVIRQ
+virqexit puls  cc
+         clrb
+         rts
 
-DelVIRQ  pshs  x,y       
-DelVLup                  
-         IFGT  Level-2   
-         ldq              ,y++		move entries up in table
-         leay  2,y       
+DelVIRQ  pshs  x,y
+DelVLup
+         IFGT  Level-2
+         ldq              ,y++          move entries up in table
+         leay  2,y
          stq              -8,y
-         bne   DelVLup   
-         puls  x,y,pc    
-         ELSE            
+         bne   DelVLup
+         puls  x,y,pc
+         ELSE
          ldx   ,y++       move entries up in table
-         stx   -4,y      
-         bne   DelVLup   
-         puls  x,y       
-         leay  -2,y      
-         rts             
-         ENDC            
+         stx   -4,y
+         bne   DelVLup
+         puls  x,y
+         leay  -2,y
+         rts
+         ENDC
 
 *------------------------------------------------------------
 *
 * Handle F$Alarm call
 *
 F.Alarm  ldx   #WGlobal+G.AlPckt
-         ldd   R$D,u     
-         bne   DoAlarm   
+         ldd   R$D,u
+         bne   DoAlarm
          std   G.AlPID-G.AlPckt,x Erase F$Alarm PID, Signal.
-         rts             
+         rts
 
 DoAlarm  tsta             If PID != 0, set alarm for this process
-         bne   SetAlarm  
+         bne   SetAlarm
          cmpd  #1         1 -> Set system-wide alarm
-         bne   GetAlarm  
+         bne   GetAlarm
 SetAlarm std   G.AlPID-G.AlPckt,x
-         ldy   <D.Proc   
+         ldy   <D.Proc
          lda   P$Task,y   Move from process task
          ldb   <D.SysTsk  To system task
          ldx   R$X,u      From address given in X
          ldu   #WGlobal+G.AlPckt
          ldy   #5         Move 5 bytes
-         bra   FMove     
+         bra   FMove
 
-GetAlarm cmpd  #2        
-         bne   AlarmErr  
+GetAlarm cmpd  #2
+         bne   AlarmErr
          ldd   G.AlPID-G.AlPckt,x
-         std   R$D,u     
-         bra   RetTime   
-AlarmErr comb            
-         ldb   #E$IllArg 
-         rts             
+         std   R$D,u
+         bra   RetTime
+AlarmErr comb
+         ldb   #E$IllArg
+         rts
 
 *------------------------------------------------------------
 *
@@ -386,10 +386,10 @@ F.Time   equ   *
 RetTime  ldy   <D.Proc    Get pointer to current proc descriptor
          ldb   P$Task,y   Process Task number
          lda   <D.SysTsk  From System Task
-         ldu   R$X,u     
+         ldu   R$X,u
 STime.Mv ldy   #6         Move 6 bytes
-FMove    os9   F$Move    
-         rts             
+FMove    os9   F$Move
+         rts
 
 *------------------------------------------------------------
 *
@@ -406,16 +406,16 @@ F.STime  equ  *
          ldb   <D.SysTsk  Destination is in system map
          bsr   STime.Mv   Get time packet (ignore errors)
          lda   #TkPerSec  Reset to start of second
-         sta   <D.Tick   
+         sta   <D.Tick
 
 *
 * Call SetTime entry point in Clock2
          ldx   <D.Clock2  get entry point to Clock2
          jsr   $06,x      else call GetTime entry point
 
-NoSet    rts             
+NoSet    rts
 
-Clock2   fcs   "Clock2"  
+Clock2   fcs   "Clock2"
 
 *--------------------------------------------------
 *
@@ -428,21 +428,21 @@ Clock2   fcs   "Clock2"
 *
 *
 Init     ldx   <D.Proc    save user proc
-         pshs  x         
+         pshs  x
          ldx   <D.SysPrc  make sys for link
-         stx   <D.Proc   
+         stx   <D.Proc
 
          leax  <Clock2,pcr
          lda   #Sbrtn+Objct
-         os9   F$Link    
+         os9   F$Link
 
 * And here, we restore the original D.Proc value
-         puls  x         
+         puls  x
          stx   <D.Proc    restore user proc
 
-         bcc   LinkOk    
-         lda   #E$MNF    
-         jmp   <D.Crash  
+         bcc   LinkOk
+         lda   #E$MNF
+         jmp   <D.Crash
 LinkOk   sty   <D.Clock2  save entry point
 InitCont ldx   #PIA0Base  point to PIA0
          clra             no error for return...
@@ -460,7 +460,7 @@ InitCont ldx   #PIA0Base  point to PIA0
          sta   1,x        enable DDRA
          sta   ,x         set port A all inputs
          sta   3,x        enable DDRB
-         coma            
+         coma
          sta   2,x        set port B all outputs
          ldd   #$343C     [A]=PIA0 CRA contents, [B]=PIA0 CRB contents
          sta   1,x        CA2 (MUX0) out low, port A, disable HBORD high-to-low IRQs
@@ -476,11 +476,11 @@ InitCont ldx   #PIA0Base  point to PIA0
          stb   <D.TSlice  set ticks per time slice
          stb   <D.Slice   set first time slice
          leax  SvcIRQ,pcr set IRQ handler
-         stx   <D.IRQ    
+         stx   <D.IRQ
          leax  SvcVIRQ,pcr set VIRQ handler
-         stx   <D.VIRQ   
+         stx   <D.VIRQ
          leay  NewSvc,pcr insert syscalls
-         os9   F$SSvc    
+         os9   F$SSvc
 * H6309 optimization opportunity here using oim
          lda   <D.IRQER   get shadow GIME IRQ enable register
          ora   #$08       set VBORD bit
@@ -492,6 +492,6 @@ InitCont ldx   #PIA0Base  point to PIA0
          jsr   ,y         call init entry point of Clock2
 InitRts  puls  cc,pc      recover IRQ enable status and return
 
-         emod            
-len      equ   *         
-         end             
+         emod
+len      equ   *
+         end

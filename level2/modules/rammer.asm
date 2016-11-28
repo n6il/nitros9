@@ -35,7 +35,7 @@ MAXBLOCK set   201         Maximum # of MMU blocks allowed in RAM drive
          use   defsfile
          endc
 
-tylg     set   Drivr+Objct   
+tylg     set   Drivr+Objct
 atrv     set   ReEnt+rev
 rev      set   $02
 edition  set   5
@@ -115,11 +115,11 @@ Init     lda   #1
          rold
          ELSE
          rolb
-         rola 
+         rola
          rolb
-         rola 
+         rola
          rolb
-         rola 
+         rola
          ENDC
          cmpa  #MAXBLOCK    If higher than max, exit with mem full error
          bhi   L0041
@@ -183,9 +183,9 @@ start    bra   Init
          nop
          bra   GetStat
          nop
-         bra   GetStat       Actually SetStat (no calls, so same routine)
+         bra   GetStat        Actually SetStat (no calls, so same routine)
          nop
-         lbra  L0024         Terminate (returns memory)
+         lbra  L0024          Terminate (returns memory)
 
 * Entry: B:X = LSN to write
 *        Y=Path dsc. ptr
@@ -200,7 +200,7 @@ L00AE    orcc  #IntMasks      Shut IRQ's off
          ldx   <D.SysDAT      Get ptr to system DAT image
          ldb   1,x            Get original System MMU block #0
          puls  x              Get X back
-         sta   >$FFA0         Map in RAM drive block into block #0
+         sta   >DAT.Regs      Map in RAM drive block into block #0
          IFNE  H6309
          ldw   #$0100         256 byte transfer
          tfm   x+,y+          Copy between the two buffers
@@ -211,7 +211,7 @@ WriteLp  lda   ,x+
          decb
          bne   WriteLp
          ENDC
-         stb   >$FFA0         Remap in system block 0
+         stb   >Dat.Regs      Remap in system block 0
          andcc #^(IntMasks+Carry) Turn IRQ's back on & no error
          rts
 
@@ -284,8 +284,8 @@ L0100    pshs  a              Save block #
          ldy   PD.BUF,y       Get sector buffer address
          puls  x,a,pc         Get offset, MMU block & return
 
-L010E    leas  2,s          Eat X on stack
-L010F    comb               Exit with bad sector #
+L010E    leas  2,s            Eat X on stack
+L010F    comb                 Exit with bad sector #
          ldb   #E$Sect
          rts
 
