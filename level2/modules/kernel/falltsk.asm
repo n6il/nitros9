@@ -32,10 +32,10 @@ L0C65    rts                return
 * Error:  CC = C bit set; B = error code
 *
 FDelTsk  ldx   R$X,u
-L0C68    ldb   P$Task,x   grab the current task number
-         beq   L0C64      if system (or released), exit
-         clr   P$Task,x   force the task number to be zero
-         bra   L0CC3      do a F$RelTsk
+L0C68    ldb   P$Task,x     grab the current task number
+         beq   L0C64        if system (or released), exit
+         clr   P$Task,x     force the task number to be zero
+         bra   L0CC3        do a F$RelTsk
 
 TstImg   equ   *
          IFNE  H6309
@@ -46,8 +46,8 @@ TstImg   equ   *
          bitb  #ImgChg
 *         puls  b
          ENDC
-         beq   L0C65      if not, exit now: don't clear carry, it's not needed
-         fcb   $8C        skip LDX, below
+         beq   L0C65        if not, exit now: don't clear carry, it's not needed
+         fcb   $8C          skip LDX, below
 
 
 **************************************************
@@ -83,7 +83,7 @@ L0C79    equ   *
          cmpb  #2           is it either system or GrfDrv?
          bhi   L0C9F        no, return
          ldx   #DAT.Regs    update system DAT image
-         lbsr  L0E93      go bash the hardware
+         lbsr  L0E93        go bash the hardware
 L0C9F    puls  cc,d,x,u,pc
 
 
@@ -100,7 +100,7 @@ L0C9F    puls  cc,d,x,u,pc
 *
 FResTsk  bsr   L0CA6
          stb   R$B,u
-L0CA5    rts   
+L0CA5    rts
 
 
 * Find a free task in task map
@@ -154,45 +154,45 @@ L0CD0    puls  b,x,pc       Restore regs & return
 *   Possible, move ALL software-clock code into OS9p2, and therefore
 * have it auto-initialize?  All hardware clocks would then be called
 * just once a minute.
-L0CD2    ldx   <D.SProcQ      Get sleeping process Queue ptr
-         beq   L0CFD          None (no one sleeping), so exit
+L0CD2    ldx   <D.SProcQ    Get sleeping process Queue ptr
+         beq   L0CFD        None (no one sleeping), so exit
          IFNE  H6309
          tim   #TimSleep,P$State,x  Is it a timed sleep?
          ELSE
          ldb   P$State,x
          bitb  #TimSleep
          ENDC
-         beq   L0CFD          No, exit: waiting for signal/interrupt
-         ldu   P$SP,x         Yes, get his stack pointer
-         ldd   R$X,u          Get his sleep tick count
+         beq   L0CFD        No, exit: waiting for signal/interrupt
+         ldu   P$SP,x       Yes, get his stack pointer
+         ldd   R$X,u        Get his sleep tick count
          IFNE  H6309
-         decd                 decrement sleep count
+         decd               decrement sleep count
          ELSE
          subd  #$0001
          ENDC
-         std   R$X,u          Save it back
-         bne   L0CFD          Still more ticks to go, so exit
+         std   R$X,u        Save it back
+         bne   L0CFD        Still more ticks to go, so exit
 * Process needs to wake up, update queue pointers
-L0CE7    ldu   P$Queue,x      Get next process in Queue
-         bsr   L0D11          activate it
-         leax  ,u             point to new process
-         beq   L0CFB          don't exist, go on
+L0CE7    ldu   P$Queue,x    Get next process in Queue
+         bsr   L0D11        activate it
+         leax  ,u           point to new process
+         beq   L0CFB        don't exist, go on
          IFNE  H6309
          tim   #TimSleep,P$State,x  is it in a timed sleep?
          ELSE
          ldb   P$State,x
          bitb  #TimSleep
          ENDC
-         beq   L0CFB          no, go update process table
-         ldu   P$SP,x         get it's stack pointer
-         ldd   R$X,u          any sleep time left?
-         beq   L0CE7          no, go activate next process in queue
-L0CFB    stx   <D.SProcQ      Store new sleeping process pointer
-L0CFD    dec   <D.Slice       Any time remaining on process?
-         bne   L0D0D          Yes, exit
-         inc   <D.Slice       reset slice count
-         ldx   <D.Proc        Get current process pointer
-         beq   L0D0D          none, return
+         beq   L0CFB        no, go update process table
+         ldu   P$SP,x       get it's stack pointer
+         ldd   R$X,u        any sleep time left?
+         beq   L0CE7        no, go activate next process in queue
+L0CFB    stx   <D.SProcQ    Store new sleeping process pointer
+L0CFD    dec   <D.Slice     Any time remaining on process?
+         bne   L0D0D        Yes, exit
+         inc   <D.Slice     reset slice count
+         ldx   <D.Proc      Get current process pointer
+         beq   L0D0D        none, return
          IFNE  H6309
          oim   #TimOut,P$State,x put him in a timeout state
          ELSE
@@ -200,5 +200,5 @@ L0CFD    dec   <D.Slice       Any time remaining on process?
          orb   #TimOut
          stb   P$State,x
          ENDC
-L0D0D    clrb  
-         rts   
+L0D0D    clrb
+         rts

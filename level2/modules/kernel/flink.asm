@@ -90,7 +90,7 @@ L03BB    ldd    MD$MPtr,x   get module pointer
          lsrb
 *         adda   #$02
          lsra
-         inca             instead of adda #2, above
+         inca               instead of adda #2, above
          lsra
          lsra
          lsra
@@ -138,18 +138,18 @@ L0406    puls   b,x,y,u
          addd   R$U,u       add it to start of module
          std    R$Y,u       set execution entry point
          clrb               No error & return
-         rts   
+         rts
 
 LinkErr  orcc   #Carry      Error & return
          puls   u,pc
 
 L0422    ldx    <D.Proc     get pointer to current process
          leay   P$DATImg,x  point to process DAT image
-         clra  
+         clra
          pshs   d,x,y
          subb   #DAT.BlCt
-         negb  
-         lslb  
+         negb
+         lslb
          leay   b,y
          IFNE   H6309
 L0430    ldw    ,s          Get counter
@@ -168,9 +168,9 @@ L0434    ldd    ,y++
          bne    L0434       If not done, keep going
          puls   d,u
          subd   4,s
-         lsrb  
+         lsrb
          stb    ,s
-         clrb  
+         clrb
          puls   d,x,y,pc    Restore regs & return
 
 L0449    puls   u,y

@@ -7,7 +7,7 @@
 *
 * Output: Control does not return to the caller
 *
-FNProc   
+FNProc
          IFGT  Level-1
          ldx   <D.SysPrc   get system process descriptor
          stx   <D.Proc     save it as current
@@ -18,7 +18,7 @@ FNProc
          clrb
          std   <D.Proc
          ENDC
-         fcb   $8C        skip the next 2 bytes
+         fcb   $8C         skip the next 2 bytes
 
 L0D91    cwai  #^IntMasks  re-enable IRQ's and wait for one
 L0D93    orcc  #IntMasks   Shut off interrupts again
@@ -83,13 +83,13 @@ L0DF2    ldu   <D.UsrSvc   Get current User's system call service routine ptr
          ldu   <D.UsrIRQ   Get IRQ entry point for user state
          stu   <D.XIRQ     Save as IRQ service routine ptr
 
-         ldb   P$Task,x   get task number
-         lslb             2 bytes per entry in D.TskIpt
-         ldy   P$SP,x     get stack pointer
-         lbsr  L0E8D      re-map the DAT image, if necessary
+         ldb   P$Task,x    get task number
+         lslb              2 bytes per entry in D.TskIpt
+         ldy   P$SP,x      get stack pointer
+         lbsr  L0E8D       re-map the DAT image, if necessary
 
-         ldb   <D.Quick   get quick return flag
-         lbra   L0E4C       Go switch GIME over to new process & run
+         ldb   <D.Quick    get quick return flag
+         lbra   L0E4C      Go switch GIME over to new process & run
 
 * Process a signal (process had no signal trap)
 L0DFD    equ   *
@@ -100,10 +100,10 @@ L0DFD    equ   *
          orb   #SysState
          stb   P$State,x
          ENDC
-         leas  >P$Stack,x           Point SP to process' stack
-         andcc #^IntMasks           Turn interrupts on
-         ldb   <P$Signal,x          Get signal that process received
-         clr   <P$Signal,x          Clear out the one in process dsc.
-         os9   F$Exit               Exit with signal # being error code
+         leas  >P$Stack,x  Point SP to process' stack
+         andcc #^IntMasks  Turn interrupts on
+         ldb   <P$Signal,x Get signal that process received
+         clr   <P$Signal,x Clear out the one in process dsc.
+         os9   F$Exit      Exit with signal # being error code
 
-S.SvcIRQ jmp    [>D.Poll]   Call IOMAN for IRQ polling
+S.SvcIRQ jmp    [>D.Poll]  Call IOMAN for IRQ polling

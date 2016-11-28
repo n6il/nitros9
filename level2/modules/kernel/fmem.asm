@@ -66,8 +66,8 @@ L062C    equ   *
          pshs  b
          adda  ,s+
          ENDC
-         negb  
-         os9   F$DelImg 
+         negb
+         os9   F$DelImg
 L0634    puls  a            restore requested page count
          sta   P$PagCnt,x   save it into process descriptor
 L0638    lda   P$PagCnt,x   get page count

@@ -14,7 +14,7 @@ FLDAXY   ldx   R$X,u          Get offset within block (S/B $0000-$1FFF)
          ldy   R$Y,u          Get ptr to DAT block entry
          bsr   L0AC8          Go get byte
          sta   R$A,u          Save in caller's A reg.
-         rts   
+         rts
 
 * Entry: X=offset ($0000-$1fff) to get from block pointed to by Y (DAT entry
 * format)
@@ -47,7 +47,7 @@ LDAXY    lda   1,y            Get MMU block #
          puls  b,cc
          bra   AdjBlk0
 
-L0AEA    leax  >-DAT.BlSz,x      Bump offset ptr to start of block again
+L0AEA    leax  >-DAT.BlSz,x   Bump offset ptr to start of block again
          leay  2,y            Bump source MMU block up to next on in DAT Image
 AdjBlk0  cmpx  #DAT.BlSz      Going to wrap out of our block?
          bhs   L0AEA          Yes, go adjust
@@ -73,7 +73,7 @@ FLDDDXY  ldd   R$D,u          Get offset to offset within DAT Image
          bsr   L0B02          Go get 2 bytes
          std   -(R$X+3),u     Save into caller's X
          clrb                 No error & return
-         rts   
+         rts
 * Get 2 bytes for LDDDXY (also called by other routines)
 * Should simply map in 2 blocks, and do a LDD (don't have to worry about wrap)
 L0B02    pshs  u,y,x          Preserve regs
@@ -85,9 +85,9 @@ L0B02    pshs  u,y,x          Preserve regs
          bsr   AdjBlk0        Wrap address around for 1 block
          ldu   <D.SysDAT      Get sys DAT Image ptr
 *         lda   1,u            Get MMU block #0
-         clra             system block 0 =0 always
+         clra                 system block 0 =0 always
          ldb   3,u            Get MMU block #1
-         tfr   d,u        make U=blocks to re-map in once done
+         tfr   d,u            make U=blocks to re-map in once done
          lda   1,y            Get MMU block #0
          ldb   3,y            Get MMU block #1
          pshs  cc             Preserve int. status
@@ -95,5 +95,4 @@ L0B02    pshs  u,y,x          Preserve regs
          std   >DAT.Regs      Map in both blocks
          ldd   ,x             Get 2 bytes
          stu   >DAT.Regs      Map original blocks in
-*         tfr   y,w            Restore W
          puls  pc,u,y,x,cc    Restore regs & return

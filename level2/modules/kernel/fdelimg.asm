@@ -17,7 +17,7 @@ FDelImg  ldx   R$X,u        get process pointer
          lsla               2 bytes per block entry
          leau  a,u          Point U to block entry
 * Block count in B
-L0B55    
+L0B55
          IFNE  H6309
          ldw   ,u           Get block #
          addw  <D.BlkMap    Add it to map ptr
@@ -47,6 +47,5 @@ L0BLoop  ldd   ,u
          ora   #ImgChg
          sta   P$State,x
          ENDC
-         clrb  
-         rts   
-
+         clrb
+         rts

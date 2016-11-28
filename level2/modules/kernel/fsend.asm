@@ -124,11 +124,10 @@ L06D6    leay  ,x
 L06E0    ldd   P$Queue,x
          std   P$Queue,y
          lda   P$Signal,x
-         deca  
+         deca
          bne   L06F1
          sta   P$Signal,x
          lda   ,s
          tfr   a,cc
 L06F1    os9   F$AProc      activate the process
 L06F4    puls  cc,a,y,u,pc  restore & return
-

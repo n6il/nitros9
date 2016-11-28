@@ -1,7 +1,7 @@
 **************************************************
 * System Call: F$GBlkMp
 *
-* Function: 
+* Function:
 *
 * Input:  X = 1024 byte buffer pointer
 *
@@ -23,4 +23,4 @@ FGBlkMp  ldd   #DAT.BlSz   # bytes per MMU block (8k)
          ldx   <D.BlkMap   Get start ptr of system block map
 L0978    ldu   R$X,u       Get addr to put it that caller requested
          os9   F$Move      Move it into caller's space
-         rts   
+         rts

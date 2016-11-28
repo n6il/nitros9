@@ -22,7 +22,7 @@ FSleep   pshs  cc           preserve interupt status
          deca               wakeup signal?
          bne   L0715        no, skip ahead
          sta   P$Signal,x   clear pending signal so we can wake up process
-L0715    
+L0715
          IFNE   H6309
          aim   #^Suspend,P$State,x
          ELSE
@@ -96,8 +96,8 @@ L0770    leay  ,x
          ldx   P$Queue,x
          bne   L0770
          ldx   <D.Proc
-         clra  
-         clrb  
+         clra
+         clrb
          stx   P$Queue,y
          std   P$Queue,x
          puls  cc
@@ -116,10 +116,10 @@ L0792    ldd   P$SP,x
          ENDC
          pshs  cc,d
          sts   P$SP,x
-         os9   F$NProc  
+         os9   F$NProc
 
 L079C    pshs  x
          ldx   <D.Proc
          std   P$SP,x
-         clrb  
+         clrb
          puls  x,pc

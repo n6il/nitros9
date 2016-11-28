@@ -175,7 +175,7 @@ Uday     lda    ,x+
          puls   cc,u,pc     restore IRQ's, register stack pointer & return
      ENDC
 
-krnp2    lda   #'2        into krnp2
+krnp2    lda   #'2          into krnp2
          jsr   <D.BtBug
 
          leay   SvcTab,pc   install system calls
@@ -190,7 +190,7 @@ L003A    ldu    <D.Init     get init module pointer
          beq    L004F       don't exist, open std device
          leax   d,u         point to name
 
-         lda   #'x        tried chd'ing
+         lda   #'x          tried chd'ing
          jsr   <D.BtBug
 
          lda    #(EXEC.+READ.) get file mode
@@ -233,7 +233,7 @@ L0083    ldu    <D.Init     get init module pointer
          ldd    InitStr,u   get offset to name of first module
          leax   d,u         point to it
 
-         lda   #'C        tried to to CC3Go
+         lda   #'C          tried to to CC3Go
          jsr   <D.BtBug
 
          lda    #Objct      get module type
@@ -335,7 +335,7 @@ svctab   fcb    F$UnLink
          fdb    FCRCMod-*-2
          fcb    $7f
          fdb    GetIOMan-*-2
-         fcb    $80         
+         fcb    $80
 
          use    fcrcmod.asm
 
@@ -365,7 +365,7 @@ LnkIOMan leax   <IOMan,pc   point to name
          os9    F$Link      link it
          rts                return
 
-IOMan    fcs    /IOMan/    
+IOMan    fcs    /IOMan/
 
          use    funlink.asm
 

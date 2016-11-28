@@ -71,7 +71,7 @@ L09FB    leas  <$14,s       Purge our stack buffer & return
          rts
 
 L0A01    clrb               No error & exit
-         rts   
+         rts
 
 
          ELSE
@@ -133,4 +133,3 @@ L0A01    clrb             ok
          rts              end.
 
          ENDC
-

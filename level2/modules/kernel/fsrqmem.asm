@@ -26,7 +26,7 @@ FSRqMem  ldd   R$D,u        get memory allocation size requested
          addd  #$00FF       round it up to nearest 256 byte page (e.g. $1FF = $2FE)
          clrb               just keep # of pages (and start 8K block #, e.g. $2FE = $200)
          std   R$D,u        save rounded version back to user
-*         leay  Bt.Start/256,y      
+*         leay  Bt.Start/256,y
 *         leay  $20,y        skip Block 0 (always reserved for system)
 * Change to pshs a,b:use 1,s for block # to check, and ,s for TFM spot
 *         incb               skip block 0 (always reserved for system)
@@ -61,8 +61,8 @@ L0848    sta   ,s           Put it on stack
          ldw   #$0020       Get size of 8K block in pages
          tfm   s,y+         Mark entire block's worth of pages with A
          ELSE
-L0848    ldb   #32		count = 32 pages
-L084A    sta   ,y+		mark the RAM
+L0848    ldb   #32              count = 32 pages
+L084A    sta   ,y+              mark the RAM
          decb
          bne    L084A
          ENDC
@@ -104,18 +104,18 @@ L0863    lda   ,-y          Get page marker (starting @ end of SMAP)
          sty   ,s           Found free contiguous pages, save SMAP entry ptr
          lda   1,s          Get LSB of ptr
          lsra               Divide by 32 (Calculate start 8K block #)
-         lsra  
-         lsra  
-         lsra  
-         lsra  
+         lsra
+         lsra
+         lsra
+         lsra
          ldb   1,s          Get LSB of ptr again
          andb  #%00011111   Keep only within 8K block offset
          addb  R$A,u        Add # pages requested
          addb  #$1F         Round up to nearest 8K block
          lsrb               Divide by 32 (Calculate end 8K block #)
-         lsrb  
-         lsrb  
-         lsrb  
+         lsrb
+         lsrb
+         lsrb
          lsrb
          ldx   <D.SysPrc    Get ptr to system proc. dsc.
          lbsr  L09BE        Allocate an image with our start/end block #'s
@@ -165,7 +165,7 @@ L08AD    equ   *
          andb  #^RAMinUse
          stb   ,x+
          ENDC
-         deca  
+         deca
          bne   L08AD
 * Scan DAT image to find memory blocks to free up
          ldx   <D.SysDAT    get pointer to system DAT image
@@ -183,10 +183,10 @@ L08BC    ldd   ,x           get block image
          bne   L08EC        no, move to next block
          tfr   x,d
          subd  <D.SysDAT
-         lslb  
-         lslb  
-         lslb  
-         lslb  
+         lslb
+         lslb
+         lslb
+         lslb
          ldu   <D.SysMem    get pointer to system map
          IFNE   H6309
          addr   d,u
@@ -239,7 +239,7 @@ L08F3    rts                return
 * Error:  CC = C bit set; B = error code
 *
 FBoot
-         lda   #'t        tried to boot
+         lda   #'t          tried to boot
          jsr   <D.BtBug
          coma               Set boot flag
          lda   <D.Boot      we booted once before?
@@ -257,34 +257,34 @@ boot     fcs   /Boot/
 L0908    leax  <boot,pcr
 * Link to module and execute
 L090C    lda   #Systm+Objct
-         os9   F$Link   
+         os9   F$Link
          bcs   L08F3
-         lda   #'b        calling boot
+         lda   #'b          calling boot
          jsr   <D.BtBug
          jsr   ,y           load boot file
          bcs   L08F3
          std   <D.BtSz      save boot file size
          stx   <D.BtPtr     save start pointer of bootfile
-         lda   #'b        boot returns OK
+         lda   #'b          boot returns OK
          jsr   <D.BtBug
 
 * added for IOMan system memory extentions
          IFNE  H6309
-         ldd   M$Name,x   grab the name offset
-         ldd   d,x        find the first 2 bytes of the first module
-         cmpd  #$4E69     'Ni' ? (NitrOS9 module?)
-         bne   not.ext    no, not system memory extensions
-         ldd   M$Exec,x   grab the execution ptr
-         jmp   d,x        and go execute the system memory extension module
+         ldd   M$Name,x     grab the name offset
+         ldd   d,x          find the first 2 bytes of the first module
+         cmpd  #$4E69       'Ni' ? (NitrOS9 module?)
+         bne   not.ext      no, not system memory extensions
+         ldd   M$Exec,x     grab the execution ptr
+         jmp   d,x          and go execute the system memory extension module
          ENDC
 
 not.ext  ldd   <D.BtSz
-         bsr   I.VBlock   internal verify block routine
+         bsr   I.VBlock     internal verify block routine
          ldx   <D.SysDAT    get system DAT pointer
-         ldb   $0D,x      get highest allocated block number
-         incb             allocate block 0, too
-         ldx   <D.BlkMap  point to the memory block map
-         lbra  L01DF      and go mark the blocks as used.
+         ldb   $0D,x        get highest allocated block number
+         incb               allocate block 0, too
+         ldx   <D.BlkMap    point to the memory block map
+         lbra  L01DF        and go mark the blocks as used.
 
 
 **************************************************
@@ -297,46 +297,46 @@ not.ext  ldd   <D.BtSz
 *
 * Output: None
 *
-* Error:  CC = C bit set; B = error code       
+* Error:  CC = C bit set; B = error code
 *
-FVBlock  ldd   R$D,u      size of block to verify
-         ldx   R$X,u      start address to verify
+FVBlock  ldd   R$D,u        size of block to verify
+         ldx   R$X,u        start address to verify
 
 I.VBlock leau  d,x          point to end of bootfile
          tfr   x,d
          anda  #$E0
-         clrb  
+         clrb
          pshs  d,u
-         lsra  
-         lsra  
-         lsra  
-         lsra  
+         lsra
+         lsra
+         lsra
+         lsra
          ldy   <D.SysDAT    get pointer to system DAT
          leay  a,y          offset to bootfile
 L092D    ldd   M$ID,x       get module ID
          cmpd  #M$ID12      legal ID?
          bne   L0954        no, keep looking
 
-         ldd   M$Name,x   find name offset pointer
+         ldd   M$Name,x     find name offset pointer
          pshs  x
          leax  d,x
-name.prt lda   ,x+        get first character of the name
-         jsr   <D.BtBug   print it out
+name.prt lda   ,x+          get first character of the name
+         jsr   <D.BtBug     print it out
          bpl   name.prt
-         lda   #C$SPAC    a space
+         lda   #C$SPAC      a space
          jsr   <D.BtBug
          puls  x
 
          IFNE  H6309
-         ldd   ,s         offset into block
-         subr  d,x        make X=offset into block
+         ldd   ,s           offset into block
+         subr  d,x          make X=offset into block
          ELSE
          tfr   x,d
          subd  ,s
          tfr   d,x
          ENDC
          tfr   y,d
-         os9   F$VModul 
+         os9   F$VModul
          IFNE  H6309
          ldw   ,s
          leax  w,x
@@ -351,7 +351,7 @@ name.prt lda   ,x+        get first character of the name
          bne   L0954
 L094E    ldd   M$Size,x
          leax  d,x
-         fcb   $8C        skip 2 bytes
+         fcb   $8C          skip 2 bytes
 
 L0954    leax  1,x          move to next byte
 L0956    cmpx  2,s          gone thru whole bootfile?

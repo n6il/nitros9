@@ -34,7 +34,7 @@ GotNPrc  pshs   u           save pointer to new descriptor
          ENDC
 * Copy network I/O pointers to new descriptor
          IFEQ   Network-1
-         pshs   x,u 
+         pshs   x,u
          leax   >P$NIO,x    point to current NIO pointers
          leau   >P$NIO,u    point to buffer for new ones
          IFNE   H6309
@@ -50,7 +50,7 @@ L0250    lda    ,x+
          puls   x,u         restore pointers to descriptors
          ENDC
 * Copy I/O pointers to new descriptor
-         leax   P$DIO,x    
+         leax   P$DIO,x
          leau   P$DIO,u
          IFNE   H6309
          ldw    #DefIOSiz
@@ -92,7 +92,7 @@ SveNPth  sta    ,u+         save new path #
 
 * Copy parameters to new process
          lda    P$PagCnt,x  get memory page count
-         clrb   
+         clrb
          subd   ,s          calculate destination
          tfr    d,u         set parameter destination pointer
          ldb    P$Task,x    get source task #
@@ -110,7 +110,7 @@ SveNPth  sta    ,u+         save new path #
          ldy    #R$Size     get size of register stack
          os9    F$Move      move the register stack over
          puls   u,x
-         os9    F$DelTsk 
+         os9    F$DelTsk
          ldy    <D.Proc
          lda    P$ID,x
          sta    R$A,u
@@ -126,18 +126,18 @@ SveNPth  sta    ,u+         save new path #
          sta    P$State,x
          ENDC
 * Put date & time of creation into descriptor
-*         pshs   x           preserve process pointer
-*         leax   P$DatBeg,x  point to time buffer
-*         os9    F$Time      put date/time into it
-*         puls   x           restore pointer
+*         pshs   x          preserve process pointer
+*         leax   P$DatBeg,x point to time buffer
+*         os9    F$Time     put date/time into it
+*         puls   x          restore pointer
          os9    F$AProc     and start the process
          rts                return
 
 * Fork error goes here
 L02CF    puls  x
-         pshs  b		save error
-         lbsr  L05A5		close paths & unlink mem
-         lda   P$ID,x		get bad ID
-         lbsr  L0386		delete proc desc & task #
-         comb			set carry
-         puls  pc,u,b		pull error code & u & return
+         pshs  b            save error
+         lbsr  L05A5        close paths & unlink mem
+         lda   P$ID,x       get bad ID
+         lbsr  L0386        delete proc desc & task #
+         comb               set carry
+         puls  pc,u,b       pull error code & u & return

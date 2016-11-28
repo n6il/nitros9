@@ -20,4 +20,4 @@ FGPrDsc  ldx   <D.Proc     Get current process dsc. ptr.
          ldy   #P$Size     Y=Size of process descriptor (512 bytes)
          ldu   R$X,u       Get requested place to put copy of process dsc.
          os9   F$Move      Move it into caller's space
-L0962    rts   
+L0962    rts

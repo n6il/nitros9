@@ -104,11 +104,11 @@ L06E1    lda   $06,s
          anda  #LangMask
          bne   L06FE
 L06ED    puls  y,x,d
-         abx   
-         clrb  
+         abx
+         clrb
          ldb   1,s
          leas  4,s
-         rts   
+         rts
 
 L06F6    leas  4,s          purge stack
          ldd   8,s          do we have a directory pointer?
@@ -119,10 +119,10 @@ L0700    leau  -MD$ESize,u  move back 1 entry in module table
          cmpu  <D.ModDir    at the beginning?
          bhs   L06A1        no, check entry
          ldb   #E$MNF       get error code (module not found)
-         fcb   $8C        skip 2 bytes
+         fcb   $8C          skip 2 bytes
 
 L070B    ldb   #E$BNam      get error code
-         coma             set carry for error
+         coma               set carry for error
 L070E    stb   1,s          save error code for caller
          puls  d,u,pc       return
 
@@ -143,5 +143,5 @@ L0720    pshs  d,cc         preserve char
          tfr   y,d          copy DAT pointer to D
          subd  3,s          calculate DAT image offset
          asrb               divide it by 2
-         lbsr  CmpLBlk        convert X to logical address in 64k map
+         lbsr  CmpLBlk      convert X to logical address in 64k map
          puls  cc,d,y,pc    restore & return

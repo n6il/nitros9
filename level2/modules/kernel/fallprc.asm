@@ -57,12 +57,12 @@ LChinese std    ,x++
 
 ***************************************************************************
 * OS-9 L2 Upgrade Enhancement: Stamp current date/time for start of process
-*         ldy    <D.Proc		get current process descriptor
-*         ldx    <D.SysProc	get system process descriptor
-*         stx    <D.Proc		make system process current
-*         leax   P$DatBeg,u	new proc desc creation date/time stamp
-*         os9    F$Time		ignore any error...
-*         sty    <D.Proc		restore current proc desc address
+*         ldy    <D.Proc                get current process descriptor
+*         ldx    <D.SysProc     get system process descriptor
+*         stx    <D.Proc                make system process current
+*         leax   P$DatBeg,u     new proc desc creation date/time stamp
+*         os9    F$Time         ignore any error...
+*         sty    <D.Proc                restore current proc desc address
 ***************************************************************************
 
          lda    #SysState   set process to system state
@@ -89,8 +89,8 @@ L032F    rts                return
 *
 * Error:  CC = C bit set; B = error code
 *
-FDelPrc  lda    R$A,u		get process #
-         bra    L0386		delete it
+FDelPrc  lda    R$A,u       get process #
+         bra    L0386       delete it
 
 
 **************************************************
@@ -147,7 +147,7 @@ L035D    ldd    <D.WProcQ   get ptr to head of waiting process line
 
 L0368    comb               Exit with No Children error
          ldb    #E$NoChld
-         rts   
+         rts
 
 * Child has died
 * Entry: Y=Ptr to child process that died

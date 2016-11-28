@@ -7,7 +7,7 @@
 *
 * Output: None
 *
-* Error:  CC = C bit set; B = error code       
+* Error:  CC = C bit set; B = error code
 *
 FSUser   ldx   <D.Proc      get current process dsc ptr
          ldd   R$Y,u        get requested user number

@@ -42,12 +42,12 @@ L0161    ldb    ,s          get current offset
          beq    L015D       already zero, get next one
          lda    ,s          get block offset
          lsla               find offset into 64k map by multiplying by 32
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-         clrb  
-         nega  
+         lsla
+         lsla
+         lsla
+         lsla
+         clrb
+         nega
          IFNE   H6309
          addr   d,x
          ELSE
@@ -154,19 +154,19 @@ L01FB    ldw    ,u++        Get first block
          bne    L01FB
          puls   u           Restore module ptr
          ELSE
-         pshs  y          save y
-         ldy   MD$MPDAT,u module image ptr
-L01FB    pshs  a,x        save #blocks, ptr
-         ldd   ,y         get block number
-         clr   ,y+        clear the image
+         pshs  y            save y
+         ldy   MD$MPDAT,u   module image ptr
+L01FB    pshs  a,x          save #blocks, ptr
+         ldd   ,y           get block number
+         clr   ,y+          clear the image
          clr   ,y+
-         leax  d,x        point to blkmap entry
+         leax  d,x          point to blkmap entry
          ldb   ,x
          andb  #^(RAMinUse+ModBlock) free block
          stb   ,x
          puls  a,x
-         deca             last block done?
-         bne   L01FB      ..no, loop
+         deca               last block done?
+         bne   L01FB        ..no, loop
          puls  y
          ENDC
          ldx    <D.ModDir   get module directory pointer
@@ -182,9 +182,8 @@ L0225    rts                return
 
 L0226    addd   #$1FFF      round up to nearest block
          lsra               calculate block # within 64k workspace
-         lsra  
-         lsra  
-         lsra  
-         lsra  
-         rts   
-
+         lsra
+         lsra
+         lsra
+         lsra
+         rts
