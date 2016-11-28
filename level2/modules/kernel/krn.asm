@@ -78,7 +78,7 @@ R.Flip0 equ     *
         ELSE
         pshs    a
         lda     <D.TINIT
-        anda    #$FE
+        anda    #$FE            force TR=0
         sta     <D.TINIT
         sta     >DAT.Task
         puls    a
@@ -113,32 +113,32 @@ L001C   std     ,x++
         ENDC
 
 * Setup system direct page variables
-        std     <D.Tasks
-        addb    #$20            set Task image table to $0120
+        std     <D.Tasks        set Task Structure pointer to 0x100
+        addb    #$20            set Task image table pointer to $0120
         std     <D.TskIPt
-        clrb                    set memory block map to $0200
+        clrb                    set memory block map pointer to $0200
         inca
         std     <D.BlkMap
-        addb    #$40            set second block map to $0240
+        addb    #$40            set second block map pointer to $0240
         std     <D.BlkMap+2
-        clrb                    set system service dispatch table to $0300
-        inca
+        clrb                    set system service dispatch table
+        inca                    pointer to 0x300
         std     <D.SysDis
-        inca                    set user dispatch table to $0400
+        inca                    set user dispatch table pointer to $0400
         std     <D.UsrDis
-        inca                    set process descriptor block to $0500
+        inca                    set process descriptor block pointer to $0500
         std     <D.PrcDBT
-        inca                    set system process descriptor to $0600
+        inca                    set system process descriptor pointer to $0600
         std     <D.SysPrc
-        std     <D.Proc         set user process descriptor to $0600
+        std     <D.Proc         set user process descriptor pointer to $0600
         adda    #$02            set stack pointer to $0800
         tfr     d,s
-        inca                    set system stack to $0900
+        inca                    set system stack base pointer to $0900
         std     <D.SysStk
         std     <D.SysMem       set system memory map ptr $0900
-        inca                    set module directory start to $0a00
+        inca                    set module directory start ptr to $0a00
         std     <D.ModDir
-        std     <D.ModEnd       set module directory end to $0a00
+        std     <D.ModEnd       set module directory end ptr to $0a00
         adda    #$06            set secondary module directory start to $1000
         std     <D.ModDir+2
         std     <D.ModDAT       set module directory DAT pointer to $1000
@@ -146,7 +146,7 @@ L001C   std     ,x++
 * In following line, CRC=ON if it is STA <D.CRC, CRC=OFF if it is a STB <D.CRC
         stb     <D.CRC          set CRC checking flag to off
 
-* Initialize interrupt vector tables
+* Initialize interrupt vector tables, move pointer data down to DP
         leay    <DisTable,pcr   point to table of absolute vector addresses
         ldx     #D.Clock        where to put it in memory
         IFNE    H6309
@@ -155,13 +155,14 @@ L001C   std     ,x++
         ELSE
         ldb     #DisSize
 l@
-        lda     ,y+
-        sta     ,x+
-        decb
-        bne     l@
+        lda     ,y+             load a byte from source
+        sta     ,x+             store a byte to dest
+        decb                    bump counter
+        bne     l@              loop if we're not done
         ENDC
 
-* initialize D.Flip0 routine in low memory
+* initialize D.Flip0 routine in low memory, move function down to low
+* memory.
 * Y=ptr to R.Flip0 already
 *         leay  >R.Flip0,pc
         ldu     #LowSub         somewhere in block 0 that's never modified
@@ -171,13 +172,14 @@ l@
         tfm     y+,u+           copy it over
         ELSE
         ldb     #SubSiz
-Loop2   lda     ,y+
-        sta     ,u+
-        decb
-        bne     Loop2
+Loop2   lda     ,y+             load a byte from source
+        sta     ,u+             and save to destination
+        decb                    bump counter
+        bne     Loop2           loop if not done
         ENDC
 
 *         leau   <Vectors,pc   point to vector
+* fill in the secondard interrupt vectors to all point to
         tfr     y,u             move the pointer to a faster register
 L0065   stu     ,x++            Set all IRQ vectors to go to Vectors for now
         cmpx    #D.NMI
@@ -211,8 +213,8 @@ L0065   stu     ,x++            Set all IRQ vectors to go to Vectors for now
         stx     <D.Flip1
 
 * Setup System calls
-        leay    >SysCalls,pc
-        lbsr    SysSvc
+        leay    >SysCalls,pc    load y with address of table, below
+        lbsr    SysSvc          copy table below into dispatch table
 
 * Initialize system process descriptor
         ldu     <D.PrcDBT       get process table pointer
@@ -226,10 +228,10 @@ L0065   stu     ,x++            Set all IRQ vectors to go to Vectors for now
         oim     #SysState,P$State,x     Set to system state (inited to 0)
         ELSE
         ldd     #$01*256+SysState
-        sta     P$ID,x
-        stb     P$State,x
+        sta     P$ID,x          set PID to 1
+        stb     P$State,x       set state to system (*NOT* zero )
         ENDC
-        clra                    System task is task #0
+        clra                    set System task as task #0
         sta     <D.SysTsk
         sta     P$Task,x
         coma                    Setup its priority & age ($FF)
@@ -249,9 +251,9 @@ L0065   stu     ,x++            Set all IRQ vectors to go to Vectors for now
 * Dat.BlCt-ROMCount-RAMCount
         lda     #$06            initialize the rest of the blocks to be free
         ldu     #DAT.Free
-L00EF   stu     ,x++
-        deca
-        bne     L00EF
+L00EF   stu     ,x++            store free "flag"
+        deca                    bump counter
+        bne     L00EF           loop if not done
 
         ldu     #$003F          Block $3F is in use, at the top of system DAT image
         stu     ,x

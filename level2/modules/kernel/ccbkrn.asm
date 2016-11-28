@@ -208,7 +208,7 @@ l@
         bne     l@              loop if we're not done
         ENDC
 
-* initialize D.Flip0 routine in low memory, move funtion down to low
+* initialize D.Flip0 routine in low memory, move function down to low
 * memory.
 * Y=ptr to R.Flip0 already
 *         leay  >R.Flip0,pc
@@ -266,6 +266,7 @@ L0065   stu     ,x++            Set all IRQ vectors to go to Vectors for now
 * Initialize system process descriptor
         ldu     <D.PrcDBT       get process table pointer
         ldx     <D.SysPrc       get system process pointer
+
 * These overlap because it is quicker than trying to strip hi byte from X
         stx     ,u              save it as first process in table
         stx     1,u             save it as the second as well
@@ -1112,6 +1113,5 @@ SWIStack
         nop
         bra     NMIVCT  NMI vector comes here
         nop
-
 
         end
