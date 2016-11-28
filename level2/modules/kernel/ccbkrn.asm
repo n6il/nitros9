@@ -121,11 +121,11 @@ entry   equ     *
 BtDebug pshs    cc,d,x          save the register
         orcc    #IntMasks       turn IRQ's off
         ldb     #$3b            block to map in
-        stb     >$FFA0          map the boot screen into block 0
+        stb     >DAT.Regs       map the boot screen into block 0
         ldx     >$0002          where to put the bytes
         sta     ,x+             put the character on-screen
         stx     >$0002          save updated address
-        clr     >$FFA0          map block 0 in again
+        clr     >DAT.Regs       map block 0 in again
         puls    cc,d,x,pc       restore and return
         * This routine just prints "!" and loops forever
 Crash   lda     #'!             print a "!"
@@ -327,7 +327,7 @@ L0104   inc     ,x+             Mark it as used
         IFNE    H6309
         ldq     #$00080100      e=Marker, D=Block # to check
 L0111   asld                    get next block #
-        stb     >$FFA5          Map block into block 6 of my task
+        stb     >DAT.Regs+5     Map block into block 6 of my task
         ste     >-$6000,x       save marker to that block
         cmpe    ,x              did it ghost to block 0?
         bne     L0111           No, keep going till ghost is found
@@ -337,7 +337,7 @@ L0111   asld                    get next block #
         ldd     #$0008
 L0111   aslb
         rola
-        stb     >$FFA5
+        stb     >DAT.Regs+5
         pshs    a
         lda     #$01
         sta     >-$6000,x
@@ -683,7 +683,7 @@ L02E9   leau    a,u             point to block # of where stack is
         lda     1,u             get first block
         ldb     3,u             get a second just in case of overlap
         orcc    #IntMasks       shutdown interupts while we do this
-        std     >$FFA5          map blocks in
+        std     >DAT.Regs+5     map blocks in
         IFNE    H6309
         ldw     #R$Size         get size of register stack
         tfm     x+,y+           copy it
@@ -697,7 +697,7 @@ Loop5   lda     ,x+
         ldx     <D.SysDAT       remap the blocks we took out
         lda     $0B,x
         ldb     $0D,x
-        std     >$FFA5
+        std     >DAT.Regs+5
         puls    cc,x,y,u,pc     restore & return
 
 * Process software interupts from system state
@@ -957,7 +957,7 @@ S.Flip1 ldb     #2              get Task image entry numberx2 for Grfdrv (task 1
 L0E8D   cmpb    <D.Task1N       are we going back to the same task
         beq     L0EA3           without the DAT image changing?
         stb     <D.Task1N       nope, save current task in map type 1
-        ldx     #$FFA8          get MMU start register for process's
+        ldx     #DAT.Regs+8     get MMU start register for process's
         ldu     <D.TskIPt       get task image pointer table
         ldu     b,u             get address of DAT image
 L0E93   leau    1,u             point to actual MMU block

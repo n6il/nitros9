@@ -23,10 +23,10 @@ leave    rts
 * THIS CODE IS SPECIFIC TO THE COCO 3!
 REBOOT   orcc  #IntMasks  turn off IRQ's
          clrb
-         stb   >$FFA0      map in block 0
+         stb   >DAT.Regs   map in block 0
          stb   >$0071      cold reboot
          lda   #$38        bottom of DECB block mapping
-         sta   >$FFA0      map in block zero
+         sta   >DAT.Regs   map in block zero
          stb   >$0071      and cold reboot here, too
          ldu   #$0000      force code to go at offset $0000
          leax  ReBootLoc,pc  reboot code
@@ -41,7 +41,7 @@ cit.loop lda   ,x+
 
 ReBootLoc
          ldd   #$3808      block $38, 8 times
-         ldx   #$FFA0      where to put it
+         ldx   #DAT.Regs   where to put it
 Lp       sta   8,x         put into map 1
          sta   ,x+         and into map 0
          inca
@@ -50,7 +50,7 @@ Lp       sta   8,x         put into map 1
 
          lda   #$4C        standard DECB mapping
          sta   >$FF90
-         clr   >$FF91      go to map type 0
+         clr   >DAT.Task   go to map type 0
          clr   >$FFDE      and to all-ROM mode
          ldd   #$FFFF
 *         clrd              executes as CLRA on a 6809
