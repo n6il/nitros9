@@ -157,7 +157,7 @@ done     puls   b           restore task #
          lda    1,u         get 1st block
          ldb    3,u         get a second in case of overlap
          orcc   #IntMasks   shut IRQ's down
-         std    >$FFA5      map in the blocks
+         std    >DAT.Regs+5 map in the blocks
          IFNE   H6309
          ldw    #R$Size     get size of register stack
          tfm    x+,y+       move 'em to process descriptor
@@ -171,7 +171,7 @@ Uday     lda    ,x+
          ldx    <D.SysDAT   get the system DAT image pointer
          lda    $0B,x       get the original blocks
          ldb    $0D,x
-         std    >$FFA5      map 'em back in
+         std    >DAT.Regs+5 map 'em back in
          puls   cc,u,pc     restore IRQ's, register stack pointer & return
      ENDC
 

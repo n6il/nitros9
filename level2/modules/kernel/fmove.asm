@@ -86,9 +86,9 @@ L0B89    cmpw  #$0100       less than 128 bytes?
          ldw   #$0100       force to 128 bytes
 L0B92    stw   12,s         save count
          orcc  #IntMasks    Shut off interrupts
-         std   >$FFA5       map in the blocks
+         std   >DAT.Regs+5  map in the blocks
          tfm   x+,u+        Copy up to 128 bytes
-         sty   >$FFA5       Restore system blocks 5&6 to normal
+         sty   >DAT.Regs+5  Restore system blocks 5&6 to normal
          andcc #^IntMasks
          ldd   14,s         get full count
          subd  12,s         done?
@@ -147,7 +147,7 @@ L0B84    std   $0F,s
          puls  y
          orcc  #IntMasks
          lda   $0E,s  +++
-         sty   >$FFA5
+         sty   >DAT.Regs+5
 ***** NO STACK USE BETWEEN HERE.....
                  tfr   d,y    +++
          andb  #$07
@@ -193,7 +193,7 @@ L0BA4
 L0BBC    ldy   <D.SysDAT
          lda   $0B,y
          ldb   $0D,y
-         std   >$FFA5
+         std   >DAT.Regs+5
 ***** AND HERE...........
          puls  cc
          ldd   $0E,s
