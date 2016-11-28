@@ -61,8 +61,8 @@ L0848    sta   ,s           Put it on stack
          ldw   #$0020       Get size of 8K block in pages
          tfm   s,y+         Mark entire block's worth of pages with A
          ELSE
-L0848    ldb   #32              count = 32 pages
-L084A    sta   ,y+              mark the RAM
+L0848    ldb   #32          count = 32 pages
+L084A    sta   ,y+          mark the RAM
          decb
          bne    L084A
          ENDC
@@ -303,14 +303,14 @@ FVBlock  ldd   R$D,u        size of block to verify
          ldx   R$X,u        start address to verify
 
 I.VBlock leau  d,x          point to end of bootfile
-         tfr   x,d
+         tfr   x,d          transfer start of block to D
          anda  #$E0
-         clrb
-         pshs  d,u
+         clrb               D is now block number
+         pshs  d,u          save starting block and end of block
          lsra
          lsra
          lsra
-         lsra
+         lsra               A is now logical block * 2
          ldy   <D.SysDAT    get pointer to system DAT
          leay  a,y          offset to bootfile
 L092D    ldd   M$ID,x       get module ID
