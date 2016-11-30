@@ -228,7 +228,7 @@ LFail    equ   *-TFail
 L00E2    tfr   pc,d       get the address at which we're executing
          cmpa  #$26       the bootfile starts out at $2600
          bne   L0101      if not at $26xx, continue with booting
-         ldu   #$2600     else move rel, Boot, OS9p1 over
+         ldu   #$2600     else move rel, Boot, krn over
          IFNE  H6309
          ldw   #$1200     size of track 34 boot file
          ELSE
@@ -264,8 +264,8 @@ L0101
 
 *         leax  <eom,pcr   point to the end of REL
 *         ldd   M$Size,x   get size of the next module
-*         leax  d,x        skip Boot, point to OS9p1
-         ldx   #$F000     we KNOW where OS9p1 starts in memory
+*         leax  d,x        skip Boot, point to krn
+         ldx   #$F000     we KNOW where krn starts in memory
          ldd   M$Exec,x   get execution start address
          jmp   d,x        jump to it
 
@@ -278,7 +278,7 @@ L003F    clr   >$FF91     go to map type 0 - called by CC3Go from map 1
          fdb   $0074      go to $0074, next routine
 
 * reset vector: map ROMs out and go to REL in the default DECB block map,
-* which is still block $3F at the top fo memory
+* which is still block $3F at the top of memory
          nop              required for the ROMs to believe it's a reset vector
          clr   >$FFDF     go to all RAM mode
          jmp   >Offset+reset and re-start the boot
