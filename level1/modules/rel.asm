@@ -283,7 +283,17 @@ L003F    clr   >$FF91     go to map type 0 - called by CC3Go from map 1
          clr   >$FFDF     go to all RAM mode
          jmp   >Offset+reset and re-start the boot
 
-Pad      fill  $39,$127-*
+* L2 kernel file is composed of rel, boot, krn. The size of each of these
+* is controlled with filler, so that (after relocation):
+* rel  starts at $ED00 and is $130 bytes in size
+* boot starts at $EE30 and is $1D0 bytes in size
+* krn  starts at $F000 and ends at $FEFF (there is no 'emod' at the end
+*      of krn and so there are no module-end boilerplate bytes)
+*
+* Filler to get to a total size of $130. XX.Size is bytes at the start of
+* this file - before the module header. 3 is bytes after this filler - the
+* end boilerplate for the module.
+Filler   fill  $39,$130-XX.Size-3-*
 
          ELSE                          match IFGT Level-1
 
