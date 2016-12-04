@@ -1,5 +1,7 @@
 ********************************************************************
 * Boot - IDE Boot Module
+* Provides HWInit, HWTerm, HWRead which are called by code in
+* "use"d boot_common.asm
 *
 * $Id$
 *
@@ -31,21 +33,21 @@
 * a OS9Boot file off of the real NitrOS-9 volume without need
 * of the OS9Boot file being stored in the HDBDOS virtual drive
 
-               NAM       Boot                
-               TTL       IDE Boot Module     
+               NAM       Boot
+               TTL       IDE Boot Module
 
-               IFP1      
+             IFP1
                USE       defsfile
                USE       ide.d
-               ENDC      
+             ENDC
 
 tylg           SET       Systm+Objct
 atrv           SET       ReEnt+rev
 rev            SET       $00
 edition        SET       9
 
-* Disassembled 94/06/25 11:37:47 by Alan DeKok 
-* ReDone by Paul T. Barton 99/08/17, for IDE 
+* Disassembled 94/06/25 11:37:47 by Alan DeKok
+* ReDone by Paul T. Barton 99/08/17, for IDE
 
                MOD       eom,name,tylg,atrv,start,size
 
@@ -61,9 +63,9 @@ blockimg       RMB       2                   duplicate of the above
 bootloc        RMB       3                   sector pointer; not byte pointer
 bootsize       RMB       2                   size in bytes
 LSN0Ptr        RMB       2                   LSN0 pointer (used by boot_common.asm)
-               IFDEF     DEBLOCK
+             IFDEF     DEBLOCK
 HalfSect       RMB       1
-               ENDC
+             ENDC
 size           EQU       .
 
 name           FCS       /Boot/
@@ -109,7 +111,7 @@ b@             tst       Status,y
                ldb       #43
 l@             tst       DataReg,y
                lda       Latch,y
-               decb      
+               decb
                bne       l@
 * A holds byte with LBA bit
                anda      #%00000010          LBA drive?
@@ -119,37 +121,38 @@ l@             tst       DataReg,y
                stb       mode,u
 nope@          ldb       #256-50
 o@             tst       DataReg,y
-               decb      
+               decb
                bne       o@
-HWTerm         clrb      
-               rts       
+HWTerm         clrb
+               rts
 
 * HWRead - Read a 256 byte sector from the device
 *   Entry: Y = hardware address
 *          B = bits 23-16 of LSN
 *          X = bits 15-0  of LSN
-*	   blockloc,u = ptr to 256 byte sector
+*          blockloc,u = ptr to 256 byte sector
 *   Exit:  X = ptr to data (i.e. ptr in blockloc,u)
-HWRead                   
+*          Carry Clear = OK, Set = Error
+HWRead
                pshs      x,b
 b@             tst       Status,y
-               bmi       b@                  if =1 then loop 
-               IFDEF     DEBLOCK
+               bmi       b@                  if =1 then loop
+             IFDEF     DEBLOCK
                clra                          clear A so we can hold half sector flag
                lsr       ,s                  ok shift the 3 bytes on stack that
                ror       1,s                 hold LSN to the right to create a
                ror       2,s                 divide by 2.  Then put last bit in
                rola                          A for use as the half sector flag
                sta       HalfSect,u          then store the flag on the stack
-               ENDC
+             ENDC
                lda       mode,u
-               sta       DevHead,y           0L0d/0hhh device=CHS 
-r@             ldb       Status,y            is IDE ready for commands? 
-               andb      #BusyBit+DrdyBit    ready ? 
+               sta       DevHead,y           0L0d/0hhh device=CHS
+r@             ldb       Status,y            is IDE ready for commands?
+               andb      #BusyBit+DrdyBit    ready ?
                cmpb      #DrdyBit
                bne       r@                  loop until Drdy=1 and Busy=0
-               ldb       #$01                only one at a time 
-               stb       SectCnt,y           only one at a time 
+               ldb       #$01                only one at a time
+               stb       SectCnt,y           only one at a time
                anda      #%01000000
                beq       chs@                branch if mode
                lda       ,s                  get bits 23-16
@@ -158,7 +161,7 @@ r@             ldb       Status,y            is IDE ready for commands?
                stb       SectNum,y
                sta       CylLow,y
                bra       DoCmd
-chs@                     
+chs@
 * Compute proper C:H:S value
                lda       sides,u             get device's head
                ldb       sects+1,u           and sector
@@ -193,26 +196,26 @@ c@             leax      1,x
                tfr       x,d
                orb       DevHead,y           OR in with value written earlier
                stb       DevHead,y
-DoCmd          lda       #S$READ             read one sector 
-               sta       Command,y           finish process 
+DoCmd          lda       #S$READ             read one sector
+               sta       Command,y           finish process
 
-Blk2           lda       Status,y            is IDE ready to send? 
-               anda      #DrqBit             DRQ, data request 
-               beq       Blk2                loop while DRQ =0 
+Blk2           lda       Status,y            is IDE ready to send?
+               anda      #DrqBit             DRQ, data request
+               beq       Blk2                loop while DRQ =0
 
                ldx       blockloc,u
                clr       ,s
-               IFDEF     DEBLOCK
+             IFDEF     DEBLOCK
                lda       HalfSect,u          load half sector flag
                cmpa      #$01                check to see which routine we
                beq       Blk2Lp              need and branch to it.
-               ENDC
-BlkLp                    
-               lda       DataReg,y           A <- IDE 
+             ENDC
+BlkLp
+               lda       DataReg,y           A <- IDE
                ldb       Latch,y
-               std       ,x++                into RAM 
+               std       ,x++                into RAM
                inc       ,s
-               bpl       BlkLp               go get the rest 
+               bpl       BlkLp               go get the rest
 b@             lda       DataReg,y           read remaining 256 bytes
                dec       ,s
                bne       b@
@@ -220,11 +223,11 @@ b@             lda       DataReg,y           read remaining 256 bytes
 BlkEnx
                leax      -256,x
                stx       1,s
-               lda       Status,y            check for error-bit 
+               lda       Status,y            check for error-bit
                clrb
                puls      b,x,pc
 
-               IFDEF     DEBLOCK
+             IFDEF     DEBLOCK
 Blk2Lp
                lda       DataReg,y           A <- IDE
                inc       ,s                  Here we toss out the
@@ -237,18 +240,18 @@ b2@
                inc       ,s
                bpl       b2@                 go get the rest
                bra       BlkEnx
-               ENDC
+             ENDC
 
-* ------------------------------------------ 
+* ------------------------------------------
 
-*Init           
+*Init
 *         pshs  d,y
 *         ldy   <Address,pcr
-*         bsr   ChkBusy    could be spinning up... 
-*         lda   #Diagnos   hits all drives 
-*         sta   Command,y   ./ 
-*         bsr   ChkBusy    wait 'til both done 
-*         clrb             no errors 
+*         bsr   ChkBusy    could be spinning up...
+*         lda   #Diagnos   hits all drives
+*         sta   Command,y   ./
+*         bsr   ChkBusy    wait 'til both done
+*         clrb             no errors
 *         puls  d,y,pc
 
 * Entry: A = number to show
@@ -270,15 +273,22 @@ b2@
 *s@ jsr   <D.BtBug
 * rts
 
-               IFGT      Level-1
-Pad            FILL      $39,$1D0-3-2-1-*
-               ENDC      
+             IFGT      Level-1
+* L2 kernel file is composed of rel, boot, krn. The size of each of these
+* is controlled with filler, so that (after relocation):
+* rel  starts at $ED00 and is $130 bytes in size
+* boot starts at $EE30 and is $1D0 bytes in size
+* krn  starts at $F000 and ends at $FEFF (there is no 'emod' at the end
+*      of krn and so there are no module-end boilerplate bytes)
+*
+* Filler to get to a total size of $1D0. 3, 2, 1 represent bytes after
+* the filler: the end boilerplate for the module, fdb and fcb respectively.
+Filler         FILL      $39,$1D0-3-2-1-*
+             ENDC
 
 Address        FDB       SDAddr
 WhchDriv       FCB       0                   Drive to use (0 = master, 1 = slave)
 
-
-               EMOD      
+               EMOD
 eom            EQU       *
-               END       
-
+               END

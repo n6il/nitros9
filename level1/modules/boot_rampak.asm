@@ -1,6 +1,9 @@
 ********************************************************************
 * Boot - Disto RAMPak Boot Module
 *
+* Provides HWInit, HWTerm, HWRead which are called by code in
+* "use"d boot_common.asm
+*
 * $Id$
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
@@ -20,9 +23,9 @@
 
 * Disassembled 94/06/25 11:37:47 by Alan DeKok
 
-         IFP1  
+         IFP1
          use   defsfile
-         ENDC  
+         ENDC
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
@@ -46,7 +49,7 @@ seglist  rmb   2
 bootsize rmb   2
 blockloc rmb   2
 blockimg rmb   2
-LSN0Ptr		rmb   2		In memory LSN0 pointer
+LSN0Ptr         rmb   2         In memory LSN0 pointer
 size     equ   .
 
 name     equ   *
@@ -78,7 +81,7 @@ cont     clrb
 HWTerm   lda   mpisave,u
          sta   >MPI.Slct
          clrb
-         rts   
+         rts
 
 
 * HWRead - Read a 256 byte sector from the device
@@ -87,6 +90,7 @@ HWTerm   lda   mpisave,u
 *          X = bits 15-0  of LSN
 *          blockloc,u = ptr to 256 byte sector
 *   Exit:  X = ptr to data (i.e. ptr in blockloc,u)
+*          Carry Clear = OK, Set = Error
 HWRead   tfr   x,d        move 16 bit LSN into 2 8-bit registers
          sta   2,y        save HB LSN
          stb   1,y        save LB LSN
@@ -104,12 +108,21 @@ ReadLp   stb   ,y         save byte number
          rts
 
          IFGT  Level-1
+* L2 kernel file is composed of rel, boot, krn. The size of each of these
+* is controlled with filler, so that (after relocation):
+* rel  starts at $ED00 and is $130 bytes in size
+* boot starts at $EE30 and is $1D0 bytes in size
+* krn  starts at $F000 and ends at $FEFF (there is no 'emod' at the end
+*      of krn and so there are no module-end boilerplate bytes)
+*
+* Filler to get to a total size of $1D0. 3, 2, 1 represent bytes after
+* the filler: the end boilerplate for the module, fdb and fcb respectively.
 Pad      fill  $39,$1D0-3-2-1-*
          ENDC
 
 Address  fdb   $FF40      address of the device to boot from
 PakSlot  fcb   $01        multipak slot number
 
-         emod  
+         emod
 eom      equ   *
-         end   
+         end

@@ -1,5 +1,7 @@
 ********************************************************************
 * Boot - CoCo SDC Boot module
+* Provides HWInit, HWTerm, HWRead which are called by code in
+* "use"d boot_common.asm
 *
 * $Id$
 *
@@ -112,7 +114,7 @@ HWTerm         clrb                         no error
 *
 *    Exit:
 *       X  = ptr to data (i.e. ptr in blockloc,u)
-*       Carry set => ERROR
+*       Carry Clear = OK, Set = Error
 *
 * multicomp09:
 * for now, the image starts at SDcard block $02.8000
@@ -230,7 +232,15 @@ waitRet        rts                          return
 *--------------------------------------------------------------------------
 
      IFGT Level-1
-* Filler to get $1D0
+* L2 kernel file is composed of rel, boot, krn. The size of each of these
+* is controlled with filler, so that (after relocation):
+* rel  starts at $ED00 and is $130 bytes in size
+* boot starts at $EE30 and is $1D0 bytes in size
+* krn  starts at $F000 and ends at $FEFF (there is no 'emod' at the end
+*      of krn and so there are no module-end boilerplate bytes)
+*
+* Filler to get to a total size of $1D0. 3, 2, 1 represent bytes after
+* the filler: the end boilerplate for the module, fdb and fcb respectively.
 Filler         fill      $39,$1D0-3-2-1-*
      ENDC
 

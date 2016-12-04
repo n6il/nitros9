@@ -30,9 +30,9 @@ HDStep   equ   $0F        see step rate table
 *!  $03=18mS/6.0mS  !  $07=10mS/4.0mS  !  $0B=04mS/2.0mS  !  $0F=15uS/ 35uS  !
 *+------------------+------------------+------------------+------------------+
 
-         IFP1  
+       IFP1
          use   defsfile
-         ENDC  
+       ENDC
 
 * These equates should not have to be changed:
 BEdtn    equ   2
@@ -119,14 +119,14 @@ BExec    ldy   <D.WDAddr  get HCA base address (set by auto-boot EPROM)
          cmpa  #$07       legal drive number?
          blo   InitPIA    yes, go initialize PIA...
 UnitErr  ldb   #E$Unit
-         coma  
-         rts   
+         coma
+         rts
 
 DumpRead clr   PB,y       set WD address to sector buffer
 DumpR0   lda   WDData,y   get a byte from WD sector buffer
          decb             done yet?
          bne   DumpR0     no, go dump another byte
-         rts   
+         rts
 LSN0Info ldb   #DD.FMT    load number of bytes to dump
          bsr   DumpRead   go dump LSN0 up to DD.FMT
          lda   WDData,y   get DD.FMT (disk density, sides)
@@ -149,7 +149,7 @@ LSN0Info ldb   #DD.FMT    load number of bytes to dump
          bsr   DumpRead   go dump LSN0 from DD.DAT to number of sides in option table
          lda   WDData,y   get number of sides from DD.OPT section
          sta   U.Sides,u
-GotInfo  rts   
+GotInfo  rts
 
 InitPIA  clr   CRA,y      enable PIA DDRA
          ldd   #$033E     [A]=DDRA:  PA bits 7-2 = inputs, bits 1-0 = outputs
@@ -223,7 +223,7 @@ CylLoop0 leax  1,x        increment current cylinder number
 ReadErr  ldb   #E$Read
          coma             set Carry for error
          leas  BootMem,s  restore stack pointer
-         rts   
+         rts
 ChkBtMSB tst   U.BT,u     boot file LSN MSB = 0?
          beq   GotCyl     yes, go determine head number
          dec   U.BT,u     decrement boot file LSN MSB
@@ -277,7 +277,7 @@ ReadLoop lda   WDData,y   get byte from WD 1002-05
          ldd   U.BSZ,u    get boot file size
          ldx   U.BtStrt,u get boot file start address
 BtExit0  leas  BootMem,s  restore stack pointer
-         rts   
+         rts
 
 GetSctr  bsr   SetupTF    go set up WD task files (except command)
          lda   #ReadSctr  load WD read sector command code
@@ -297,10 +297,10 @@ BusyW0   ldb   WDData,y   get WD 1002-05 status
          stb   PB,y       set WD error register address
          ldb   WDData,y   get error register contents
          bne   BWErr
-NoError  clrb  
-         rts   
+NoError  clrb
+         rts
 BWErr    comb             error, set [CC] Carry...
-         rts   
+         rts
 
 SetupTF  ldd   #$01*256+SctrCnt single sector commands only
          bsr   TFUpdat
@@ -325,14 +325,21 @@ StdHead  stb   PA,y       set extended head enable/disable
          ldb   #SDHReg
 TfUpdat  stb   PB,y       set WD register address
          sta   WDData,y   write data to WD 1002-05
-         rts   
+         rts
 
-         IFGT  Level-1
-* Pad Boot module out to $01D0 exactly
-Pad      fill  $39,$1D0-3-*
-         ENDC
+       IFGT  Level-1
+* L2 kernel file is composed of rel, boot, krn. The size of each of these
+* is controlled with filler, so that (after relocation):
+* rel  starts at $ED00 and is $130 bytes in size
+* boot starts at $EE30 and is $1D0 bytes in size
+* krn  starts at $F000 and ends at $FEFF (there is no 'emod' at the end
+*      of krn and so there are no module-end boilerplate bytes)
+*
+* Filler to get to a total size of $1D0. 3 represents bytes after
+* the filler: the end boilerplate for the module.
+Filler   fill  $39,$1D0-3-*
+       ENDC
 
-         emod  
+         emod
 BEnd     equ   *
-         end   
-
+         end
