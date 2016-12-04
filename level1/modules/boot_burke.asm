@@ -46,7 +46,7 @@ size     equ   .
 name     fcs   /Boot/
          fcb   edition
 
-start    ldb   >MPI.Slct   Set up Multipak properly for us
+start    ldb   >MPI.Slct    Set up Multipak properly for us
          lda   #$10
          mul
          ldb   #$11
@@ -169,7 +169,7 @@ hddiv    inc   head,u         Increase head #?
          stb   sector,u       Preserve sector #
          leas  $03,s          Clear stack of 24 bit number
 
-     pshs  cc             Preserve odd sector flag (carry bit)
+         pshs  cc             Preserve odd sector flag (carry bit)
 
          bsr   cmdstrt        Set up controller for new command
          lda   #$08           Read sector command
@@ -327,7 +327,15 @@ nxtready bsr   stable       Make sure status register is stable and get it
          rts                Padding to get $1D0 Size
 
          IFGT  Level-1
-* Pad to $1D0 bytes exactly
+* L2 kernel file is composed of rel, boot, krn. The size of each of these
+* is controlled with filler, so that (after relocation):
+* rel  starts at $ED00 and is $130 bytes in size
+* boot starts at $EE30 and is $1D0 bytes in size
+* krn  starts at $F000 and ends at $FEFF (there is no 'emod' at the end
+*      of krn and so there are no module-end boilerplate bytes)
+*
+* Filler to get to a total size of $1D0. 3 represents bytes after
+* the filler: the end boilerplate for the module.
 Pad      fill  $39,$1D0-3-*
          ENDC
 

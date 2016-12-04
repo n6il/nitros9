@@ -1,12 +1,14 @@
 ********************************************************************
 * Boot - WD1773 Boot module
+* Provides HWInit, HWTerm, HWRead which are called by code in
+* "use"d boot_common.asm
 *
 * $Id$
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
-*   4      1985/??/??   
+*   4      1985/??/??
 * Original Tandy distribution version.
 *
 *   6      1998/10/12  Boisy G. Pitre
@@ -43,15 +45,15 @@
          nam   Boot
          ttl   WD1773 Boot module
 
-         IFP1
+       IFP1
          use   defsfile
-         ENDC
+       ENDC
 
 * FDC Control Register bits at $FF40
 HALTENA  equ   %10000000
-SIDESEL  equ   %01000000	DRVSEL3 if no DS drives
+SIDESEL  equ   %01000000        DRVSEL3 if no DS drives
 DDEN     equ   %00100000
-READY    equ   %00010000	READY for Tandy WD1773-based controllers
+READY    equ   %00010000        READY for Tandy WD1773-based controllers
 MOTON    equ   %00001000
 DRVSEL2  equ   %00000100
 DRVSEL1  equ   %00000010
@@ -59,20 +61,20 @@ DRVSEL0  equ   %00000001
 
 * Default Boot is from drive 0
 BootDr   set DRVSEL0
-         IFEQ  DNum-1
-BootDr   set DRVSEL1		Alternate boot from drive 1
-         ENDC
-         IFEQ  DNum-2
-BootDr   set DRVSEL2		Alternate boot from drive 2
-         ENDC
-         IFEQ  DNum-3
-BootDr   set SIDESEL		Alternate boot from drive 3
-         ENDC
+       IFEQ  DNum-1
+BootDr   set DRVSEL1            Alternate boot from drive 1
+       ENDC
+       IFEQ  DNum-2
+BootDr   set DRVSEL2            Alternate boot from drive 2
+       ENDC
+       IFEQ  DNum-3
+BootDr   set SIDESEL            Alternate boot from drive 3
+       ENDC
 
 * WD17x3 DPort offsets
 CONTROL  equ   0
-CMDREG   equ   8+0		write-only
-STATREG  equ   CMDREG		read-only
+CMDREG   equ   8+0              write-only
+STATREG  equ   CMDREG           read-only
 TRACKREG equ   8+1
 SECTREG  equ   8+2
 DATAREG  equ   8+3
@@ -81,13 +83,13 @@ DATAREG  equ   8+3
 SECTSIZE equ   256
 
 * Step Rates:
-*	$00  = 6ms
-*	$01  = 12ms
-*	$02  = 20ms
-*	$03  = 30ms
-         IFNDEF STEP
+*       $00  = 6ms
+*       $01  = 12ms
+*       $02  = 20ms
+*       $03  = 30ms
+       IFNDEF STEP
 STEP     set   $00
-         ENDC
+       ENDC
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
@@ -97,18 +99,18 @@ edition  set   9
          mod   eom,name,tylg,atrv,start,size
 
 * NOTE: these are U-stack offsets, not DP
-seglist  rmb   2						pointer to segment list
-blockloc rmb   2                       pointer to memory requested
-blockimg rmb   2                       duplicate of the above
-bootsize rmb   2                       size in bytes
-LSN0Ptr	 rmb   2		In memory LSN0 pointer
+seglist  rmb   2                pointer to segment list
+blockloc rmb   2                pointer to memory requested
+blockimg rmb   2                duplicate of the above
+bootsize rmb   2                size in bytes
+LSN0Ptr  rmb   2                In memory LSN0 pointer
 drvsel   rmb   1
 currtrak rmb   1
 * Note, for optimization purposes, the following two variables
 * should be adjacent!!
-ddtks    rmb   1		no. of sectors per track
+ddtks    rmb   1                no. of sectors per track
 ddfmt    rmb   1
-side     rmb   1		side 2 flag
+side     rmb   1                side 2 flag
 size     equ   .
 
 name     fcs   /Boot/
@@ -123,33 +125,33 @@ FLOPPY   equ   1
 *   Exit:  Carry Clear = OK, Set = Error
 *          B = error (Carry Set)
 HWInit
-         lda   #%11010000		($D0) Force Interrupt (stops any command in progress)
-         sta   CMDREG,y			write command to command register
-         lbsr  Delay2			delay 54~
-         lda   STATREG,y		clear status register
+         lda   #%11010000               ($D0) Force Interrupt (stops any command in progress)
+         sta   CMDREG,y                 write command to command register
+         lbsr  Delay2                   delay 54~
+         lda   STATREG,y                clear status register
          lda   #$FF
-         sta   currtrak,u		set current track to 255
-         leax  >NMIRtn,pcr		point to NMI routine
-         IFGT  Level-1
-         stx   <D.NMI			save address
-         ELSE
-         stx   >D.XNMI+1		save address
+         sta   currtrak,u               set current track to 255
+         leax  >NMIRtn,pcr              point to NMI routine
+       IFGT  Level-1
+         stx   <D.NMI                   save address
+       ELSE
+         stx   >D.XNMI+1                save address
          lda   #$7E
          sta   >D.XNMI
-         ENDC
-         lda   #MOTON			turn on drive motor
+       ENDC
+         lda   #MOTON                   turn on drive motor
          ora   WhichDrv,pcr
          sta   CONTROL,y
 * MOTOR ON spin-up delay loop (~307 mSec)
-         IFGT  Level-1
-         IFNE  H6309
+       IFGT  Level-1
+       IFNE  H6309
          ldd   #$F000        3 cycles
-         ELSE
+       ELSE
          ldd   #50000
-         ENDC 
-         ELSE
-         ldd   #25000 
-         ENDC
+       ENDC
+       ELSE
+         ldd   #25000
+       ENDC
 *         IFNE  H6309
 *         nop
 *         ENDC
@@ -172,27 +174,29 @@ HWTerm   clrb
 
 
          use   boot_common.asm
-                         
 
-DoDDns   lda   #DDEN+MOTON		double density enable and motor on
-         ora   WhichDrv,pcr		OR in selected drive
-         sta   drvsel,u			save drive selection byte
-         clr   currtrak,u		clear current track
+
+DoDDns   lda   #DDEN+MOTON              double density enable and motor on
+         ora   WhichDrv,pcr             OR in selected drive
+         sta   drvsel,u                 save drive selection byte
+         clr   currtrak,u               clear current track
          lda   #$05
-         lbsr  SetTrak			Set the track to the head we want
-         ldb   #0+STEP			RESTORE cmd
-         lbra  Talk2FDC			send command and wait for it to complete
+         lbsr  SetTrak                  Set the track to the head we want
+         ldb   #0+STEP                  RESTORE cmd
+         lbra  Talk2FDC                 send command and wait for it to complete
 
 * HWRead - Read a 256 byte sector from the device
 *   Entry: Y = hardware address
 *          B = bits 23-16 of LSN
 *          X = bits 15-0  of LSN
-* 		   blockloc,u = ptr to 256 byte sector
+*          blockloc,u = ptr to 256 byte sector
 *   Exit:  X = ptr to data (i.e. ptr in blockloc,u)
+*          Carry Clear = OK, Set = Error
+*
 HWRead   lda   #$91
-         bsr   L00DF		else branch subroutine
-         bcs   HWRRts		branch if error
-         ldx   blockloc,u	get buffer pointer in X for caller
+         bsr   L00DF            else branch subroutine
+         bcs   HWRRts           branch if error
+         ldx   blockloc,u       get buffer pointer in X for caller
          clrb
 HWRRts   rts
 
@@ -200,32 +204,32 @@ L00D7    bcc   L00DF
          pshs  x,b,a
          bsr   DoDDns
          puls  x,b,a
-L00DF    pshs  x,b,a		save LSN, command
+L00DF    pshs  x,b,a            save LSN, command
          bsr   ReadSect
-         puls  x,b,a		restore LSN, command
-         bcc   HWRRts		branch if OK
+         puls  x,b,a            restore LSN, command
+         bcc   HWRRts           branch if OK
          lsra
          bne   L00D7
-ReadSect bsr   Seek2Sect 	seek to the sector stored in X
-         bcs   HWRRts		if error, return to caller
-         ldx   blockloc,u	get address of buffer to fill
-         orcc  #IntMasks	mask interrupts
-         pshs  x			save X
+ReadSect bsr   Seek2Sect        seek to the sector stored in X
+         bcs   HWRRts           if error, return to caller
+         ldx   blockloc,u       get address of buffer to fill
+         orcc  #IntMasks        mask interrupts
+         pshs  x                save X
          ldx   #$FFFF
-         ldb   #%10000000	($80) READ SECTOR command
-         stb   CMDREG,y		write to command register
-         ldb   drvsel,u		(DDEN+MOTORON+BootDr)
+         ldb   #%10000000       ($80) READ SECTOR command
+         stb   CMDREG,y         write to command register
+         ldb   drvsel,u         (DDEN+MOTORON+BootDr)
 * NOTE: The 1773 FDC multiplexes the write precomp enable and ready
 * signals on the ENP/RDY pin, so the READY bit must always be ON for
 * read and seek commands.  (from the FD502 FDC Service Manual)
-         orb   #DDEN+READY	set DDEN+READY bits ($30)
-         tst   side,u		are we on side 2?
+         orb   #DDEN+READY      set DDEN+READY bits ($30)
+         tst   side,u           are we on side 2?
          beq   L0107
-         orb   #SIDESEL		set side 2 bit
+         orb   #SIDESEL         set side 2 bit
 L0107    stb   CONTROL,y
-         lbsr  Delay2		delay 54~
-         orb   #HALTENA		HALT enable ($80)
-*         lda   #%00000010	RESTORE cmd ($02)
+         lbsr  Delay2           delay 54~
+         orb   #HALTENA         HALT enable ($80)
+*         lda   #%00000010      RESTORE cmd ($02)
 *L0111    bita  >DPort+STATREG
 *         bne   L0123
 *         leay  -$01,y
@@ -239,9 +243,9 @@ L0107    stb   CONTROL,y
          nop
 *         bra   L0123
 
-         ldx   ,s			get X saved earlier
+         ldx   ,s               get X saved earlier
 * Sector READ Loop
-L0123    lda   DATAREG,y	read from WD DATA register
+L0123    lda   DATAREG,y        read from WD DATA register
          sta   ,x+
 *         stb   >DPort+CONTROL
          nop
@@ -251,74 +255,74 @@ L0123    lda   DATAREG,y	read from WD DATA register
 * means that reading a single-density boot disk will not generate the
 * NMI signal needed to exit the read loop!  Single-density disks must
 * use a polled I/O loop instead.
-NMIRtn   leas  R$Size,s		adjust stack
+NMIRtn   leas  R$Size,s         adjust stack
          puls  x
-         ldb   STATREG,y	read WD STATUS register
-         bitb  #$9C			any errors?
-*         bitb  #$04		LOST DATA bit set?
-         beq   r@			branch if not
-*         beq   ChkErr		branch if not
-L0138    comb				else we will return error
+         ldb   STATREG,y        read WD STATUS register
+         bitb  #$9C             any errors?
+*         bitb  #$04            LOST DATA bit set?
+         beq   r@               branch if not
+*         beq   ChkErr          branch if not
+L0138    comb                   else we will return error
          ldb   #E$Read
 r@       rts
 
 Seek2Sect
-         lda   #MOTON		permit alternate drives
-         ora   WhichDrv,pcr		permit alternate drives
-         sta   drvsel,u		save byte to static mem
-         clr   side,u		start on side 1
-         tfr   x,d			move LSN into D
-         cmpd  #$0000		zero?
-         beq   L016C		branch if so
-         clr   ,-s			else clear space on stack
+         lda   #MOTON           permit alternate drives
+         ora   WhichDrv,pcr     permit alternate drives
+         sta   drvsel,u         save byte to static mem
+         clr   side,u           start on side 1
+         tfr   x,d              move LSN into D
+         cmpd  #$0000           zero?
+         beq   L016C            branch if so
+         clr   ,-s              else clear space on stack
          pshs  a
          lda   ddfmt,u
-         bita  #FMT.SIDE	double sided disk?
+         bita  #FMT.SIDE        double sided disk?
          puls  a
-         beq   SnglSid		branch if not
+         beq   SnglSid          branch if not
          bra   DblSid
 * Double-sided code
-L0152    com   side,u		flag side 2
+L0152    com   side,u           flag side 2
          bne   DblSid
          inc   ,s
-DblSid   subb  ddtks,u		
+DblSid   subb  ddtks,u
          sbca  #$00
          bcc   L0152
          bra   L0168
 L0160    inc   ,s
-SnglSid  subb  ddtks,u		subtract sectors per track from B
+SnglSid  subb  ddtks,u          subtract sectors per track from B
          sbca  #$00
          bcc   L0160
-L0168    addb  ddtks,u		add sectors per track
-         puls  a		get current track indicator off of stack
+L0168    addb  ddtks,u          add sectors per track
+         puls  a                get current track indicator off of stack
 L016C    incb
-         stb   SECTREG,y	save in sector register
-SetTrak  ldb   currtrak,u	get current track in B
-         stb   TRACKREG,y	save in track register
-         cmpa  currtrak,u	same as A?
-         beq   rtsok		branch if so
+         stb   SECTREG,y        save in sector register
+SetTrak  ldb   currtrak,u       get current track in B
+         stb   TRACKREG,y       save in track register
+         cmpa  currtrak,u       same as A?
+         beq   rtsok            branch if so
          sta   currtrak,u
          sta   DATAREG,y
-         ldb   #$10+STEP	SEEK command
-         bsr   Talk2FDC		send command to controller
+         ldb   #$10+STEP        SEEK command
+         bsr   Talk2FDC         send command to controller
          pshs  x
 * Seek Delay
-         ldx   #$222E		delay ~39 mSec (78mS L1)
+         ldx   #$222E           delay ~39 mSec (78mS L1)
 SeekDly  leax  -$01,x
          bne   SeekDly
          puls  x
 rtsok    clrb
          rts
 
-*ChkErr   bitb  #$98		evaluate WD status (READY, RNF, CRC err)
+*ChkErr   bitb  #$98            evaluate WD status (READY, RNF, CRC err)
 *         bne   L0138
 *         clrb
 *         rts
 
-Talk2FDC bsr   DoCMD		issue FDC cmd, wait 54~
-FDCLoop  ldb   STATREG,y	get status
-         bitb  #$01			still BUSY?
-         bne   FDCLoop		loop until command completes
+Talk2FDC bsr   DoCMD            issue FDC cmd, wait 54~
+FDCLoop  ldb   STATREG,y        get status
+         bitb  #$01             still BUSY?
+         bne   FDCLoop          loop until command completes
          rts
 
 * Issue command and wait 54 clocks
@@ -328,18 +332,18 @@ DoCMD    bsr   SelNSend
 * Delay branches
 * 54 clock delay including bsr (=30uS/L2,60us/L1)
 * H6309 code changed to reduce code size, RG
-         IFEQ  H6309
-Delay2  
+       IFEQ  H6309
+Delay2
          lbsr  Delay3
-Delay3 
+Delay3
          lbsr  Delay4
-Delay4 
-         ELSE
+Delay4
+       ELSE
 Delay2   lda   #5       3 cycles
 Delay3   exg   a,a      5 cycles  | 10*5
          deca           2 cycles  |
          bne   Delay3   3 cycles  |
-         ENDC
+       ENDC
          rts
 
 * Select And Send
@@ -349,10 +353,18 @@ SelNSend lda   drvsel,u
          stb   CMDREG,y
          rts
 
-         IFGT  Level-1
-* Filler to get $1D0
+       IFGT  Level-1
+* L2 kernel file is composed of rel, boot, krn. The size of each of these
+* is controlled with filler, so that (after relocation):
+* rel  starts at $ED00 and is $130 bytes in size
+* boot starts at $EE30 and is $1D0 bytes in size
+* krn  starts at $F000 and ends at $FEFF (there is no 'emod' at the end
+*      of krn and so there are no module-end boilerplate bytes)
+*
+* Filler to get to a total size of $1D0. 3, 2, 1 represent bytes after
+* the filler: the end boilerplate for the module, fdb and fcb respectively.
 Filler   fill  $39,$1D0-3-2-1-*
-         ENDC
+       ENDC
 
 Address  fdb   DPort
 WhichDrv fcb   BootDr
