@@ -15,10 +15,14 @@ dirs	=  $(NOSLIB)
 ifneq (,$(findstring coco3,$(PORTS)))
 dirs	+= $(LEVEL2)
 else
-dirs	+= $(LEVEL1)
+ifneq (,$(findstring mc09l2,$(PORTS)))
+dirs    += $(LEVEL2)
+else
+dirs    += $(LEVEL1)
 endif
 endif
- 
+endif
+
 # Make all components
 all:
 	@$(ECHO) "**************************************************"
@@ -51,7 +55,7 @@ dskclean:
 
 info:
 	@$(foreach dir,$(dirs), $(MAKE) --no-print-directory -C $(dir) info &&) :
-	
+
 # This section is to do the nightly build and upload 
 # to sourceforge.net you must set the environment
 # variable SOURCEUSER to the userid you have for sourceforge.net
