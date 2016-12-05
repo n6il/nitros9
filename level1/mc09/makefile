@@ -7,8 +7,9 @@ WHICHSHELL	= shell_21
 DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)
 DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
-BOOTFILE_COVDG_SD80	= bootfiles/bootfile_covdg_sd80
-KERNELFILE_COCOSDC	= bootfiles/kernel_cocosdc
+# The BOOTFILE is for 80D (720K) virtual drive on SD, 50Hz timer interrupt
+BOOTFILE_MC09SD	= bootfiles/bootfile_mc09sd
+KERNELFILE	= bootfiles/kernel_mc09sd
 DIRS		= cmds modules defs sys bootfiles wwwroot
 
 
@@ -67,7 +68,7 @@ $(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
 $(DSK720K):
 	$(RM) $@
 	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
-	$(OS9GEN) $@ -b=$(BOOTFILE_COVDG_SD80) -t=$(KERNELFILE_COCOSDC)
+	$(OS9GEN) $@ -b=$(BOOTFILE_MC09SD) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS

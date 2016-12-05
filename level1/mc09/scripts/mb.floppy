@@ -15,7 +15,7 @@ format /d0 "NitrOS-9 Level 1 Boot Disk" r
 echo *
 echo * Step 2: Create a custom boot track
 del bttemp
-merge ../MODULES/BOOTTRACK/rel ../MODULES/KERNEL/krn ../MODULES/KERNEL/krnp2 ../MODULES/SYSMODS/init ../MODULES/BOOTTRACK/boot_1773_6ms>bttemp
+merge ../MODULES/BOOTTRACK/rel ../MODULES/KERNEL/krn ../MODULES/KERNEL/krnp2 ../MODULES/SYSMODS/init ../MODULES/BOOTTRACK/boot_sdc>bttemp
 echo *
 echo * Step 3: Create the bootfile and boot track
 os9gen /d0 -t=bttemp<../BOOTLISTS/standard.bl
