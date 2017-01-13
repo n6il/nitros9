@@ -1,6 +1,6 @@
 include ../port.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 index.html:	$(LEVEL1)/wwwroot/index.html
 	@sed -e 's|%PORT%|$(PORT)|' -e 's|%MACHINE%|$(MACHINE)|' $^ > $@
