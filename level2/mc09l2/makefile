@@ -1,9 +1,4 @@
-ifeq ($(CPU),)
-    CPU = 6809
-endif
-
 include port.mak
-include $(NITROS9DIR)/rules.mak
 
 DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)
@@ -33,7 +28,6 @@ STARTUP_DW	= startup.dw
 SYSGO		= sysgo_dd
 CCBKRN		= ccbkrn
 
-PACKAGENAME	= $(DISTROVER).zip
 DSK720K		= $(DISTROVER)_80d.dsk
 LDSK720K	= $(DISTRONAME)_80d.dsk
 TESTDSK		= test.dsk
@@ -53,21 +47,15 @@ all:
 
 # Clean all components
 clean: dskclean
-	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
+	$(foreach dir,$(DIRS),$(MAKE) -C $(dir) clean &&) :
 
 dskclean:
-	$(RM) $(PACKAGENAME) $(DSKS) $(LDSKS)
+	$(RM) $(DSKS) $(LDSKS)
 
-dsk: all $(PACKAGENAME)
+dsk: all $(DSKS)
 
-dskcopy: dsk
+dskcopy: $(DSKS)
 	$(CP) $(DSKS) $(DSKDIR)
-
-scp: dsk
-	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
-
-$(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
-	$(ARCHIVE) $@ $^
 
 $(DSK720K):
 	$(RM) $@
