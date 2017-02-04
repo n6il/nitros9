@@ -1,0 +1,8 @@
+
+
+
+	extern DPTR		; uint16 data address
+	extern LSN		; uint24 LSN
+	extern SMALL		; int8:  0=512B read, 1=256B read, -1=256B 2nd 1/2 read
+	extern ll_read		; call to do a read with above set.
+	extern ll_init		; call to initialize SD driver

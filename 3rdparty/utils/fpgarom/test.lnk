@@ -1,0 +1,6 @@
+define basesympat start%s
+define lensympat  length%s
+section	.bss  load  1000
+section bounce
+section .code load  2000
+entry	prestart
