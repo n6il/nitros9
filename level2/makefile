@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-dirs	= coco3 coco3_6309 mc09l2
+dirs	= coco3 coco3_6309 mc09l2 coco3fpga
 ifdef PORTS
 dirs	= $(PORTS)
 endif
