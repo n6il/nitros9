@@ -22,11 +22,19 @@ atrv     set   ReEnt+rev
 rev      set   $00
 
 * Window descriptor definitions
+	IFNE   CC3FPGA
+szx      set   80         number of columns for display
+szy      set   24         number for rows for display
+sty      set   2          window type
+cpx      set   0          x cursor position
+cpy      set   0          y cursor position
+	ELSE
 szx      set   40         number of columns for display
 szy      set   12         number for rows for display
 sty      set   $FF        window type
 cpx      set   0          x cursor position
 cpy      set   12         y cursor position
+	ENDC
 	IFNE   ALTCOLOR
 prn1     set   Green.     foreground color
 prn2     set   Black.     background color
