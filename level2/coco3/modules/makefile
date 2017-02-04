@@ -17,6 +17,7 @@ CLOCKJVEMU      = -DRTCJVEmu=1
 TC3FLAGS        = $(AFLAGS) -DTC3=1 $(FLAGS)
 IDEFLAGS        = $(AFLAGS) -DIDE=1 $(FLAGS)
 SDFLAGS         = $(AFLAGS) -DCOCOSDC=1 -DITTYP=128 $(FLAGS)
+CC3FPGAFLAGS    = $(AFLAGS) -DCC3FPGA=1 $(FLAGS)
 
 DEPENDS		= ./makefile
 TPB		= $(3RDPARTY)/booters
@@ -47,7 +48,8 @@ RBF		= rbf.mn \
 		ddi0_ide.dd i0_ide.dd i1_ide.dd ih_ide.dd \
 		dds0_tc3.dd s0_tc3.dd s1_tc3.dd s2_tc3.dd s3_tc3.dd s4_tc3.dd \
 		s5_tc3.dd s6_tc3.dd sh_tc3.dd \
-		ddsd0_cocosdc.dd sd0_cocosdc.dd sd1_cocosdc.dd
+		ddsd0_cocosdc.dd sd0_cocosdc.dd sd1_cocosdc.dd \
+		llcoco3fpga.dr ddsd0_coco3fpga.dd sd0_coco3fpga.dd sd1_coco3fpga.dd
 
 SCF		= scf.mn \
 		vtio.dr vrn.dr scbbp.dr scbbt.dr scdwp.dr sspak.dr sc6551.dr \
@@ -394,6 +396,16 @@ sd0_cocosdc.dd: superdesc.asm
 
 sd1_cocosdc.dd: superdesc.asm
 	$(AS) $(ASOUT)$@ $< $(SDFLAGS) -DITDRV=1
+
+# CoCo3FPGA SD Descriptors
+ddsd0_coco3fpga.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(CC3FPGAFLAGS) -DDD=1
+
+sd0_coco3fpga.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(CC3FPGAFLAGS) -DITDRV=0
+
+sd1_coco3fpga.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(CC3FPGAFLAGS) -DITDRV=1
 
 # RFM descriptors
 ddy0.dd: rfmdesc.asm
