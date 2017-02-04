@@ -1,0 +1,230 @@
+
+* 
+* flex 2 addresses and constants
+*
+flxorg equ $a000
+*
+sstack equ flxorg+$007f flex stack
+lnbuff equ flxorg+$0080 line buffer
+startr equ flxorg+$0100 utility area
+*
+sffunc equ flxorg+$0840 fcb function code
+sferor equ flxorg+$0841 fcb error status
+sfactv equ flxorg+$0842 fcb activity status
+sfdriv equ flxorg+$0843 fcb drive number
+sfname equ flxorg+$0844 fcb name
+sfextn equ flxorg+$084c fcb extension
+sfattr equ flxorg+$084f fcb file attributes
+sfres1 equ flxorg+$0850 fcb reserved
+sfsadr equ flxorg+$0851 fcb starting disk address
+sfeadr equ flxorg+$0853 fcb ending disk address
+sfsize equ flxorg+$0855 fcb file size
+sffscm equ flxorg+$0857 fcb file sector map indicator
+sfres2 equ flxorg+$0858 fcb reserved
+sfdmon equ flxorg+$0859 fcb creation month
+sfdday equ flxorg+$085a fcb creation day
+sfdyer equ flxorg+$085b fcb creation year
+sflist equ flxorg+$085c fcb list pointer
+sfcrpo equ flxorg+$085e fcb current position
+sfcrec equ flxorg+$0860 fcb current record number
+sfindx equ flxorg+$0862 fcb data index
+sfrinx equ flxorg+$0863 fcb random index
+sfnwbf equ flxorg+$0864 fcb name work buffer
+sfcdir equ flxorg+$086f fcb current directory address
+sfdelp equ flxorg+$0872 fcb first deleted directory pointer
+sfrenm equ flxorg+$0875 fcb rename work area
+sfcomp equ flxorg+$087b fcb space compression flag
+sfbuff equ flxorg+$0880 fcb sector buffer
+*
+ttybsp equ flxorg+$0c00 ttyset backspace
+ttydel equ flxorg+$0c01 ttyset delete
+ttyeol equ flxorg+$0c02 ttyset end of line
+ttydep equ flxorg+$0c03 ttyset depth count
+ttywid equ flxorg+$0c04 ttyset width count
+ttynlc equ flxorg+$0c05 ttyset null count
+ttytab equ flxorg+$0c06 ttyset tab
+ttybec equ flxorg+$0c07 ttyset backspace echo
+ttyejc equ flxorg+$0c08 ttyset eject count
+ttypau equ flxorg+$0c09 ttyset pause control
+ttyesc equ flxorg+$0c0a ttyset escape
+sysdrv equ flxorg+$0c0b system drive number
+wrkdrv equ flxorg+$0c0c working drive number
+syssc1 equ flxorg+$0c0d system scratch
+smonth equ flxorg+$0c0e system month
+sdaymn equ flxorg+$0c0f system day
+syearn equ flxorg+$0c10 system year
+lsttrm equ flxorg+$0c11 last terminator
+uctaba equ flxorg+$0c12 user command table
+lnbufp equ flxorg+$0c14 line buffer pointer
+escrtn equ flxorg+$0c16 escape return
+curchr equ flxorg+$0c18 current character
+prvchr equ flxorg+$0c19 previous character
+curlin equ flxorg+$0c1a current line number
+loadof equ flxorg+$0c1b loader address offset
+trflag equ flxorg+$0c1d transfer flag
+traddr equ flxorg+$0c1e transfer address
+errtyp equ flxorg+$0c20 error type
+spciof equ flxorg+$0c21 special i/o flag
+outswt equ flxorg+$0c22 output switch
+inswtc equ flxorg+$0c23 input switch
+foaddr equ flxorg+$0c24 file output address
+fiaddr equ flxorg+$0c26 file input address
+comflg equ flxorg+$0c28 command flag
+crotcl equ flxorg+$0c29 current output column
+syssc2 equ flxorg+$0c2a system scratch
+memend equ flxorg+$0c2b memory end
+errvec equ flxorg+$0c2d error name vector
+fieflg equ flxorg+$0c2f file input echo flag
+syssc3 equ flxorg+$0c30 system scratch
+syssc4 equ flxorg+$0c31 system scratch
+syssc5 equ flxorg+$0c32 system scratch
+respra equ flxorg+$0c35 reserved printer area pointer
+resprl equ flxorg+$0c37 reserved printer area length
+prtadr equ flxorg+$0cc9 printer device address
+prinit equ flxorg+$0cc0 printer initialization
+prdych equ flxorg+$0cd8 printer ready check
+proutr equ flxorg+$0ce4 printer output
+syssc6 equ flxorg+$0cf8 system scratch
+*
+coldst equ flxorg+$0d00 cold start
+warmst equ flxorg+$0d03 warm start
+renter equ flxorg+$0d06 re-entry
+inchar equ flxorg+$0d09 basic input character
+incha2 equ flxorg+$0d0c basic input character
+outchr equ flxorg+$0d0f basic output character
+outch2 equ flxorg+$0d12 basic output character
+getchr equ flxorg+$0d15 get character
+putchr equ flxorg+$0d18 put character
+inbuff equ flxorg+$0d1b input into line buffer
+pstrng equ flxorg+$0d1e print string
+clasfy equ flxorg+$0d21 classify character
+prcrlf equ flxorg+$0d24 print crlf
+nxtchr equ flxorg+$0d27 get next buffer character
+rstrio equ flxorg+$0d2a restore i/o vectors
+getfil equ flxorg+$0d2d get file specs
+loadfl equ flxorg+$0d30 load binary file
+setext equ flxorg+$0d33 set extension
+addb2x equ flxorg+$0d36 add b to x
+outdec equ flxorg+$0d39 output decimal number
+outhex equ flxorg+$0d3c output hexadecimal number
+rpterr equ flxorg+$0d3f report error
+gethex equ flxorg+$0d42 get hexadecimal number
+outadr equ flxorg+$0d45 output hexadecimal address
+indecm equ flxorg+$0d48 input decimal number
+docmnd equ flxorg+$0d4b call dos as a suboutine
+ctstat equ flxorg+$0d4e check terminal status
+*
+fmsint equ flxorg+$1400 fms initialization
+fmscls equ flxorg+$1403 fms close files
+fmscal equ flxorg+$1406 fms call
+fcbbas equ flxorg+$1409 fcb base pointer
+fcbcur equ flxorg+$140b fcb current address
+verflg equ flxorg+$1435 verify flag
+*
+dreadr equ flxorg+$1e80 basic read disk
+dwrite equ flxorg+$1e83 basic write disk
+dverfy equ flxorg+$1e86 basic verify disk
+drstor equ flxorg+$1e89 basic restore disk
+ddselr equ flxorg+$1e8c basic select drive
+dcheck equ flxorg+$1e8f basic check drive ready
+dqchek equ flxorg+$1e92 basic quick drive check
+*
+fmgnxb equ $00 get next byte
+fmpnxb equ $00 put next byte
+fmopni equ $01 open for input
+fmopno equ $02 open for output
+fmopnu equ $03 open for update
+fmclsi equ $04 close for input
+fmclso equ $04 close for output
+fmclsu equ $04 close for update
+fmrewf equ $05 rewind file
+fmopdi equ $06 open directory
+fmgeti equ $07 get information record
+fmputi equ $08 put information record
+fmrdss equ $09 read single sector
+fmwtss equ $0a write single sector
+fmresd equ $0b reserved
+fmdelt equ $0c delete file
+fmrenm equ $0d rename file
+fmrese equ $0e reserved
+fmnxsq equ $0f get next sequential sector
+fmopir equ $10 open system information record
+fmgtrb equ $11 get random byte from sector
+fmptrb equ $12 put random byte into sector
+fmresf equ $13 reserved
+fmnxdr equ $14 find next drive
+fmrecn equ $15 position to record n
+fmback equ $16 back up one record
+*
+fcfunc equ $00 fcb function code
+fceror equ $01 fcb error status
+fcactv equ $02 fcb activity status
+fcdriv equ $03 fcb drive number
+fcname equ $04 fcb name
+fcextn equ $0c fcb extension
+fcattr equ $0f fcb file attributes
+fcres1 equ $10 fcb reserved
+fcsadr equ $11 fcb starting disk address
+fceadr equ $13 fcb ending disk address
+fcsize equ $15 fcb file size
+fcfscm equ $17 fcb file sector map indicator
+fcres2 equ $18 fcb reserved
+fcdmon equ $19 fcb creation month
+fcdday equ $1a fcb creation day
+fcdyer equ $1b fcb creation year
+fclist equ $1c fcb list pointer
+fccrpo equ $1e fcb current position
+fccrec equ $20 fcb current record number
+fcindx equ $22 fcb data index
+fcrinx equ $23 fcb random index
+fcnwbf equ $24 fcb name work buffer
+fccdir equ $2f fcb current directory address
+fcdelp equ $32 fcb first deleted directory pointer
+fcrenm equ $35 fcb rename work area
+fccomp equ $3b fcb space compression flag
+fcbuff equ $40 fcb sector buffer
+*
+frillg equ 01 illegal fms function code encountered
+frinus equ 02 the requested file is in use
+frexis equ 03 the file specified already exists
+frabsn equ 04 the specified file could not be found
+frsysd equ 05 system directory error - reboot system
+frfuld equ 06 the system directory space is full
+frnosp equ 07 all available disk space has been used
+frendf equ 08 read past end of file
+frrder equ 09 disk file read error
+frwter equ 10 disk file write error
+frwrpr equ 11 the file or disk is write protected!
+frprot equ 12 the file is protected - file not deleted
+frbfcb equ 13 illegal file control block specified
+frbadr equ 14 illegal disk address encountered
+frbdrv equ 15 an illegal drive number was specified
+frdrnr equ 16 drives not ready
+frflpr equ 17 the file is protected - access denied
+frsyss equ 18 system file status error
+frdtix equ 19 fms data index range error
+frfmse equ 20 fms inactive - reboot system
+frilfl equ 21 illegal file specification
+frsysc equ 22 system file close error
+frsmap equ 23 sector map overflow - disk too segmented
+frbrno equ 24 nonexistent record number specified
+frbfil equ 25 record number match error - file damaged
+frsntx equ 26 command syntax error - retype command
+frprnt equ 27 that command is not allowed while printing
+frhard equ 28 wrong hardware configuration
+frundf equ 29 undefined
+*
+extbin equ $00 .bin
+exttxt equ $01 .txt
+extcmd equ $02 .cmd
+extbas equ $03 .bas
+extsys equ $04 .sys
+extbak equ $05 .bak
+extscr equ $06 .scr
+extdat equ $07 .dat
+extbac equ $08 .bac
+extdir equ $09 .dir
+extprt equ $0a .prt
+extout equ $0b .out
+*
+*
