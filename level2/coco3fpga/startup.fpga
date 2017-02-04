@@ -1,0 +1,23 @@
+x
+* Echo welcome message
+echo 
+echo 
+echo 
+echo *******************************
+echo * Welcome to NitrOS-9 Level 2 *
+echo *        Version 3.3.0        *
+echo *  Special Coco3FPGA Edition  *
+echo *  on Gary Becker's Coco3FPGA *
+echo *******************************
+echo 
+* Lock shell and std utils into memory
+link shell
+load utilpak1
+* Merging system fonts, patterns and pointers
+merge /dd/sys/stdfonts /dd/sys/stdptrs /dd/sys/stdpats_2 /dd/sys/stdpats_4 /dd/sys/stdpats_16
+* Creating a 2nd and 3rd window
+shell i=/w&
+shell i=/w&
+date -t
+-x
+
