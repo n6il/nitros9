@@ -1,0 +1,3 @@
+ use ../../../defs/os9.d
+ use ../../../defs/scf.d
+ use ../../../defs/coco.d
