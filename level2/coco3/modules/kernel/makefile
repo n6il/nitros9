@@ -1,5 +1,4 @@
-PORT = coco3
-include $(NITROS9DIR)/rules.mak
+include ../../port.mak
 
 vpath %.asm $(LEVEL2)/modules/kernel:$(LEVEL1)/modules/kernel
 
