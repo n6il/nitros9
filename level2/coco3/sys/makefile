@@ -7,6 +7,7 @@ DEPENDS		= ./makefile
 
 L1TXTFILES	= errmsg password
 L2TXTFILES	= $(LEVEL2)/sys/motd
+L2SYSGOTEXTFILES = $(LEVEL2)/sys/sysgo.cfg
 BINFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs \
 		ibmedcfont isolatin1font
 HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \
@@ -32,7 +33,8 @@ HELPFILES	+= dmem.hp gfx2.hp grfdrv.hp basic09.hp runb.hp \
 HELPMSG		= helpmsg
 
 TEXTFILES	= $(L2TXTFILES) $(HELPMSG) $(L1TXTFILES)
-ALLOBJS		= $(TEXTFILES) $(BINFILES) inetd.conf
+SYSGOTEXTFILES = $(L2SYSGOTEXTFILES)
+ALLOBJS = $(TEXTFILES) $(SYSGOTEXTFILES) $(BINFILES) inetd.conf
 
 all:	$(ALLOBJS) $(DEPENDS)
 
@@ -53,6 +55,9 @@ showbinobjs:
 
 showtextobjs:
 	@$(ECHO) $(TEXTFILES) inetd.conf
+
+showsysgotextobjs:
+	@$(ECHO) $(SYSGOTEXTFILES)
 
 showobjs:
 	@$(ECHO) $(ALLOBJS)

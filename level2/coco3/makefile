@@ -40,6 +40,7 @@ SYSTEXT		= $(shell $(CD) sys; make --no-print-directory showtextobjs)
 STARTUP		= startup
 STARTUP_DW	= startup.dw
 SYSGO		= sysgo_dd
+SYSGOBD		= sysgo_bd
 CCBKRN		= ccbkrn
 
 DSKDW		= $(DISTROVER)_dw.dsk
