@@ -27,9 +27,15 @@ szy      set   11         number for rows for display
 sty      set   $FF        window type
 cpx      set   61         x cursor position
 cpy      set   0          y cursor position
+	IFNE   ALTCOLOR
+prn1     set   Yellow.    foreground color
+prn2     set   Black.     background color
+prn3     set   Black.     border color
+	ELSE
 prn1     set   Black.     foreground color
 prn2     set   Cyan.      background color
 prn3     set   Red.       border color
+	ENDC
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 

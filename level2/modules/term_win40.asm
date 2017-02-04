@@ -28,9 +28,15 @@ wnum     set   0          window number
 sty      set   1          window type
 cpx      set   0          x cursor position
 cpy      set   0          y cursor position
+	IFNE   ALTCOLOR
+prn1     set   Black.     foreground color
+prn2     set   White.     background color
+prn3     set   White.     border color
+	ELSE
 prn1     set   Black.     foreground color
 prn2     set   Green.     background color
 prn3     set   Green.     border color
+	ENDC
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
