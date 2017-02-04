@@ -156,7 +156,11 @@ InstStr  equ   *
          fcb    $1B
          fcc    "[0m"
          ELSE
+         IFNE   coco3fpga
+         fcc    "Gary Becker's Coco3FPGA"
+         ELSE
          fcc    "Unknown Machine"
+         ENDC                             match IFNE coco3fpga
          ENDC                             match IFNE mc09
          ENDC                             match IFNE atari
          ENDC                             match IFNE dalpha
