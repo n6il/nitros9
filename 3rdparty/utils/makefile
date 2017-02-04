@@ -1,6 +1,6 @@
 include ../../rules.mak
 
-dirs	= boisy dasm smartwatch supercomm dladd winfo gene tlindner
+dirs	= boisy dasm smartwatch supercomm dladd winfo gene tlindner fpgarom
 
 # Make all components
 all:

@@ -1,0 +1,11 @@
+
+
+
+***********************************
+TODO
+***********************************
+
+* make load os9 by physical block, and put a jump routine for remaping the
+  memory to trampoline to the kernel - this will allow for a max sized os9 kernel, whatever that is.
+
+
