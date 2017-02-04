@@ -93,6 +93,14 @@ ITSOFS2        SET       $00
 ITSOFS3        SET       $00
                ENDC
 
+		IFNE	CC3FPGA
+Sides		SET	$01
+Cyls		SET	$7100
+SectTrk	SET	$0012
+SectTrk0	SET	$0012
+Interlv		SET	$01
+SAS		SET	$08
+		ELSE
 * Geometry for an EZ-135
 *               IFEQ      Sides
 		IFNDEF	Sides
@@ -118,6 +126,7 @@ Interlv        SET       $01
 		IFNDEF	SAS
 SAS            SET       $10
                ENDC
+			   ENDC
 
                IFP1
                USE       defsfile
@@ -132,6 +141,10 @@ SAS            SET       $10
                ENDC
                ENDC
                ENDC
+
+		IFNE	CC3FPGA
+SDAddr	SET	$FF64
+		ENDC
 
 tylg           SET       Devic+Objct
 atrv           SET       ReEnt+rev
@@ -167,8 +180,18 @@ rev            SET       $09
 *       cannot due to the fact that there is simply NO ROOM in
 *       the path descriptor to do so.  The driver must access
 *       these values directly from the descriptor.
+	IFNE	CC3FPGA
+	IFNE	ITDRV
+	FCB	$03	(IT.WPC)
+	FCB	$F9	(IT.OFS)
+	ELSE
+	FCB	ITSOFS1	(IT.WPC)
+	FCB	ITSOFS2	(IT.OFS)
+	ENDC
+	ELSE
                FCB       ITSOFS1             (IT.WPC)
                FCB       ITSOFS2             (IT.OFS)
+               ENDC
                FCB       ITSOFS3
 initsize       EQU       *
                FDB       lldrv               (IT.RWC)
@@ -197,7 +220,7 @@ name           FCC       /I/
                FCB       '0+ITDNS+$80
                ENDC
                ELSE
-               IFNE      COCOSDC
+               IFNE	COCOSDC+CC3FPGA
 name           FCC       /SD/
                IFNE      HB
                FCS       /H/
@@ -246,6 +269,11 @@ lldrv          EQU       *
                IFNE      COCOSDC
                FCS       /llcocosdc/
                FCB       0,0,0
+               ELSE
+               IFNE      CC3FPGA
+               FCS       /llcoco3fpga/
+               FCB       0,0,0
+               ENDC
                ENDC
                ENDC
                ENDC
