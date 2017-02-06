@@ -19,7 +19,7 @@ print "<TR id='header'><TD class='h1'>File</td><TD class='h1'>Name</td><TD class
 foreach $dsk (sort @dsks)
 {
 
- if ($dsk =~ m/.*\.dsk$/)
+ if ($dsk =~ m/.*\.(dsk|img|DSK)$/)
  {
   @os9id = `os9 id $dirtoget/$dsk`;
 
@@ -60,6 +60,18 @@ foreach $dsk (sort @dsks)
     $format = "CoCo SDC";
   }
 
+  if ($dsk =~ m/.*\.img/)
+  {
+    $format = "Other disk image";
+  }
+
+  if ($dsk =~ m/.*\.DSK/)
+  {
+    $format = "RSDOS";
+    $created = "-";
+    $sectors = "-";
+  }
+
   $size = -s "$dirtoget/$dsk";
 
   $size = int($size / 1024) . "k";
@@ -73,6 +85,12 @@ foreach $dsk (sort @dsks)
   print "<TD class='d1'>$format</TD>";
   print "</tr>\r\n";
  
+ }
+
+ if ($dsk eq "ReadMe")
+ {
+  print "<td class='d1'><A HREF=$dsk>$dsk</A></td>";
+  print "\r\n";
  }
 }
 
