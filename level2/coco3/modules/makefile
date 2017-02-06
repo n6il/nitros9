@@ -14,6 +14,7 @@ CLOCKCLOUD9     = -DRTCCloud9=1
 CLOCKSOFT       = -DRTCSoft=1
 CLOCKMESSEMU    = -DRTCMessEmu=1
 CLOCKJVEMU      = -DRTCJVEmu=1
+CLOCKCOCO3FPGA  = -DRTCCoco3CPGA=1
 TC3FLAGS        = $(AFLAGS) -DTC3=1 $(FLAGS)
 IDEFLAGS        = $(AFLAGS) -DIDE=1 $(FLAGS)
 SDFLAGS         = $(AFLAGS) -DCOCOSDC=1 -DITTYP=128 $(FLAGS)
@@ -31,7 +32,7 @@ SYSMODS		= ioman init sysgo_h0 sysgo_dd sysgo_rom sysgo_bd rominfo vectors
 CLOCKS		= clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
 		clock2_smart clock2_harris clock2_cloud9 clock2_soft \
-		clock2_jvemu clock2_messemu clock2_dw
+		clock2_jvemu clock2_messemu clock2_dw clock2_coco3fpga
 
 RBF		= rbf.mn \
 		rbdw.dr dwio.sb dwio_becker.sb dwio_arduino.sb \
@@ -49,7 +50,8 @@ RBF		= rbf.mn \
 		dds0_tc3.dd s0_tc3.dd s1_tc3.dd s2_tc3.dd s3_tc3.dd s4_tc3.dd \
 		s5_tc3.dd s6_tc3.dd sh_tc3.dd \
 		ddsd0_cocosdc.dd sd0_cocosdc.dd sd1_cocosdc.dd \
-		llcoco3fpga.dr ddsd0_coco3fpga.dd sd0_coco3fpga.dd sd1_coco3fpga.dd
+		llcoco3fpga.dr ddsd0_coco3fpga.dd sd0_coco3fpga.dd sd1_coco3fpga.dd \
+		ramd_coco3fpga.dr r0_ramd_coco3fpga.dd
 
 SCF		= scf.mn \
 		vtio.dr vrn.dr scbbp.dr scbbt.dr scdwp.dr sspak.dr sc6551.dr \
@@ -256,6 +258,10 @@ r0_192k.dd: r0.asm
 
 ddr0_192k.dd: r0.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=192 -DDD=1
+
+# Coco3fpga ramd descriptors
+r0_ramd_coco3fpga.dd: ramddesc_coco3fpga.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS)
 
 # DriveWire SCF descriptors
 term_scdwv.dt: scdwvdesc.asm
