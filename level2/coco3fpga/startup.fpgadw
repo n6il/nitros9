@@ -1,24 +1,25 @@
 x
 * Echo welcome message
-echo 
-echo 
-echo 
 echo *******************************
 echo * Welcome to NitrOS-9 Level 2 *
 echo *        Version 3.3.0        *
 echo *  Special Coco3FPGA Edition  *
-echo *      with DriveWire 4       *
 echo *  on Gary Becker's Coco3FPGA *
 echo *******************************
-echo 
 * Lock shell and std utils into memory
 link shell
 load utilpak1
 * Merging system fonts, patterns and pointers
+echo Merging Fonts pointers and Patterns
 merge /dd/sys/stdfonts /dd/sys/stdptrs /dd/sys/stdpats_2 /dd/sys/stdpats_4 /dd/sys/stdpats_16
+* Init ramdisk
+echo Initializing Ramdisk
+iniz /r0
 * Creating a 2nd and 3rd window
+echo Creating Windows W1 and W2 use CLEAR to change Windows
 shell i=/w&
 shell i=/w&
+echo Dont forget to format your RamDisk after a Cold Start
 date -t
 -x
 
