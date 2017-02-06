@@ -54,7 +54,8 @@ RBDWARDUINO = $(MD)/rbdw.dr $(MD)/dwio_arduino.sb \
 RBDWBECKER = $(MD)/rbdw.dr $(MD)/dwio_becker.sb \
 		$(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
 RBCOCO3FPGA = $(MD)/rbsuper.dr $(MD)/llcoco3fpga.dr \
-		$(MD)/sd1_coco3fpga.dd
+		$(MD)/sd1_coco3fpga.dd $(MD)/ramd_coco3fpga.dr \
+		$(MD)/r0_ramd_coco3fpga.dd
 
 SCDWV_NET  = $(MD)/n_scdwv.dd $(MD)/n1_scdwv.dd $(MD)/n2_scdwv.dd \
 		$(MD)/n3_scdwv.dd $(MD)/n4_scdwv.dd $(MD)/n5_scdwv.dd \
@@ -69,6 +70,7 @@ PIPE       = $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd
 CLOCK50HZ  = $(MD)/clock_50hz $(MD)/clock2_soft
 CLOCK60HZ  = $(MD)/clock_60hz $(MD)/clock2_soft
 CLOCK60HZDW = $(MD)/clock_60hz $(MD)/clock2_dw
+CLOCK60HZCC3FPGA = $(MD)/clock_60hz $(MD)/clock2_coco3fpga
 
 # NitrOS-9 disk bootfile to allow booting from DriveWire server
 # on a DE1 or Xilinx using Gary Becker's CoCo 3 FGPA
@@ -102,6 +104,21 @@ BOOTFILE_COCO3FPGA_SD = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 	$(PIPE) \
 	$(CLOCK60HZDW)
 
+BOOTFILE_COCO3FPGA_SD_RTC = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+	$(MD)/rbf.mn \
+	$(RBDWBECKER) \
+	$(MD)/x0.dd \
+	$(RBCOCO3FPGA) \
+	$(MD)/ddsd0_coco3fpga.dd\
+	$(MD)/scf.mn \
+	$(VTIO_COWIN_80) \
+	$(MD)/scdwv.dr \
+	$(SCDWV_NET) \
+	$(SCDWV_WIN) \
+	$(SCDWP) \
+	$(PIPE) \
+	$(CLOCK60HZCC3FPGA)
+
 BOOTFILE_COCO3FPGA_ROM = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 	$(MD)/rbf.mn \
 	$(RBDWBECKER) \
@@ -131,6 +148,21 @@ BOOTFILE_COCO3FPGA_ROM_DW = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 	$(SCDWP) \
 	$(PIPE) \
 	$(CLOCK60HZDW)
+
+BOOTFILE_COCO3FPGA_ROM_RTC = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+	$(MD)/rbf.mn \
+	$(RBDWBECKER) \
+	$(MD)/x0.dd \
+	$(RBCOCO3FPGA) \
+	$(MD)/ddsd0_coco3fpga.dd\
+	$(MD)/scf.mn \
+	$(VTIO_COWIN_80) \
+	$(MD)/scdwv.dr \
+	$(SCDWV_NET) \
+	$(SCDWV_WIN) \
+	$(SCDWP) \
+	$(PIPE) \
+	$(CLOCK60HZCC3FPGA)
 
 BOOTFILE_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
@@ -288,8 +320,8 @@ BOOTFILES	= bootfile_40d bootfile_40d_50hz bootfile_80d \
 		bootfile_80d_50hz bootfile_dw bootfile_dw_headless \
 		bootfile_becker bootfile_arduino bootfile_becker_headless \
 		bootfile_arduino_headless bootfile_cocosdc bootfile_ide \
-		bootfile_coco3fpga bootfile_coco3fpga_sd \
-		bootfile_coco3fpga_rom bootfile_coco3fpga_rom_dw
+		bootfile_coco3fpga bootfile_coco3fpga_sd bootfile_coco3fpga_sd_rtc \
+		bootfile_coco3fpga_rom bootfile_coco3fpga_rom_dw bootfile_coco3fpga_rom_rtc
 
 KERNELS		= kernel_1773 kernel_1773_50hz kernel_dw kernel_becker \
 		kernel_arduino kernel_cocosdc kernel_ide kernel_dide
@@ -305,11 +337,17 @@ bootfile_coco3fpga: $(BOOTFILE_COCO3FPGA) $(DEPENDS)
 bootfile_coco3fpga_sd: $(BOOTFILE_COCO3FPGA_SD) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COCO3FPGA_SD)>$@
 
+bootfile_coco3fpga_sd_rtc: $(BOOTFILE_COCO3FPGA_SD_RTC) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COCO3FPGA_SD_RTC)>$@
+
 bootfile_coco3fpga_rom: $(BOOTFILE_COCO3FPGA_ROM) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COCO3FPGA_ROM)>$@
 
 bootfile_coco3fpga_rom_dw: $(BOOTFILE_COCO3FPGA_ROM_DW) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COCO3FPGA_ROM_DW)>$@
+
+bootfile_coco3fpga_rom_rtc: $(BOOTFILE_COCO3FPGA_ROM_RTC) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COCO3FPGA_ROM_RTC)>$@
 
 bootfile_becker: $(BOOTFILE_BECKER) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_BECKER)>$@
