@@ -58,13 +58,8 @@ RBCOCO3FPGA = $(MD)/rbsuper.dr $(MD)/llcoco3fpga.dr \
 		$(MD)/r0_ramd_coco3fpga.dd
 
 SCDWV_NET  = $(MD)/n_scdwv.dd $(MD)/n1_scdwv.dd $(MD)/n2_scdwv.dd \
-		$(MD)/n3_scdwv.dd $(MD)/n4_scdwv.dd $(MD)/n5_scdwv.dd \
-		$(MD)/n6_scdwv.dd $(MD)/n7_scdwv.dd $(MD)/n8_scdwv.dd \
-		$(MD)/n9_scdwv.dd $(MD)/n10_scdwv.dd $(MD)/n11_scdwv.dd \
-		$(MD)/n12_scdwv.dd $(MD)/n13_scdwv.dd $(MD)/midi_scdwv.dd
-SCDWV_WIN  = $(MD)/z1_scdwv.dd $(MD)/z2_scdwv.dd $(MD)/z3_scdwv.dd \
-		$(MD)/z4_scdwv.dd $(MD)/z5_scdwv.dd $(MD)/z6_scdwv.dd \
-		$(MD)/z7_scdwv.dd 
+		$(MD)/n3_scdwv.dd $(MD)/n4_scdwv.dd $(MD)/midi_scdwv.dd
+SCDWV_WIN  = $(MD)/z1_scdwv.dd $(MD)/z2_scdwv.dd
 SCDWP     = $(MD)/scdwp.dr $(MD)/p_scdwp.dd
 PIPE       = $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd
 CLOCK50HZ  = $(MD)/clock_50hz $(MD)/clock2_soft
