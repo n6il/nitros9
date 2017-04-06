@@ -24,9 +24,9 @@
          nam   SysGo
          ttl   Kickstart program module
 
-         IFP1
+       IFP1
          use   defsfile
-         ENDC
+       ENDC
 
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
@@ -45,43 +45,45 @@ name     fcs   /SysGo/
          fcb  edition
 
 * Default process priority
-DefPrior set   128         
+DefPrior set   128
 
 Banner   equ   *
          fcc   /(C) 2014 The NitrOS-9 Project/
 CrRtn    fcb   C$CR,C$LF
-         IFEQ  ROM
-         IFNE  NOS9DBG
+
+       IFEQ  ROM
+       IFNE  NOS9DBG
          fcc   "**   DEVELOPMENT BUILD   **"
          fcb   C$CR,C$LF
          fcc   "** NOT FOR DISTRIBUTION! **"
          fcb   C$CR,C$LF
-         ENDC
-         dts   
+       ENDC
+         dts
          fcb   C$CR,C$LF
          fcc   !http://www.nitros9.org!
          fcb   C$CR,C$LF
-         ENDC
+       ENDC
+
          fcb   C$LF
 BannLen  equ   *-Banner
 
-         IFEQ  ROM
+       IFEQ  ROM
 DefDev   equ   *
-         IFNE  DD
+       IFNE  DD
          fcc   "/DD"
-         ELSE
+       ELSE
          fcc   "/H0"
-         ENDC
+       ENDC
          fcb   C$CR
 HDDev    equ   *
-         IFNE  DD
+       IFNE  DD
          fcc   "/DD/"
-         ELSE
+       ELSE
          fcc   "/H0/"
-         ENDC
+       ENDC
 ExecDir  fcc   "CMDS"
          fcb   C$CR
-         ENDC
+       ENDC
 
 Shell    fcc   "Shell"
          fcb   C$CR
@@ -91,36 +93,36 @@ AutoExPr fcc   ""
          fcb   C$CR
 AutoExPrL equ  *-AutoExPr
 
-         IFEQ  ROM
+       IFEQ  ROM
 Startup  fcc   "startup -p"
          fcb   C$CR
 StartupL equ  *-Startup
-         ENDC
+       ENDC
 
 ShellPrm equ   *
-         IFGT  Level-1
+       IFGT  Level-1
          fcc   "i=/1"
-         ENDC
+       ENDC
 CRtn     fcb   C$CR
 ShellPL  equ   *-ShellPrm
 
 * Default time packet
 DefTime  dtb
 
-         IFEQ  atari
-         IFEQ  Level-1
+       IFEQ  atari
+       IFEQ  Level-1
 * BASIC reset code (CoCo port only)
 BasicRst fcb   $55
          neg   <$0074
          nop
          clr   >PIA0Base+3
-         nop       
+         nop
          nop
          sta   >$FFDF           turn off ROM mode
          jmp   >Bt.Start+2      jump to boot
 BasicRL  equ   *-BasicRst
-         ENDC
-         ENDC
+       ENDC
+       ENDC
 
 Init     fcs   /Init/
 
@@ -133,13 +135,16 @@ go@      addd  #$0001
          bne   go@
          puls  x,pc
 
+* Display carriage-return/line-feed.
 WriteCR  pshs  y
          leax  CrRtn,pcr
          ldy   #$0001
          os9   I$WritLn
          puls  y,pc
-         
+
+**********************************************************
 * SysGo Entry Point
+**********************************************************
 start    leax  >IcptRtn,pcr
          os9   F$Icpt
 * Set priority of this process
@@ -154,21 +159,21 @@ start    leax  >IcptRtn,pcr
          os9   F$Link
          bcs   SignOn
          stx   <InitAddr
-         ldd   OSName,u					point to OS name in INIT module
-         leax  d,u						point to install name in INIT module
-         bsr   strlen         
+         ldd   OSName,u                point to OS name in INIT module
+         leax  d,u                     point to install name in INIT module
+         bsr   strlen
          tfr   d,y
          lda   #$01
          os9   I$Write
          bsr   WriteCR
          ldd   InstallName,u
-         leax  d,u						point to install name in INIT module
-         bsr   strlen         
+         leax  d,u                     point to install name in INIT module
+         bsr   strlen
          tfr   d,y
          lda   #$01
          os9   I$Write
          bsr   WriteCR
-         
+
 * Show rest of banner
 SignOn
          puls  u
@@ -180,47 +185,46 @@ SignOn
 * Set default time
          leax  >DefTime,pcr
          os9   F$STime                 set time to default
-         IFEQ  ROM
+       IFEQ  ROM
 * Change EXEC and DATA dirs
          leax  >ExecDir,pcr
          lda   #EXEC.
          os9   I$ChgDir                change exec. dir
          leax  >DefDev,pcr
 * Made READ. so that no write occurs at boot (Boisy on Feb 5, 2012)
-*         lda   #READ.+WRITE.
          lda   #READ.
          os9   I$ChgDir                change data dir.
          bcs   L0125
          leax  >HDDev,pcr
          lda   #EXEC.
          os9   I$ChgDir                change exec. dir to HD
-         ENDC
+       ENDC
 
 L0125    equ   *
          pshs  u,y
-         IFEQ  atari
-         IFEQ  Level-1
+       IFEQ  atari
+       IFEQ  Level-1
 * Setup BASIC code (CoCo port only)
          leax  >BasicRst,pcr
          ldu   #D.CBStrt
          ldb   #BasicRL
-CopyLoop lda   ,x+   
+CopyLoop lda   ,x+
          sta   ,u+
          decb
          bne   CopyLoop
-         ELSE
-         os9   F$ID
-         lbcs  L01A9
+       ELSE
+         os9   F$ID                    get process ID
+         lbcs  L01A9                   fail
          leax  ,u
-         os9   F$GPrDsc
-         lbcs  L01A9
+         os9   F$GPrDsc                get process descriptor copy
+         lbcs  L01A9                   fail
          leay  ,u
          ldx   #$0000
          ldb   #$01
          os9   F$MapBlk
          bcs   L01A9
 
-         lda   #$55	set flag for Color BASIC
+         lda   #$55                    set flag for Color BASIC
          sta   <D.CBStrt,u
 * Copy our default I/O ptrs to the system process
          ldd   <D.SysPrc,u
@@ -232,36 +236,39 @@ L0151    lda   b,y
          sta   b,u
          decb
          bpl   L0151
-         ENDC
-         ENDC
+       ENDC
+       ENDC
 
-         IFEQ  ROM
+       IFEQ  ROM
 * Fork shell startup here
-		IFEQ	atari
+       IFEQ  atari
 * Added 12/14/03: If SHIFT is held down, startup is not run (CoCo only)
-         lda   #$01			standard output
+         lda   #$01                    standard output
          ldb   #SS.KySns
          os9   I$GetStt
          bcs   DoStartup
-         bita  #SHIFTBIT		SHIFT key down?
-         bne   L0186			Yes, don't to startup or autoex
-     	ENDC
+         bita  #SHIFTBIT               SHIFT key down?
+         bne   L0186                   Yes, don't to startup or autoex
+        ENDC
+
 DoStartup leax  >Shell,pcr
          leau  >Startup,pcr
          ldd   #256
          ldy   #StartupL
          os9   F$Fork
-         bcs   DoAuto
+         bcs   DoAuto                  Startup failed..
          os9   F$Wait
-         ENDC
+       ENDC
+
 * Fork AutoEx here
 DoAuto   leax  >AutoEx,pcr
          leau  >CRtn,pcr
          ldd   #$0100
          ldy   #$0001
          os9   F$Fork
-         bcs   L0186
+         bcs   L0186                   AutoEx failed..
          os9   F$Wait
+
 L0186    equ   *
          puls  u,y
 FrkShell leax  >ShellPrm,pcr
@@ -273,22 +280,23 @@ L0190    lda   ,x+
          bne   L0190
 * Fork final shell here
          leax  >Shell,pcr
-         lda   #$01		D = 256 (B already 0 from above)
+         lda   #$01                    D = 256 (B already 0 from above)
          ldy   #ShellPL
-         IFGT  Level-1
-         os9   F$Chain
-         ldb   #$06
+       IFGT  Level-1
+         os9   F$Chain                 Level 2/3. Should not return..
+         ldb   #$06                    it did! Fatal. Load error code
          bra   Crash
-L01A9    ldb   #$04
-Crash    clr   >DPort+$08	turn off disk motor
-         jmp   <D.Crash
-         ELSE
-         os9   F$Fork
-         bcs   DeadEnd
+
+L01A9    ldb   #$04                    error code
+Crash    clr   >DPort+$08              turn off disk motor
+         jmp   <D.Crash                fatal error
+       ELSE
+         os9   F$Fork                  Level 1.
+         bcs   DeadEnd                 Fatal.
          os9   F$Wait
-         bcc   FrkShell
+         bcc   FrkShell                OK, go start shell.
 DeadEnd  bra   DeadEnd
-         ENDC
+       ENDC
 
 IcptRtn  rti
 
