@@ -198,16 +198,48 @@ TIMER          EQU $FFDD
 * MMUADR (WRITE-ONLY)
 * 7   - ROMDIS (RESET TO 0)
 * 6   - TR
-* 5   - MMUEN
-* 4   - RESERVED
+* 5   - MMUEN  (RESET TO 0)
+* 4   - NMI
 * 3:0 - MAPSEL
+*
 * MMUDAT (WRITE-ONLY)
 * 7   - WRPROT
 * 6:0 - PHYSICAL BLOCK FOR CURRENT MAPSEL
+*
+*
+* Magic: for NitrosL2, want a fixed 512byte region of r/w memory
+* at the top of the address space. There is no space to provide
+* an enable for this behaviour (which I call FRT for FixedRamTop)
+* and so some special magic is used, as follows:
+*
+* IF ROMDIS=1 & MMUEN=1 then a write with b4=0 (see NMI behaviour
+* below) and b7=0 and b5=1 does NOT enable the ROM but actually
+* sets FRT=1. Any write with MMUEN=0 sets FRT=0 again. In summary:
+*
+* Current           Action        End State
+* -----------------+-------------+-----------------
+* ROMDIS MMUEn FRT  ROMDIS MMUEn  ROMDIS MMUEn FRT
+* x      x     x    RESET         0      0     0
+* x      x     x    0      1      0      1     x
+* x      x     x    1      1      1      1     x
+* x      x     x    x      0      x      0     0
+* 1      1     x    0      1      1      1     1
 
 MMUADR         EQU $FFDE
 MMUDAT         EQU $FFDF
 
+* BIT-FIELDS
+MMUADR_ROMDIS  EQU $80         0 after reset, 1 when OS boots. Leave at 1.
+MMUADR_TR      EQU $40         0 after reset, 0 when OS boots. 0=user, 1=sys
+MMUADR_MMUEN   EQU $20         0 after reset, 1 when OS boots. Leave at 1.
+MMUADR_NMI     EQU $10         0 after reset, 0 when OS boots. Do not write 1.
+MMUADR_MAPSEL  EQU $0f         last-written value is UNDEFINED.
+* the only two useful values for the upper nibble
+MMU_TR0        EQU     (MMUADR_ROMDIS|MMUADR_MMUEN)
+MMU_TR1        EQU     (MMUADR_ROMDIS|MMUADR_MMUEN|MMUADR_TR)
+* one-time write to enable FRT
+MMU_TR0FRT     EQU     (MMUADR_MMUEN)
+MMU_TR1FRT     EQU     (MMUADR_MMUEN|MMUADR_TR)
 
 
 ********************************************************************
