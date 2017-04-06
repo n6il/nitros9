@@ -1,10 +1,7 @@
 ********************************************************************
 * Clock - Clock for OS-9 Level Two/NitrOS-9
 *
-* Clock module for CoCo 3 and TC9 OS9 Level 2 and NitrOS-9
-*
-* Includes support for several different RTC chips, GIME Toggle
-* IRQ fix, numerous minor changes.
+* Clock module for multicomp09 (mc09l2)
 *
 * Based on Microware/Tandy Clock Module for CC3/L2
 *
@@ -13,40 +10,38 @@
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
-*          ????/??/??
-* NitrOS-9 2.00 distribution.
-*
-*   9r4    2003/01/01  Boisy G. Pitre
-* Back-ported to OS-9 Level Two.
-*
-*   9r5    2003/08/18  Boisy G. Pitre
-* Separated clock into Clock and Clock2 for modularity.
+*          2017/01/29  Neal Crook
+* Created from clock.asm version 9r5. This version for 50Hz timer on
+* multicomp09 (mc09l2).
 
          nam   Clock
          ttl   Clock for OS-9 Level Two/NitrOS-9
 
 TkPerTS  equ   2          ticks per time slice
-GI.Toggl equ   %00000001  GIME CART* IRQ enable bit, for CC3
 
-* TC9 needs to reset more interrupt sources
-*GI.Toggl equ %00000111 GIME SERINT*, KEYINT*, CART* IRQ enable bits
-
-         IFP1
          use   defsfile
+* Need to NOT be using this!! But it is the source of:
+        
          use   cocovtio.d
-         ENDC
 
-Edtn     equ   9
-Vrsn     equ   5
+tylg     set   Systm+Objct
+atrv     set   ReEnt+rev
+rev      equ   5
+edition  equ   9
+
+*------------------------------------------------------------
+* For a detailed hardware description of the Multicomp09
+* timer, refer to mc09.d
+*
 
 *------------------------------------------------------------
 *
 * Start of module
 *
-         mod   len,name,Systm+Objct,ReEnt+Vrsn,Init,0
+         mod   len,name,tylg,atrv,init,0
 
 name     fcs   "Clock"
-         fcb   Edtn
+         fcb   edition
 
 *
 * Table to set up Service Calls:
@@ -64,33 +59,29 @@ NewSvc   fcb   F$Time
 *---------------------------------------------------------
 * IRQ Handling starts here.
 *
+* For Multicomp09, called 50 times/s ie once every 20ms
+*
 * Caveat: There may not be a stack at this point, so avoid using one.
 *         Stack is set up by the kernel between here and SvcVIRQ.
 *
-SvcIRQ   lda   >IRQEnR    Get GIME IRQ Status and save it.
-         ora   <D.IRQS
-         sta   <D.IRQS
-         bita  #$08       Check for clock interrupt
-         beq   NoClock
-         anda  #^$08      Drop clock interrupt
-         sta   <D.IRQS
-         ldx   <D.VIRQ    Set VIRQ routine to be executed
-         clr   <D.QIRQ    ---x IS clock IRQ
-         bra   ContIRQ
+SvcIRQ
 
-NoClock  leax  DoPoll,pcr If not clock IRQ, just poll IRQ source
-         IFNE  H6309
-         oim              #$FF,<D.QIRQ    ---x set flag to NOT clock IRQ
-         ELSE
+* The increment sets N depending upon whether the timer interrupted
+         ldx   <D.VIRQ    Routine to be invoked from the kernel
+         clr   <D.QIRQ    ---x IS clock IRQ
+         inc   TIMER
+         bmi   ContIRQ    Timer interrupt
+
+NoClock  leax  DoPoll,pcr If not timer IRQ, just poll IRQ source
          lda   #$FF
          sta   <D.QIRQ
-         ENDC
+
 ContIRQ  stx   <D.SvcIRQ
          jmp   [D.XIRQ]   Chain through Kernel to continue IRQ handling
 
 *------------------------------------------------------------
 *
-* IRQ handling re-enters here on VSYNC IRQ.
+* IRQ handling re-enters here (from Kernel) on Timer interrupt
 *
 * - Count down VIRQ timers, mark ones that are done
 * - Call DoPoll/DoToggle to service VIRQs and IRQs and reset GIME
@@ -114,11 +105,7 @@ virqloop equ   *
          ENDC
 
          ldd   Vi.Cnt,x   Decrement tick count
-         IFNE  H6309
-         decd             --- subd #1
-         ELSE
          subd  #$0001
-         ENDC
          bne   notzero    Is this one done?
          lda   Vi.Stat,x  Should we reset?
          bmi   doreset
@@ -260,16 +247,7 @@ Dopoll.i
 *
 * Reset GIME to avoid missed IRQs
 *
-DoToggle lda   #^GI.Toggl Mask off CART* bit
-         anda  <D.IRQS
-         sta   <D.IRQS
-         lda   <D.IRQER   Get current enable register status
-         tfr   a,b
-         anda  #^GI.Toggl Mask off CART* bit
-         orb   #GI.Toggl  --- ensure that 60Hz IRQ's are always enabled
-         sta   >IRQEnR    Disable CART
-         stb   >IRQEnR    Enable CART
-         clrb
+DoToggle clrb
          rts
 
 
@@ -422,12 +400,12 @@ Clock2   fcs   "Clock2"
 * Clock Initialization
 *
 * This vector is called by the kernel to service the first F$STime
-* call.  F$STime is usually called by CC3Go (with a dummy argument)
+* call.  F$STime is usually called by SysGo (with a dummy argument)
 * in order to initialize the clock.  F$STime is re-vectored to the
 * service code above to handle future F$STime calls.
 *
 *
-Init     ldx   <D.Proc    save user proc
+init     ldx   <D.Proc    save user proc
          pshs  x
          ldx   <D.SysPrc  make sys for link
          stx   <D.Proc
@@ -444,30 +422,9 @@ Init     ldx   <D.Proc    save user proc
          lda   #E$MNF
          jmp   <D.Crash
 LinkOk   sty   <D.Clock2  save entry point
-InitCont ldx   #PIA0Base  point to PIA0
-         clra             no error for return...
+
          pshs  cc         save IRQ enable status (and Carry clear)
          orcc  #IntMasks  stop interrupts
-
-* Note: this code can go away once we have a rel_50hz
-         IFEQ  TkPerSec-50
-         ldb   <D.VIDMD   get video mode register copy
-         orb   #$08       set 50 Hz VSYNC bit
-         stb   <D.VIDMD   save video mode register copy
-         stb   >$FF98     set 50 Hz VSYNC
-         ENDC
-
-         sta   1,x        enable DDRA
-         sta   ,x         set port A all inputs
-         sta   3,x        enable DDRB
-         coma
-         sta   2,x        set port B all outputs
-         ldd   #$343C     [A]=PIA0 CRA contents, [B]=PIA0 CRB contents
-         sta   1,x        CA2 (MUX0) out low, port A, disable HBORD high-to-low IRQs
-         stb   3,x        CB2 (MUX1) out low, port B, disable VBORD low-to-high IRQs
-         sta   $23,x      disable CART +RG Mar 14, 2012
-         lda   ,x         clear possible pending PIA0 HBORD IRQ
-         lda   2,x        clear possible pending PIA0 VBORD IRQ
 
 * Don't need to explicitly read RTC during initialization
          ldd   #59*256+TkPerTS last second and time slice in minute
@@ -481,16 +438,16 @@ InitCont ldx   #PIA0Base  point to PIA0
          stx   <D.VIRQ
          leay  NewSvc,pcr insert syscalls
          os9   F$SSvc
-* H6309 optimization opportunity here using oim
-         lda   <D.IRQER   get shadow GIME IRQ enable register
-         ora   #$08       set VBORD bit
-         sta   <D.IRQER   save shadow register
-         sta   >IRQEnR    enable GIME VBORD IRQs
 
 * Call Clock2 init routine
          ldy   <D.Clock2  get entry point to Clock2
          jsr   ,y         call init entry point of Clock2
-InitRts  puls  cc,pc      recover IRQ enable status and return
+
+* Initialize clock hardware
+         lda   #2         enable timer and its interrupt
+         sta   TIMER
+
+         puls  cc,pc      recover IRQ enable status and return
 
          emod
 len      equ   *
