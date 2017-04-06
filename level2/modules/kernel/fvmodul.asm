@@ -1,9 +1,13 @@
 **************************************************
 * System Call: F$VModul
 *
-* Function: Verify a module
+* Function: Validate a module.
+*
+* Checks the module header parity and (if enabled)
+* the CRC bytes of the module.
 *
 * Input:  X = Address of module to verify
+*         D = DAT image pointer
 *
 * Output: U = Address of module directory entry
 *
@@ -24,14 +28,14 @@ L0463    pshs   x,y          save block offset & DAT Image ptr
          lbsr   L0586        Go check module ID & header parity
          bcs    L0495        Error, exit
          ldd    #M$Type      Get offset to module type
-         lbsr   L0B02        get it
+         lbsr   L0B02        go get 2 bytes (module type)
          andb   #LangMask    Just keep language mask
          pshs   d            Preserve ??? & language
          ldd    #M$Name      get offset to module name
-         lbsr   L0B02
+         lbsr   L0B02        go get 2 bytes (offset)
          leax   d,x          Point X to module name
          puls   a            Restore type/language
-         lbsr   L068D
+         lbsr   L068D        Find module in module directory
          puls   a
          bcs    L0497
          andb   #$0F
