@@ -66,7 +66,10 @@ DisTable
         fdb     $0055           D.ErrRst ??? Not used as far as I can tell
         fdb     Sys.Vec+Where   Initial Kernel system call vector
 DisSize equ     *-DisTable
-* DO NOT ADD ANYTHING BETWEEN THESE 2 TABLES: see code using 'SubSiz', below
+* ^
+* Code using 'SubSiz', below, assumes that SubStrt follows on directly after
+* the end of DisTable. Therefore, DO NOT ADD ADD ANYTHING BETWEEN THESE 2 LABELS
+* v
 LowSub  equ     $0160           start of low memory subroutines
 SubStrt equ     *
 * D.Flip0 - switch to system task 0
@@ -77,7 +80,7 @@ R.Flip0 equ     *
         ste     >DAT.Task       and we can use A here, instead of E
         ELSE
         pshs    a
-        lda     <D.TINIT
+        lda     <D.TINIT        Get value from shadow
         anda    #$FE            force TR=0
         sta     <D.TINIT
         sta     >DAT.Task
@@ -88,41 +91,62 @@ R.Flip0 equ     *
         tfr     a,cc
         rts
 SubSiz  equ     *-SubStrt
-* Don't add any code here: See L0065, below.
+* ^
+* Code around L0065, below, assumes that Vectors follows on directly after
+* the end of R.Flip0. Therefore, DO NOT ADD ADD ANYTHING BETWEEN THESE 2 LABELS
+* v
 * Interrupt service routine
 Vectors jmp     [<-(D.SWI3-D.XSWI3),x]  (-$10) (Jmp to 2ndary vector)
 
-* Let's start by initializing system page
+* Initialize the system block (the lowest 8Kbytes of memory)
+* rel.asm has cleared the DP already, so start at address $100.
 entry   equ     *
-        IFNE    H6309
+      IFNE    H6309
         ldq     #$01001f00      start address to clear & # bytes to clear
         leay    <entry+2,pc     point to a 0
         tfm     y,d+
         std     <D.CCStk        set pointer to top of global memory to $2000
         lda     #$01            set task user table to $0100
-        ELSE
-        ldx     #$100
-        ldy     #$2000-$100
+      ELSE
+        ldx     #$100           start address
+        ldy     #$2000-$100     bytes to clear
         clra
         clrb
-L001C   std     ,x++
+L001C   std     ,x++            clear it 16-bits at a time
         leay    -2,y
         bne     L001C
         stx     <D.CCStk        Set pointer to top of global memory to $2000
         inca                    D = $0100
-        ENDC
+      ENDC
 
-* Setup system direct page variables
-        std     <D.Tasks        set Task Structure pointer to 0x100
-        addb    #$20            set Task image table pointer to $0120
-        std     <D.TskIPt
-        clrb                    set memory block map pointer to $0200
+* Set up system variables in DP
+        std     <D.Tasks        set Task Structure pointer to $0100
+        addb    #$20
+        std     <D.TskIPt       set Task image table pointer to $0120
+        clrb
+
+********************************************************************
+* The memory block map is a data structure that is used to manage
+* physical memory. Physical memory is assigned in 8Kbyte "blocks".
+* 256 bytes are reserved for the map and so the maximum physical
+* memory size is 256*8Kbyte=2Mbyte. D.BlkMap is a pointer to the
+* start of the map (set to $0200, below). D.BlkMap+2 is a pointer
+* to the end of the map. Rather than simply setting it to $0300,
+* the end pointer is set by the memory sizing routine at L0111.
+* (Presumably) this makes it faster to search for unused pages
+* and also acts as the mechanism to avoid assigning non-existent
+* memory. A value of 0 indicates an unused block and since the
+* system block has been initialised to 0 (above) every block starts
+* off marked as unused. Initial reservation of blocks occurs
+* below, after the memory sizing.
+* See "Level 2 flags" in os9.d for other byte values.
+
         inca
         std     <D.BlkMap
         addb    #$40            set second block map pointer to $0240
         std     <D.BlkMap+2
-        clrb                    set system service dispatch table
-        inca                    pointer to 0x300
+        clrb                    set system service dispatch table pointer
+        inca                    to 0x300
         std     <D.SysDis
         inca                    set user dispatch table pointer to $0400
         std     <D.UsrDis
@@ -161,10 +185,9 @@ l@
         bne     l@              loop if we're not done
         ENDC
 
-* initialize D.Flip0 routine in low memory, move function down to low
-* memory.
-* Y=ptr to R.Flip0 already
-*         leay  >R.Flip0,pc
+* Initialize D.Flip0 routine in low memory by copying lump of code down from R.Flip0.
+* ASSUME: Y left pointing to R.Flip0 by previous copy loop.
+
         ldu     #LowSub         somewhere in block 0 that's never modified
         stu     <D.Flip0        switch to system task 0
         IFNE    H6309
@@ -178,8 +201,8 @@ Loop2   lda     ,y+             load a byte from source
         bne     Loop2           loop if not done
         ENDC
 
-*         leau   <Vectors,pc   point to vector
-* fill in the secondard interrupt vectors to all point to
+* Initialize secondary interrupt vectors to all point to Vectors for now
+* ASSUME: Y left pointing to Vectors by previous copy loop
         tfr     y,u             move the pointer to a faster register
 L0065   stu     ,x++            Set all IRQ vectors to go to Vectors for now
         cmpx    #D.NMI
@@ -206,7 +229,7 @@ L0065   stu     ,x++            Set all IRQ vectors to go to Vectors for now
         leax    >S.AltIRQ,pc    Setup alternate IRQ vector: pts to an RTS
         stx     <D.AltIRQ
 
-        lda     #'K     --- in Kernel
+        lda     #'K             debug: signal that we are in Kernel
         jsr     <D.BtBug        ---
 
         leax    >S.Flip1,pc     Setup change to task 1 vector
@@ -223,14 +246,14 @@ L0065   stu     ,x++            Set all IRQ vectors to go to Vectors for now
 * These overlap because it is quicker than trying to strip hi byte from X
         stx     ,u              save it as first process in table
         stx     1,u             save it as the second as well
-        IFNE    H6309
+      IFNE    H6309
         oim     #$01,P$ID,x     Set process ID to 1 (inited to 0)
         oim     #SysState,P$State,x     Set to system state (inited to 0)
-        ELSE
+      ELSE
         ldd     #$01*256+SysState
         sta     P$ID,x          set PID to 1
         stb     P$State,x       set state to system (*NOT* zero )
-        ENDC
+      ENDC
         clra                    set System task as task #0
         sta     <D.SysTsk
         sta     P$Task,x
@@ -240,15 +263,19 @@ L0065   stu     ,x++            Set all IRQ vectors to go to Vectors for now
         leax    <P$DATImg,x     point to DAT image
         stx     <D.SysDAT       save it as a pointer in DP
 * actually, since block 0 is tfm'd to be zero, we can skip the next 2 lines
-        IFNE    H6309
+      IFNE    H6309
         clrd
-        ELSE
+      ELSE
         clra
         clrb
-        ENDC
+      ENDC
         std     ,x++            initialize 1st block to 0 (for this DP)
 
-* Dat.BlCt-ROMCount-RAMCount
+********************************************************************
+* The DAT image is a data structure that is used to indicate which
+* Dynamic Address Translator (DAT) mapping registers are in use.
+
+* Dat.BlCt-ROMCount-RAMCount = 8 - 1 - 1 = 6
         lda     #$06            initialize the rest of the blocks to be free
         ldu     #DAT.Free
 L00EF   stu     ,x++            store free "flag"
@@ -262,17 +289,40 @@ L00EF   stu     ,x++            store free "flag"
         inc     ,x              mark first 2 in use (system & GrfDrv)
         inc     1,x
 
-* Setup system memory map
+********************************************************************
+* The system memory map is a data structure that is used to manage
+* the 64Kbyte CPU address space. D.SysMem is a pointer to the start
+* of the map (set to $0900, above) and the map is a fixed size of
+* 256 bytes. Each byte in the map represents one 256-byte "page"
+* (256 entries of 256 bytes is 64Kbytes). A value of 0 indicates
+* an unused page and since the system block has been initialised
+* to 0 (above) every page starts off marked as unused.
+* See "Level 2 flags" in os9.d for other byte values.
+
+* Update the system memory map to reserve the area used for
+* global memory.
         ldx     <D.SysMem       Get system memory map pointer
         ldb     <D.CCStk        Get MSB of top of CC memory
+* X indexes the system memory map.
+* B represents the number of 256-byte pages available.
+* Walk through the map changing the corresponding elements
+* from 0 (the initialisation value) to 1 (indicating 'used'). Higher
+* entries in the map remain as 0 (indicating 'unused').
 L0104   inc     ,x+             Mark it as used
         decb                    Done?
         bne     L0104           No, go back till done
 
-* Calculate memory size
+********************************************************************
+* Deduce how many 8Kbyte blocks of physical memory are available and
+* update the memory block map end pointer (D.BlkMap+2) accordingly
         ldx     <D.BlkMap       get ptr to 8k block map
         inc     <$3F,x          mark block $3F as used (kernel)
-        IFNE    H6309
+* This memory sizing routine uses location at X (D.BlkMap) as
+* a scratch location. At exit, it leaves this location at 1 which
+* has the (until now) undocumented side-effect of marking block 0
+* as used. It is essential that this is done because that block
+* does need to be reserved; it's used for global memory.
+      IFNE    H6309
         ldq     #$00080100      e=Marker, D=Block # to check
 L0111   asld                    get next block #
         stb     >DAT.Regs+5     Map block into block 6 of my task
@@ -281,7 +331,7 @@ L0111   asld                    get next block #
         bne     L0111           No, keep going till ghost is found
         stb     <D.MemSz        Save # 8k mem blocks that exist
         addr    x,d             add number of blocks to block map start
-        ELSE
+      ELSE
         ldd     #$0008
 L0111   aslb
         rola
@@ -295,15 +345,20 @@ L0111   aslb
         stb     <D.MemSz
         pshs    x
         addd    ,s++
-        ENDC
-        std     <D.BlkMap+2     save block map end pointer
+      ENDC
+        std     <D.BlkMap+2     save memory block map end pointer
 
-* [D] at this point will contain 1 of the following:
-* $0210 - 128k
-* $0220 - 256k
-* $0240 - 512k
-* $0280 - 1024k
-* $0300 - 2048k
+********************************************************************
+* Initial reservation of blocks in the memory block map. Code above
+* reserved one block (block 0) for global memory and one block
+* (usually block $3F) for krn.
+*
+* At this point, the value of D indicates the memory size:
+* $0210 - 128k  ( 16, 8KByte blocks)
+* $0220 - 256k  ( 32, 8KByte blocks)
+* $0240 - 512k  ( 64, 8KByte blocks)
+* $0280 - 1024k (128, 8KByte blocks)
+* $0300 - 2048k (256, 8KByte blocks)
         bitb    #%00110000      block above 128K-256K?
         beq     L0170           yes, no need to mark block map
         tstb                    2 meg?
@@ -317,10 +372,12 @@ L0127   sta     ,x+             Mark them all
         decb
         bne     L0127
 
+* ASSUME: however we got here, B=0
 L0170   ldx     #Bt.Start       start address of the boot track in memory
-        lda     #18             size of the boot track: B=$00 from L0127 loop, above
-        lbsr    I.VBlock        go verify it
+        lda     #18             size of the boot track is $1800
 
+* Verify the modules in the boot track and update/build a module index
+        lbsr    I.VBlock
         bsr     L01D2           go mark system map
 
 * See if init module is in memory already
@@ -330,16 +387,18 @@ L01B0   leax    <init,pc        point to 'Init' module name
 L01B8   os9     F$Boot          error linking init, try & load boot file
         bcc     L01B0           got it, try init again
         bra     L01CE           error, re-booting do D.Crash
-* Save pointer to init module and execute krnp2
+
+* So far, so good. Save pointer to init module and execute krnp2
 L01BF   stu     <D.Init         Save init module pointer
         lda     Feature1,u      Get feature byte #1 from init module
         bita    #CRCOn          CRC feature on?
         beq     ShowI           if not, continue
         inc     <D.CRC          else inc. CRC flag
-ShowI   lda     #'i             found init module
+
+ShowI   lda     #'i             debug: signal that we found the init module
         jsr     <D.BtBug
 
-L01C1   leax    <krnp2,pc       Point to it's name
+L01C1   leax    <krnp2,pc       Point to its name
         bsr     link            Try to link it
         bcc     L01D0           It worked, execute it
         os9     F$Boot          It doesn't exist try re-booting
@@ -347,14 +406,14 @@ L01C1   leax    <krnp2,pc       Point to it's name
 L01CE   jmp     <D.Crash        obviously can't do it, crash machine
 L01D0   jmp     ,y              execute krnp2
 
-* Mark kernel in system memory map as used memory (256 byte blocks)
-L01D2   ldx     <D.SysMem       Get system mem ptr
+* Update the system memory map to reserve the area used by the kernel
+L01D2   ldx     <D.SysMem       Get system memory map pointer
         ldd     #NotRAM*256+(Bt.Start/256)      B = MSB of start of the boot
         abx                     point to Bt.Start - start of boot track
-        comb                    we have $FF-$ED pages to mark as used
+        comb                    we have $FF-$ED pages to mark as inUse
         sta     b,x             Mark I/O as not RAM
-L01DF   lda     #RAMinUse       get in use flag
-L01E1   sta     ,x+             save it
+L01DF   lda     #RAMinUse       get inUse flag
+L01E1   sta     ,x+             mark this page
         decb                    done?
         bne     L01E1           no, keep going
         ldx     <D.BlkMap       get pointer to start of block map
@@ -581,16 +640,16 @@ L02E9   leau    a,u             point to block # of where stack is
         ldb     3,u             get a second just in case of overlap
         orcc    #IntMasks       shutdown interupts while we do this
         std     >DAT.Regs+5     map blocks in
-        IFNE    H6309
+      IFNE    H6309
         ldw     #R$Size         get size of register stack
         tfm     x+,y+           copy it
-        ELSE
+      ELSE
         ldb     #R$Size
 Loop5   lda     ,x+
         sta     ,y+
         decb
         bne     Loop5
-        ENDC
+      ENDC
         ldx     <D.SysDAT       remap the blocks we took out
         lda     $0B,x
         ldb     $0D,x
@@ -757,13 +816,13 @@ S.SysIRQ
         jsr     [>D.SvcIRQ]     (Normally routine in Clock calling D.Poll)
         inc     <D.SSTskN       Save task # for system state
         lda     #1              Task 1
-        ora     <D.TINIT        Merge task bit's into Shadow version
+        ora     <D.TINIT        Merge task bit into Shadow version
         sta     <D.TINIT        Update shadow
-        sta     >DAT.Task       Save to GIME as well & return
-        bra     DoneIRQ Check for error and exit
+        sta     >DAT.Task       Save to GIME as well
+        bra     DoneIRQ         Check for error and exit
 
 FastIRQ jsr     [>D.SvcIRQ]     (Normally routine in Clock calling D.Poll)
-DoneIRQ bcc     L0E28   No error on IRQ, exit
+DoneIRQ bcc     L0E28           No error on IRQ, exit
         IFNE    H6309
         oim     #IntMasks,0,s   Setup RTI to shut interrupts off again
         ELSE
@@ -779,54 +838,54 @@ L0E2B   ldx     <D.SysPrc       Get system process dsc. ptr
         lbsr    TstImg          check image, and F$SetTsk (PRESERVES A)
         orcc    #IntMasks       Shut interrupts off
         sta     <D.SSTskN       Save task # for system state
-        beq     Fst2    If task 0, skip subroutine
-        ora     <D.TINIT        Merge task bit's into Shadow version
+        beq     Fst2            If task 0, we're done
+        ora     <D.TINIT        Merge task bit into Shadow version
         sta     <D.TINIT        Update shadow
-        sta     >DAT.Task       Save to GIME as well & return
+        sta     >DAT.Task       Save to GIME as well
 Fst2    leas    ,u              Stack ptr=U & return
         rti
 
 * Switch to new process, X=Process descriptor pointer, U=Stack pointer
 L0E4C   equ     *
-        IFNE    H6309
+      IFNE    H6309
         oim     #$01,<D.TINIT   switch GIME shadow to user state
         lda     <D.TINIT
-        ELSE
+      ELSE
         lda     <D.TINIT
         ora     #$01
         sta     <D.TINIT
-        ENDC
+      ENDC
         sta     >DAT.Task       save it to GIME
         leas    ,y              point to new stack
         tstb                    is the stack at SWISTACK?
         bne     MyRTI           no, we're doing a system-state rti
 
-        IFNE    H6309
+      IFNE    H6309
         ldf     #R$Size         E=0 from call to L0E8D before
         ldu     #Where+SWIStack point to the stack
         tfm     u+,y+           move the stack from top of memory to user memory
-        ELSE
+      ELSE
         ldb     #R$Size
         ldu     #Where+SWIStack point to the stack
 RtiLoop lda     ,u+
         sta     ,y+
         decb
         bne     RtiLoop
-        ENDC
+      ENDC
 MyRTI   rti                     return from IRQ
 
 
 * Execute routine in task 1 pointed to by U
 * comes from user requested SWI vectors
 L0E5E   equ     *
-        IFNE    H6309
+      IFNE    H6309
         oim     #$01,<D.TINIT   switch GIME shadow to user state
         ldb     <D.TINIT
-        ELSE
+      ELSE
         ldb     <D.TINIT
         orb     #$01
         stb     <D.TINIT
-        ENDC
+      ENDC
         stb     >DAT.Task
         jmp     ,u
 
@@ -834,14 +893,14 @@ L0E5E   equ     *
 *  by <D.Flip1). All regs are already preserved on stack for the RTI
 S.Flip1 ldb     #2              get Task image entry numberx2 for Grfdrv (task 1)
         bsr     L0E8D           copy over the DAT image
-        IFNE    H6309
+      IFNE    H6309
         oim     #$01,<D.TINIT
         lda     <D.TINIT        get copy of GIME Task side
-        ELSE
+      ELSE
         lda     <D.TINIT
-        ora     #$01
+        ora     #$01            force TR=1
         sta     <D.TINIT
-        ENDC
+      ENDC
         sta     >DAT.Task       save it to GIME register
         inc     <D.SSTskN       increment system state task number
         rti                     return
@@ -853,6 +912,10 @@ L0E8D   cmpb    <D.Task1N       are we going back to the same task
         ldx     #DAT.Regs+8     get MMU start register for process's
         ldu     <D.TskIPt       get task image pointer table
         ldu     b,u             get address of DAT image
+* COME HERE FROM FALLTSK
+* Update 8 MMU mappings.
+* X = address of 1st DAT MMU register to update
+* U = address of DAT image to update into MMU
 L0E93   leau    1,u             point to actual MMU block
         IFNE    H6309
         lde     #4              get # banks/2 for task
@@ -870,7 +933,7 @@ L0E9B   lda     ,u++            get a bank
         ENDC
         bne     L0E9B           no, keep going
         IFEQ    H6309
-        leas    1,s
+        leas    1,s             done. Tidy up the stack
         ENDC
 L0EA3   rts                     return
 
@@ -879,18 +942,18 @@ FIRQVCT ldx     #D.FIRQ         get DP offset of vector
         bra     L0EB8           go execute it
 
 * Execute IRQ vector (called from $FEF7)
-IRQVCT  orcc    #IntMasks       disasble IRQ's
+IRQVCT  orcc    #IntMasks       disable IRQ's
         ldx     #D.IRQ  get DP offset of vector
 
 * Execute interrupt vector, B=DP Vector offset
 L0EB8   clra                    (faster than CLR >$xxxx)
         sta     >DAT.Task       Force to Task 0 (system state)
         IFNE    H6309
-        tfr     0,dp    setup DP
+        tfr     0,dp            setup DP
         ELSE
-        tfr     a,dp
+        tfr     a,dp            ASSUME: A=0 from earlier
         ENDC
-MapGrf  equ     *
+MapGrf  equ     *               come here from elsewhere, too.
         IFNE    H6309
         aim     #$FE,<D.TINIT   switch GIME shadow to system state
         lda     <D.TINIT        set GIME again just in case timer is used
@@ -899,7 +962,7 @@ MapGrf  equ     *
         anda    #$FE
         sta     <D.TINIT
         ENDC
-MapT0   sta     >DAT.Task
+MapT0   sta     >DAT.Task       come here from elsewhere, too.
         jmp     [,x]            execute it
 
 * Execute SWI3 vector (called from $FEEE)
@@ -922,11 +985,11 @@ SWICall ldb     [R$PC,s]        get callcode of the system call
         clra
         sta     >DAT.Task
 * set DP to zero
-        IFNE    H6309
+      IFNE    H6309
         tfr     0,dp
-        ELSE
-        tfr     a,dp
-        ENDC
+      ELSE
+        tfr     a,dp            ASSUME: A=0 from earlier
+      ENDC
 
 * These lines add a total of 81 addition cycles to each SWI(2,3) call,
 * and 36 bytes+12 for R$Size in the constant page at $FExx
