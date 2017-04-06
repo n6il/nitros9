@@ -1,7 +1,8 @@
 include $(NITROS9DIR)/rules.mak
 
-# Module directory
+# Module and cmds directories
 MD		= ../modules
+CM		= ../cmds
 
 DEPENDS		= ./makefile
 
@@ -35,7 +36,16 @@ BOOTFILE_MC09SD	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(PIPE) \
 		$(CLOCK50HZMC09)
 
-BOOTFILES	= bootfile_mc09sd
+BOOTFILE_MC09SDXL = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MC09SDC_80D) \
+		$(MD)/scf.mn \
+		$(TERM_MC09) \
+		$(PIPE) \
+		$(CLOCK50HZMC09) $(MD)/sysgo_dd $(CM)/shell
+
+
+BOOTFILES	= bootfile_mc09sd bootfile_mc09sdxl
 KERNELS		= kernel_mc09sd
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
@@ -44,6 +54,9 @@ all:	$(ALLOBJS)
 
 bootfile_mc09sd: $(BOOTFILE_MC09SD) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_MC09SD)>$@
+
+bootfile_mc09sdxl: $(BOOTFILE_MC09SDXL) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_MC09SDXL)>$@
 
 kernel_mc09sd: $(KERNEL_MC09SD) $(DEPENDS)
 	$(MERGE) $(KERNEL_MC09SD)>$@

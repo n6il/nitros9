@@ -24,7 +24,8 @@ TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= boot_sdc
 BOOTTRACK	= rel_80 $(BOOTERS) krn
-KERNEL		= krnp2 krnp3_perr krnp4_regdump ccbkrn
+
+KERNEL		= krnp2 krnp3_perr krnp4_regdump
 SYSMODS		= ioman init sysgo_dd rominfo vectors
 CLOCKS		= clock_50hz clock2_soft clock2_dw mc09clock_50hz
 
@@ -238,9 +239,6 @@ y3.dd: rfmdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=3
 
 # Clocks
-clock_60hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=60
-
 clock_50hz: clock.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=50
 
