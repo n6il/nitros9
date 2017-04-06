@@ -258,7 +258,7 @@ L0908    leax  <boot,pcr
 * Link to module and execute
 L090C    lda   #Systm+Objct
          os9   F$Link
-         bcs   L08F3
+         bcs   L08F3        return with error
          lda   #'b          calling boot
          jsr   <D.BtBug
          jsr   ,y           load boot file
@@ -325,7 +325,7 @@ name.prt lda   ,x+          get first character of the name
          bpl   name.prt
          lda   #C$SPAC      a space
          jsr   <D.BtBug
-         puls  x
+         puls  x            address of module header
 
          IFNE  H6309
          ldd   ,s           offset into block
@@ -333,7 +333,7 @@ name.prt lda   ,x+          get first character of the name
          ELSE
          tfr   x,d
          subd  ,s
-         tfr   d,x
+         tfr   d,x          offset into block of module header
          ENDC
          tfr   y,d
          os9   F$VModul
@@ -346,12 +346,12 @@ name.prt lda   ,x+          get first character of the name
          leax  d,x
          puls  b
          ENDC
-         bcc   L094E
-         cmpb  #E$KwnMod
-         bne   L0954
-L094E    ldd   M$Size,x
-         leax  d,x
-         fcb   $8C          skip 2 bytes
+         bcc   L094E        success
+         cmpb  #E$KwnMod    Known module?
+         bne   L0954        No. Assume a case of mistaken identity and continue
+L094E    ldd   M$Size,x     get the module size
+         leax  d,x          and step over it
+         fcb   $8C          skip 2 bytes (continue at L0956)
 
 L0954    leax  1,x          move to next byte
 L0956    cmpx  2,s          gone thru whole bootfile?
