@@ -37,7 +37,7 @@ L0AC8    lda   1,y            Get MMU block # to get data from
 * Increments X on exit; adjusts X for within 8K block & Y (DAT img ptr)
 LDAXY    lda   1,y            Get MMU block #
          pshs  b,cc
-         clrb
+         clrb                 Clear carry/setup for STB
          orcc  #IntMasks      Shut off interrupts
          sta   >DAT.Regs      Map in MMU block into slot 0
          lda   ,x+            Get byte
@@ -48,7 +48,7 @@ LDAXY    lda   1,y            Get MMU block #
          bra   AdjBlk0
 
 L0AEA    leax  >-DAT.BlSz,x   Bump offset ptr to start of block again
-         leay  2,y            Bump source MMU block up to next on in DAT Image
+         leay  2,y            Bump source MMU block up to next one in DAT Image
 AdjBlk0  cmpx  #DAT.BlSz      Going to wrap out of our block?
          bhs   L0AEA          Yes, go adjust
          rts                  No, return
@@ -74,9 +74,10 @@ FLDDDXY  ldd   R$D,u          Get offset to offset within DAT Image
          std   -(R$X+3),u     Save into caller's X
          clrb                 No error & return
          rts
+
 * Get 2 bytes for LDDDXY (also called by other routines)
 * Should simply map in 2 blocks, and do a LDD (don't have to worry about wrap)
-L0B02    pshs  u,y,x          Preserve regs
+L0B02    pshs  u,y,x          Preserve regs (x, y adjusted by AdjBlk0)
          IFNE  H6309
          addr  d,x            Point X to X+D
          ELSE

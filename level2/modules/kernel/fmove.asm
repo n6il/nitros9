@@ -69,7 +69,7 @@ L0B2C    pshs  d,x,y,u      preserve it all
 * Registers: X=Source pointer
 *            U=Destination pointer
 L0B6A    equ   *
-         IFNE  H6309
+       IFNE  H6309
          ldd   [<6,s]       [B]=Block # of source
          ldw   [<10,s]      [A]=Block # of destination
          tfr   f,a
@@ -115,7 +115,7 @@ L0BEA    std   2,s          save updated destination offset in block
 L0BEF    leas  16,s         purge stack
 L0BF2    clrb               clear errors
          puls  d,x,y,u,pc   return
-         ELSE
+       ELSE
 * Main move loop
 * Stack:  0,s=distance to end of source block
 *         2,s=distance to end of destination block
@@ -149,7 +149,7 @@ L0B84    std   $0F,s
          lda   $0E,s  +++
          sty   >DAT.Regs+5
 ***** NO STACK USE BETWEEN HERE.....
-                 tfr   d,y    +++
+         tfr   d,y    +++
          andb  #$07
          beq   L0B99
 L0B92    lda   ,x+
@@ -220,8 +220,10 @@ L0BEA    std   $02,s
 L0BEF    leas  <$10,s
 L0BF2    clrb
          puls  pc,u,y,x,b,a
-         ENDC
+       ENDC
+
 L0BF3    tfr   u,y          save a copy of U for later
+
 * Calculate offset within DAT image
 * Entry: B=Task #
 *        X=Pointer to data
@@ -235,15 +237,15 @@ L0BF5    ldu   <D.TskIPt    get task image ptr table
          anda  #%11100000   Keep only which 8K bank it's in
          beq   L0C07        Bank 0, no further calcs needed
          clrb               force it to start on an 8K boundary
-         IFNE  H6309
+       IFNE  H6309
          subr  d,x          now X=offset into the block
-         ELSE
+       ELSE
          pshs  d
          tfr   x,d
          subd  ,s
          tfr   d,x
          puls  d
-         ENDC
+       ENDC
          lsra               Calculate offset into DAT image to get proper
          lsra               8K bank (remember that each entry in a DAT image
          lsra               is 2 bytes)

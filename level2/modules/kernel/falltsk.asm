@@ -72,7 +72,7 @@ L0C79    equ   *
          stb   P$State,x
 *         puls  b
          ENDC
-         clr   <D.Task1N  task 1 DAT image has changed
+         clr   <D.Task1N    task 1 DAT image has changed
          andcc #^Carry      clear carry
          pshs  cc,d,x,u     preserve everything
          ldb   P$Task,x     get task #
