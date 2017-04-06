@@ -7,7 +7,6 @@ DEPENDS		= ./makefile
 AFLAGS		+= -I$(LEVEL2)/modules/kernel -I$(LEVEL1)/modules/kernel
 
 KERNEL		= krn
-KERNEL_CCB	= ccbkrn
 KERNEL_MC09     = krnmc09
 KERNELP2	= krnp2
 SYSCALLS	= fallimg.asm fallram.asm falltsk.asm faproc.asm fcmpnam.asm \
@@ -20,16 +19,13 @@ SYSCALLS	= fallimg.asm fallram.asm falltsk.asm faproc.asm fcmpnam.asm \
 		fid.asm fmapblk.asm fmem.asm fsend.asm fsleep.asm fsprior.asm \
 		fsswi.asm fstime.asm fsuser.asm funlink.asm funload.asm
 
-ALLOBJS		= $(KERNEL) $(KERNEL_CCB) $(KERNELP2) $(KERNEL_MC09)
-#ALLOBJS		= $(KERNEL) $(KERNELP2)
+ALLOBJS		= $(KERNEL) $(KERNELP2) $(KERNEL_MC09)
 
 all:	$(ALLOBJS)
 
 $(KERNEL):	krn.asm $(SYSCALLS) fsrqmem.asm
 
 $(KERNEL_MC09):	krnmc09.asm $(SYSCALLS) fsrqmem.asm
-
-$(KERNEL_CCB):	ccbkrn.asm $(SYSCALLS) ccbfsrqmem.asm
 
 $(KERNELP2):	krnp2.asm $(SYSCALLS)
 
