@@ -633,7 +633,11 @@ D.SWI          RMB       2
 D.NMI          RMB       2
 
 *************************
-* Level 2 Block Map flags
+* Level 2 flags used for bytes in the memory block map at D.BlkMap
+* and for bytes in the system memory map at D.SysMem.
+* A value of 0 indicates an unused/unassigned block.
+* In the code, block assignment often involves incrementing a value
+* from 0 to 1 rather than explict use of RAMinUse.
 *
 NotRAM         EQU       %10000000           Block Not RAM flag
 VidRAM         EQU       %00000100           Block is being used as Video RAM
