@@ -5,16 +5,7 @@ vpath %.asm kernel:$(LEVEL2)/modules:$(LEVEL1)/modules
 
 AFLAGS		+= -I$(LEVEL1)/modules
 
-CLOCKELIM       = -DRTCElim=1
-CLOCKDISTO2     = -DRTCDsto2=1
-CLOCKDISTO4     = -DRTCDsto4=1
-CLOCKBNB        = -DRTCBB=1
-CLOCKSMART      = -DRTCSmart=1 -DMPIFlag=1
-CLOCKHARRIS     = -DRTCHarrs=1
-CLOCKCLOUD9     = -DRTCCloud9=1
 CLOCKSOFT       = -DRTCSoft=1
-CLOCKMESSEMU    = -DRTCMessEmu=1
-CLOCKJVEMU      = -DRTCJVEmu=1
 TC3FLAGS        = $(AFLAGS) -DTC3=1 $(FLAGS)
 IDEFLAGS        = $(AFLAGS) -DIDE=1 $(FLAGS)
 SDFLAGS         = $(AFLAGS) -DCOCOSDC=1 -DITTYP=128 $(FLAGS)
@@ -27,7 +18,7 @@ BOOTTRACK	= rel_80 $(BOOTERS) krn
 
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
 SYSMODS		= ioman init sysgo_dd rominfo vectors
-CLOCKS		= clock_50hz clock2_soft clock2_dw mc09clock_50hz
+CLOCKS		= clock2_soft clock2_dw mc09clock_50hz mc09clock_91hz
 
 RBF		= rbf.mn \
 		rbdw.dr dwio.sb \
@@ -239,11 +230,11 @@ y3.dd: rfmdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=3
 
 # Clocks
-clock_50hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=50
-
 mc09clock_50hz: mc09clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=50
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DTkPerSec=50
+
+mc09clock_91hz: mc09clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DTkPerSec=91
 
 clean:
 	$(CD) kernel; make $@
