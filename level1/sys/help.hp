@@ -1,5 +1,10 @@
 @HELP
-Syntax: Help [<subject>] [<opts>]
-Usage : Give on-line help to users
+Syntax: Help [<subject>]
+Usage : Give on-line help on subject
         will prompt if no subjects given
-Opts  :
+
+The help text is extracted from the file /DD/SYS/helpmsg
+
+Entries in helpmsg are in plain text. An entry for subject FOO
+starts with a line containing the text "@FOO". helpmsg is
+typically created by concatenating a set of per-subject .hp files.
