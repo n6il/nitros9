@@ -34,10 +34,11 @@ all:
 
 # Clean all components
 clean:
-	$(RM) nitros9project.zip $(DSKDIR)/*.dsk $(DSKDIR)/ReadMe $(DSKDIR)/index.shtml
-	$(foreach dir,$(dirs),$(MAKE) -C $(dir) clean &&) :
+	$(RM) nitros9project.zip
+	$(RM) $(DSKDIR)/*.dsk $(DSKDIR)/*.DSK $(DSKDIR)/*.img
 	$(RM) $(DSKDIR)/ReadMe
-	$(RM) $(DSKDIR)/index.html
+	$(RM) $(DSKDIR)/index.html $(DSKDIR)/index.shtml
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) clean &&) :
 
 # Make DSK images
 dsk:	all
