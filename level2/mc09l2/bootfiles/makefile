@@ -42,7 +42,7 @@ BOOTFILE_MC09SDXL = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/scf.mn \
 		$(TERM_MC09) \
 		$(PIPE) \
-		$(CLOCK50HZMC09) $(MD)/sysgo_dd $(CM)/shell
+		$(CLOCK50HZMC09) $(CM)/shell
 
 
 BOOTFILES	= bootfile_mc09sd bootfile_mc09sdxl
