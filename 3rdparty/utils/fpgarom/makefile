@@ -6,7 +6,7 @@ DEPENDS		:= ./makefile
 
 ALLJOBS	= FPGABOOT.BIN fpgaboot.rom
 
-DSKFPGABOOT	= fpgaboot.dsk
+DSKFPGABOOT	= FPGABOOT.DSK
 
 DSKS		= $(DSKFPGABOOT)
 
