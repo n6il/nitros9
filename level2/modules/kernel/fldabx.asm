@@ -19,11 +19,20 @@ FLDABX   ldb   R$B,u        Get task # to get byte from
 * Exit : B=Byte from other task
 L0C40    pshs  cc,a,x,u
          bsr   L0BF5        Calculate offset into DAT image (fmove.asm)
-         ldd   a,u
+         ldd   a,u          [NAC HACK 2017Jan25] why ldd when a is never used??
          orcc  #IntMasks
+      IFNE  mc09
+         lda   <D.TINIT     Current MMU mask - selects block 0
+         sta   >MMUADR      Select block 0
+
+         stb   >MMUDAT      Map selected block into $0000-$1FFF
+         ldb   ,x
+         clr   >MMUDAT      Restore mapping at $0000-$1FFF
+      ELSE
          stb   >DAT.Regs    Map block into $0000-$1FFF
          ldb   ,x
          clr   >DAT.Regs    Restore mapping at $0000-$1FFF
+      ENDIF
          puls  cc,a,x,u
 
          stb   R$A,u        Save into caller's A & return
@@ -63,9 +72,21 @@ L0C28    andcc #^Carry
          pshs  cc,d,x,u
          bsr   L0BF5        Calculate offset into DAT image (fmove.asm)
          ldd   a,u          Get memory block
+      IFNE  mc09
+         orcc  #IntMasks
+         lda   <D.TINIT     Current MMU mask - selects block 0
+         sta   >MMUADR      Select block 0
+
+         lda   1,s          Haven't lost stack yet so this is safe
+
+         stb   >MMUDAT      Map selected block into $0000-$1FFF
+         sta   ,x
+         clr   >MMUDAT      Restore mapping at $0000-$1FFF
+      ELSE
          lda   1,s
          orcc  #IntMasks
          stb   >DAT.Regs    Map selected block into $0000-$1FFF
          sta   ,x
          clr   >DAT.Regs    Restore mapping at $0000-$1FFF
+      ENDIF
          puls  cc,d,x,u,pc

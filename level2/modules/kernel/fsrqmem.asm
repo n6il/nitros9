@@ -258,7 +258,7 @@ L0908    leax  <boot,pcr
 * Link to module and execute
 L090C    lda   #Systm+Objct
          os9   F$Link
-         bcs   L08F3        return with error
+         bcs   L08F3        return with error.
          lda   #'b          calling boot
          jsr   <D.BtBug
          jsr   ,y           load boot file

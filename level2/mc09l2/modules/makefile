@@ -14,7 +14,7 @@ DEPENDS		= ./makefile
 TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= boot_sdc
-BOOTTRACK	= rel_80 $(BOOTERS) krn
+BOOTTRACK	= rel_80 $(BOOTERS) mc09krn
 
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
 SYSMODS		= ioman init sysgo_dd rominfo vectors
@@ -49,14 +49,14 @@ RFM		= rfm.mn rfmdrv.dr ddy0.dd y0.dd y1.dd y2.dd y3.dd
 # The following macros represent a collection of modules for various
 # kernel tracks and bootfile configurations.
 #
-KERNEL_MC09SD	= rel_80 boot_sdc krn
+KERNEL_MC09SD	= rel_80 boot_sdc mc09krn
 
 ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE) $(RFM)
 
 all:	$(ALLOBJS)
 
 # Kernel
-ccbkrn krn krnp2:
+mc09krn krn krnp2:
 	$(CD) kernel; make $@
 	$(OS9COPY) kernel/$@ .
 

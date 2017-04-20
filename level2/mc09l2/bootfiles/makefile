@@ -7,7 +7,7 @@ CM		= ../cmds
 DEPENDS		= ./makefile
 
 # The _80 in rel_80 refers to 80-column screen
-KERNEL_MC09SD	= $(MD)/rel_80 $(MD)/boot_sdc $(MD)/krn
+KERNEL_MC09SD	= $(MD)/rel_80 $(MD)/boot_sdc $(MD)/mc09krn
 
 MC09SDC_80D	= $(MD)/mc09sdc.dr $(MD)/dds0_80d.dd $(MD)/s0_80d.dd $(MD)/s1_80d.dd $(MD)/s2_80d.dd $(MD)/s3_80d.dd
 
