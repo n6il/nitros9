@@ -19,10 +19,10 @@
 * in the $AXXX range, and as a result, the process stack pointer would get
 * switched out when $FFA5-$FFA6 was written and the stack would disappear.
 *
-         IFEQ  H6309
+       IFEQ  H6309
 L0A01    clrb
          rts
-         ENDC
+       ENDC
 
 FMove    ldd   R$D,u        get source & destination task #'s
 L0B25    ldy   R$Y,u        Get # bytes to move
@@ -146,10 +146,27 @@ L0B89    cmpd  #$0040
 L0B84    std   $0F,s
          puls  y
          orcc  #IntMasks
+       IFNE  mc09
+         lda   <D.TINIT     Current MMU mask - selects block 0
+         ora   #5
+         sta   >MMUADR      Select block 5
+         lda   $0E,s        stack could disappear in the remapping..
+         exg   d,y          swap them; final destination for d
+         sta   >MMUDAT
+***** NO STACK USE BETWEEN HERE.....
+         lda   <D.TINIT     Current MMU mask - selects block 0
+         ora   #6
+         sta   >MMUADR      Select block 6
+         stb   >MMUDAT
+* the coco code did a "tfr d,y". mc09 did a "exg d,y" which
+* left y correct but we also need d=y at the end..
+         tfr   y,d
+       ELSE
          lda   $0E,s  +++
          sty   >DAT.Regs+5
 ***** NO STACK USE BETWEEN HERE.....
          tfr   d,y    +++
+       ENDIF
          andb  #$07
          beq   L0B99
 L0B92    lda   ,x+
@@ -191,9 +208,21 @@ L0BA4
          bne   L0BA4  +++
          exg   x,u
 L0BBC    ldy   <D.SysDAT
+       IFNE  mc09
+         lda   <D.TINIT     Current MMU mask - selects block 0
+         ora   #5
+         sta   >MMUADR      Select block 5
+         ldb   $0B,y
+         stb   >MMUDAT      Restore it
+         inca
+         sta   >MMUADR      Select block 6
+         ldb   $0D,y
+         stb   >MMUDAT      Restore it
+       ELSE
          lda   $0B,y
          ldb   $0D,y
          std   >DAT.Regs+5
+       ENDIF
 ***** AND HERE...........
          puls  cc
          ldd   $0E,s

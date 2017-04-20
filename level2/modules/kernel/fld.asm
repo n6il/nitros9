@@ -22,6 +22,14 @@ L0AC8    lda   1,y            Get MMU block # to get data from
          clrb                 Clear carry/setup for STB
          pshs  cc             Preserve interrupt status/settings
          orcc  #IntMasks      shut IRQ's off
+       IFNE  mc09
+         ldb   <D.TINIT       Current MMU mask - selects block 0
+         stb   >MMUADR        Select block 0
+         sta   >MMUDAT        Map block into $0000-$1FFF
+         lda   ,x             Get byte
+         clrb
+         stb   >MMUDAT        Map block 0 into $0000-$1FFF
+       ELSE
          sta   >DAT.Regs      Map block into $0000-$1FFF
          IFNE  H6309
          brn    L0AC8         short delay
@@ -31,6 +39,7 @@ L0AC8    lda   1,y            Get MMU block # to get data from
          IFNE  H6309
          brn    L0AC8         short delay
          ENDC
+       ENDC
          puls  pc,cc          Get interrupt status/(or turn on) & return
 
 * Get 1st byte of LDDDXY - also used by many other routines
@@ -39,9 +48,18 @@ LDAXY    lda   1,y            Get MMU block #
          pshs  b,cc
          clrb                 Clear carry/setup for STB
          orcc  #IntMasks      Shut off interrupts
+       IFNE  mc09
+         ldb   <D.TINIT       Current MMU mask - selects block 0
+         stb   >MMUADR        Select block 0
+         sta   >MMUDAT        Map in MMU block into slot 0
+         lda   ,x+            Get byte
+         clrb
+         stb   >MMUDAT        Map block 0 back in
+       ELSE
          sta   >DAT.Regs      Map in MMU block into slot 0
          lda   ,x+            Get byte
          stb   >DAT.Regs
+       ENDC
 *         clr   >DAT.Regs     Map in MMU block #0 into slot 0
 *         andcc #^IntMasks
          puls  b,cc
@@ -77,15 +95,19 @@ FLDDDXY  ldd   R$D,u          Get offset to offset within DAT Image
 
 * Get 2 bytes for LDDDXY (also called by other routines)
 * Should simply map in 2 blocks, and do a LDD (don't have to worry about wrap)
+       IFNE  mc09
+L0B02    pshs  u,y,x,dp       Preserve regs (x, y adjusted by AdjBlk0)
+       ELSE
 L0B02    pshs  u,y,x          Preserve regs (x, y adjusted by AdjBlk0)
-         IFNE  H6309
+       ENDC
+
+       IFNE  H6309
          addr  d,x            Point X to X+D
-         ELSE
+       ELSE
          leax  d,x
-         ENDC
+       ENDC
          bsr   AdjBlk0        Wrap address around for 1 block
          ldu   <D.SysDAT      Get sys DAT Image ptr
-*         lda   1,u            Get MMU block #0
          clra                 system block 0 =0 always
          ldb   3,u            Get MMU block #1
          tfr   d,u            make U=blocks to re-map in once done
@@ -93,7 +115,35 @@ L0B02    pshs  u,y,x          Preserve regs (x, y adjusted by AdjBlk0)
          ldb   3,y            Get MMU block #1
          pshs  cc             Preserve int. status
          orcc  #IntMasks      shut off int.
+       IFNE  mc09
+         lda   <D.TINIT       Current MMU mask - selects block 0
+         inca                 Select block 1
+
+         ldb   1,y            Get MMU block #0
+         tfr   b,dp           Save it for later
+         ldb   3,u            Get restore value for MMU block #1
+         tfr   d,u            Save it for later
+
+         ldb   3,y            Get MMU block #1
+         std   >MMUADR        Set address and block 1
+
+         deca                 Select block 0
+         tfr   dp,b
+         std   >MMUADR        Set address and block 0
+
+         ldy   ,x             Get 2 bytes
+
+         tfr   u,d
+         std   >MMUADR        Restore original MMU block #1
+         deca                 Select block 0
+         clrb                 system block 0 =0 always
+         std   >MMUADR        Restore original MMU block #0
+
+         tfr   y,d            Put the data in the right place
+         puls  pc,u,y,x,dp,cc Restore regs & return
+       ELSE
          std   >DAT.Regs      Map in both blocks
          ldd   ,x             Get 2 bytes
          stu   >DAT.Regs      Map original blocks in
          puls  pc,u,y,x,cc    Restore regs & return
+       ENDC
