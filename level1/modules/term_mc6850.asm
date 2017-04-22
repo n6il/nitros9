@@ -44,7 +44,12 @@ rev      set   $00
          fcb   $01        IT.ALF auto line feed:0=off
          fcb   $00        IT.NUL end of line null count
          fcb   $01        IT.PAU pause:0=no end of page pause
-         fcb   24         IT.PAG lines per page
+* IT.PAG and IT.ROW are set to 25 to match the Multicomp6809 hardware
+* terminal. Applications (eg scred) inspect this value and need it to be
+* correct. In the case of a "glass teletype" (aka terminal emulator)
+* attached to a serial port, it should be set to 25x80 in order for programs
+* like scred to work correctly.
+         fcb   25         IT.PAG lines per page
          fcb   C$BSP      IT.BSP backspace character
          fcb   C$DEL      IT.DEL delete line character
          fcb   C$CR       IT.EOR end of record character
@@ -62,7 +67,7 @@ rev      set   $00
          fcb   C$XON      IT.XON acia xon char
          fcb   C$XOFF     IT.XOFF acia xoff char
          fcb   80         IT.COL (szx) number of columns for display
-         fcb   24         IT.ROW (szy) number of rows for display
+         fcb   25         IT.ROW (szy) number of rows for display
          fcb   $00        IT.XTYP 0 => NOT extended type
 initsize equ   *
 
