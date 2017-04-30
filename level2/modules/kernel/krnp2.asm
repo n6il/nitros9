@@ -175,7 +175,7 @@ Uday     lda    ,x+
          puls   cc,u,pc     restore IRQ's, register stack pointer & return
      ENDC
 
-krnp2    lda   #'2          into krnp2
+krnp2    lda   #'2          debug: signal that we made it into krnp2
          jsr   <D.BtBug
 
          leay   SvcTab,pc   install system calls
@@ -186,11 +186,11 @@ krnp2    lda   #'2          into krnp2
      ENDC
 * Change to default directory
 L003A    ldu    <D.Init     get init module pointer
-         ldd    SysStr,u    get pointer to system device name (usually '/dd')
+         ldd    SysStr,u    get pointer to system device name (usually '/DD')
          beq    L004F       don't exist, open std device
          leax   d,u         point to name
 
-         lda   #'x          tried chd'ing
+         lda   #'x          debug: signal that we tried chd'ing
          jsr   <D.BtBug
 
          lda    #(EXEC.+READ.) get file mode
@@ -198,12 +198,12 @@ L003A    ldu    <D.Init     get init module pointer
          bcc    L004F       went ok, go on
          os9    F$Boot      try & load boot file
          bcc    L003A       go try again
-L004F    ldu    <D.Init     get pointer to init
-         ldd    <StdStr,u   point to default device (usually '/term')
+L004F    ldu    <D.Init     get init module pointer
+         ldd    <StdStr,u   point to default device (usually '/Term')
          beq    L0077       don't exist go do OS9P3
          leax   d,u         point to it
 
-         lda   #'o        tried opening output window
+         lda   #'o          debug: signal that we tried opening output window
          jsr   <D.BtBug
 
          lda    #UPDAT.     get file mode
@@ -223,9 +223,9 @@ L0066    ldx    <D.Proc     get current process pointer
          sta    <P$Path+1,x save stdout path
          os9    I$Dup       dupe it again
          sta    <P$Path+2,x save stderr path
-L0077    leax   <L0096,pc   point to 'OS9P3'
+L0077    leax   <L0096,pc   point to 'krnp3'
          lda    #Systm      get type
-         os9    F$Link      try & link
+         os9    F$Link      try to link
          bcs    L0083       not there, go on
          jsr    ,y          execute it
 * Execute module listed in Init module
@@ -233,7 +233,7 @@ L0083    ldu    <D.Init     get init module pointer
          ldd    InitStr,u   get offset to name of first module
          leax   d,u         point to it
 
-         lda   #'C          tried to to CC3Go
+         lda   #'C          debug: signal that we tried to go to SysGo
          jsr   <D.BtBug
 
          lda    #Objct      get module type

@@ -493,11 +493,11 @@ L00E2    tfr   pc,d       get the address at which we're executing
 BtDebug  pshs  cc,d,x     save the register
          orcc  #IntMasks  turn IRQ's off
          ldb   #Bt.Block  block to map in
-         stb   >$FFA0     map the boot screen into block 0
+         stb   >DAT.Regs+0 map the boot screen into block 0
          ldx   >$0002     where to put the bytes
          sta   ,x+        put the character on-screen
          stx   >$0002     save updated address
-         clr   >$FFA0     map block 0 in again
+         clr   >DAT.Regs+0 map block 0 in again
          puls  cc,d,x,pc  restore X and exit
 
 L0101
