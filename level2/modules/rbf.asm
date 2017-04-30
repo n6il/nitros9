@@ -1837,7 +1837,7 @@ L09B7    cmpb  #DIR.FD-DIR.NM	past maximum size of name?
          andcc  #^Carry		clear error status
          puls  pc,x		return
 
-* Check for a match of 2 names
+* Check for a match of 2 names, ignoring case.
 * Entry: Y=Pointer to high bit terminated string #1
 *        X=Pointer to string #2
 *        B=Length of string #1
