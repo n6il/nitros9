@@ -977,7 +977,11 @@ SetupCoModule
          sta   <V.CurCo,u current module in use? ($02=CoVDG, $04=C080)
 L0600    rts             
                          
-GOCoHR   ldx   #$3318     51x24
+GOCoHR   ldb   #$10
+         stb   <V.CFlag,u
+         clr   <V.Caps,u 
+         lda   #ModCoHR   'CoHR is loaded' bit
+         ldx   #$3318     51x24
          pshs  u,y,x,a   
          leax  >CoHR,pcr 
          bra   SetupCoModule
