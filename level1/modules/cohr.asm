@@ -170,7 +170,7 @@ L0165    inc   V.51EscSeq,u
                          
 DoNormalChar                 
          pshs  y,a       
-         lbsr  DoEraseCursor
+*         lbsr  DoEraseCursor
          puls  y,a       
          inc   V.51CursorChanged,u
          bsr   DrawCharacter
@@ -199,7 +199,8 @@ L01A5
          ldd   V.51XPos,u * Update old Cursor pos
          std   V.51OldCursorPosX,u
          dec   V.51CursorChanged,u
-         lbsr  DoDisplayCursor * Display cursor
+         clr   V.51CursorOn,u
+*         lbsr  DoDisplayCursor * Display cursor
                          
          lbra  WriteExit2
          clrb             * Flag no error
@@ -378,8 +379,9 @@ L02A6    lbsr  L0484
          lbra  CancelEscSequence
                          
 DoBSUpdateCursor                 
-         lbsr  L0484     
-         lbsr  DoDisplayCursor
+         lbsr  L0484    
+         clr   V.51CursorOn,u 
+*         lbsr  DoDisplayCursor
          rts             
                          
 *
@@ -395,7 +397,9 @@ DoLineFeed
          lbsr  SoScrollScreen
          bra   L02BC     
 L02B9    sta   V.51YPos,u
-L02BC    lbsr  DoDisplayCursor
+L02BC    
+         clr   V.51CursorOn,u
+*        lbsr  DoDisplayCursor
          bra   L02A6     
                          
 *
@@ -438,7 +442,7 @@ L02D2    bsr   L0314
          ldb   #$07      
          bsr   L0305     
          clr   V.51CursorOn,u * Flag cursor is off
-         lbsr  DoDisplayCursor * Display cursor
+*         lbsr  DoDisplayCursor * Display cursor
          lbra  CancelEscSequence
                          
 L0305    lsra            
@@ -526,7 +530,8 @@ L0382    ldx   ,u
 DelLine
          clrb
          stb   V.51XPos,u
-         lbsr  DoDisplayCursor
+         clr   V.51CursorOn,u
+*         lbsr  DoDisplayCursor
 *
 * $1b42 - clear to end of line
 *
@@ -576,7 +581,8 @@ L03F3    lsrb
          lbsr  L0316     
 L040D    puls  a         
          sta   V.51XPos,u
-         lbsr  DoDisplayCursor
+         clr   V.51CursorOn,u
+*         lbsr  DoDisplayCursor
          rts             
 *
 * $1b4A - clear to end of screen
@@ -593,7 +599,8 @@ L0421    lbsr  L0314
          bne   L0421     
          leas  $01,s     
 L042A    dec   V.51CursorChanged,u
-         lbsr  DoDisplayCursor
+         clr   V.51CursorOn,u
+ *        lbsr  DoDisplayCursor
          lbra  CancelEscSequence
                          
 *
@@ -603,7 +610,9 @@ DoHome
          lbsr  DoEraseCursor
          clr   V.51XPos,u
          clr   V.51YPos,u
-         lbsr  DoDisplayCursor
+         clr   V.51CursorOn,u
+         clr   V.51CursorOn,u
+*         lbsr  DoDisplayCursor
          lbra  L02A6
 
 *
@@ -639,7 +648,8 @@ DoCurXY  lbsr  DoEraseCursor	hide cursor
          ldb   <V.NChar,u 	get X-pos
          subb  #C$SPAC		take out ASCII space
          stb   V.51XPos,u
-         lbsr  DoDisplayCursor
+         clr   V.51CursorOn,u
+*         lbsr  DoDisplayCursor
          lbra  L02A6     
                          
 *
@@ -664,7 +674,8 @@ L0450    cmpa  #24
          bcs   L0456     
          lda   #23       
 L0456    sta   V.51YPos,u
-L0459    lbsr  DoDisplayCursor
+L0459    clr   V.51CursorOn,u
+*        lbsr  DoDisplayCursor
          lbra  L02A6     
                          
 *
