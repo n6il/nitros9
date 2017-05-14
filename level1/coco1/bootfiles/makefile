@@ -37,6 +37,7 @@ FLOPPY_80D	= $(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd
 VTIO_COVDG	= $(MD)/vtio.dr $(MD)/covdg.io $(MD)/term_vdg.dt
 VTIO_COHR	= $(MD)/vtio.dr $(MD)/cohr.io $(MD)/term_hr.dt
 VTIO_CO80	= $(MD)/vtio.dr $(MD)/co80.io $(MD)/term_80.dt
+VTIO_CO42	= $(MD)/vtio.dr $(MD)/co42.io $(MD)/term_42.dt
 PIPE		= $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd
 CLOCK60HZ	= $(MD)/clock_60hz $(MD)/clock2_soft
 CLOCK60HZDW	= $(MD)/clock_60hz $(MD)/clock2_dw
@@ -84,6 +85,18 @@ BOOTFILE_COHR	= $(MD)/ioman \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COHR) \
+		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
+		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
+		$(PIPE) \
+		$(CLOCK60HZ) \
+		$(MD)/sysgo_dd
+
+BOOTFILE_CO42	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(FLOPPY_40D) \
+		$(MD)/ddd0_40d.dd \
+		$(MD)/scf.mn \
+		$(VTIO_CO42) \
 		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
 		$(PIPE) \
@@ -244,6 +257,19 @@ BOOTFILE_COVDG_COCOSDC	= $(MD)/ioman \
 		$(CLOCK60HZ) \
 		$(MD)/sysgo_dd
 
+BOOTFILE_CO42_COCOSDC	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBCOCOSDC) \
+		$(MD)/ddsd0_cocosdc.dd \
+		$(FLOPPY_40D) \
+		$(MD)/scf.mn \
+		$(VTIO_CO42) \
+		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
+		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
+		$(PIPE) \
+		$(CLOCK60HZ) \
+		$(MD)/sysgo_dd		
+
 BOOTFILE_COVDG_COCOSDC_GAME	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(RBCOCOSDC) \
@@ -262,6 +288,20 @@ BOOTFILE_COHR_DW	= $(MD)/ioman \
 		$(MD)/ddx0.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COHR) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
+		$(SCDWP)\
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd
+
+BOOTFILE_CO42_DW	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(FLOPPY_40D) \
+		$(RBDW) \
+		$(MD)/ddx0.dd \
+		$(MD)/scf.mn \
+		$(VTIO_CO42) \
 		$(MD)/scdwv.dr \
 		$(SCDWV_NET) \
 		$(SCDWP)\
@@ -302,18 +342,31 @@ BOOTFILE_COHR_DS80	= $(MD)/ioman \
 		$(FLOPPY_80D) \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/scf.mn \
-		$(VTIO_CO80) \
+		$(VTIO_COHR) \
 		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
 		$(PIPE) \
 		$(CLOCK60HZ) \
 		$(MD)/sysgo_dd
 
-BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_covdg_dw \
+BOOTFILE_CO42_DS80	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(FLOPPY_80D) \
+		$(MD)/ddd0_80d.dd \
+		$(MD)/scf.mn \
+		$(VTIO_CO42) \
+		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
+		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
+		$(PIPE) \
+		$(CLOCK60HZ) \
+		$(MD)/sysgo_dd
+
+BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_co42  \
 		bootfile_dw_headless bootfile_covdg_becker \
 		bootfile_covdg_becker_game bootfile_covdg_dw_game \
-		bootfile_covdg_cocosdc bootfile_covdg_cocosdc_game \
-		bootfile_cohr_dw bootfile_covdg_ds80 bootfile_cohr_ds80 \
+		bootfile_covdg_cocosdc bootfile_co42_cocosdc bootfile_covdg_cocosdc_game \
+		bootfile_covdg_dw bootfile_cohr_dw bootfile_co42_dw \
+		bootfile_covdg_ds80 bootfile_cohr_ds80 bootfile_co42_ds80 \
 		bootfile_cohr_becker bootfile_becker_headless \
 		bootfile_covdg_arduino bootfile_arduino_headless \
 		bootfile_cohr_arduino bootfile_covdg_arduino_game 
@@ -329,6 +382,9 @@ bootfile_covdg: $(BOOTFILE_COVDG) $(DEPENDS)
 
 bootfile_cohr: $(BOOTFILE_COHR) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COHR)>$@
+
+bootfile_co42: $(BOOTFILE_CO42) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_CO42)>$@
 
 bootfile_co80: $(BOOTFILE_CO80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_CO80)>$@
@@ -366,14 +422,23 @@ bootfile_covdg_arduino_game: $(BOOTFILE_COVDG_ARDUINO_GAME) $(DEPENDS)
 bootfile_covdg_cocosdc: $(BOOTFILE_COVDG_COCOSDC) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_COCOSDC)>$@
 
+bootfile_co42_cocosdc: $(BOOTFILE_CO42_COCOSDC) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_CO42_COCOSDC)>$@
+
 bootfile_covdg_cocosdc_game: $(BOOTFILE_COVDG_COCOSDC_GAME) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_COCOSDC_GAME)>$@
 
 bootfile_cohr_ds80: $(BOOTFILE_COHR_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COHR_DS80)>$@
 
+bootfile_co42_ds80: $(BOOTFILE_CO42_DS80) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_CO42_DS80)>$@
+
 bootfile_cohr_dw: $(BOOTFILE_COHR_DW) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COHR_DW)>$@
+
+bootfile_co42_dw: $(BOOTFILE_CO42_DW) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_CO42_DW)>$@
 
 bootfile_cohr_becker: $(BOOTFILE_COHR_BECKER) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COHR_BECKER)>$@
