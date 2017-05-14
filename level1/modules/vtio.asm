@@ -699,7 +699,8 @@ L0414    decb
 GrfDrv   fcs   /GrfDrv/    
 CoVDG    fcs   /CoVDG/    
 CoWP     fcs   /CoWP/    
-CoHR     fcs   /CoHR/    
+CoHR     fcs   /CoHR/
+Co42     fcs   /Co42/    
                          
 * GetStat
 *
@@ -963,7 +964,7 @@ GoCoVDG  stb   <V.CFlag,u save flag for later
          bra   SetupCoModule
                          
 GoCoWP   bita  #ModCoWP   ; CoWP needed ?
-         beq   GoCoHR    
+         beq   GOCo42    
          lda   #ModCoWP   'CoWP is loaded' bit
          ldx   #$5018     80x24
          pshs  u,y,x,a   
@@ -976,7 +977,18 @@ SetupCoModule
          stx   <V.Col,u   save screen size
          sta   <V.CurCo,u current module in use? ($02=CoVDG, $04=C080)
 L0600    rts             
-                         
+
+GOCo42   bita  #ModCo42
+         beq   GOCoHR
+         ldb   #$10
+         stb   <V.CFlag,u
+         clr   <V.Caps,u 
+         lda   #ModCo42   'Co42 is loaded' bit
+         ldx   #$2A18     42x24
+         pshs  u,y,x,a   
+         leax  >Co42,pcr 
+         bra   SetupCoModule
+
 GOCoHR   ldb   #$10
          stb   <V.CFlag,u
          clr   <V.Caps,u 

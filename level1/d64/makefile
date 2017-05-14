@@ -33,7 +33,7 @@ include port.mak
 
 # TERMWIDTH can be either VDG or HR, for 32x16 or 51x24 respectivly
 #NOTE must be lower case.
-TERMWIDTH	= hr
+TERMWIDTH	= 42
 
 
 #Default step rate for floppy drives
@@ -58,10 +58,13 @@ DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
 
 BOOTFILE_COVDG		= bootfiles/bootfile_covdg_ds40
 BOOTFILE_COHR		= bootfiles/bootfile_cohr_ds40
+BOOTFILE_CO42		= bootfiles/bootfile_co42_ds40
 BOOTFILE_COVDG_DS80	= bootfiles/bootfile_covdg_ds80
 BOOTFILE_COHR_DS80	= bootfiles/bootfile_cohr_ds80
+BOOTFILE_CO42_DS80	= bootfiles/bootfile_co42_ds80
 BOOTFILE_COVDG_SS40	= bootfiles/bootfile_covdg_ss40
 BOOTFILE_COHR_SS40	= bootfiles/bootfile_cohr_ss40
+BOOTFILE_CO42_SS40	= bootfiles/bootfile_co42_ss40
 
 BOOTFILE_DS40		= bootfiles/bootfile_co$(TERMWIDTH)_ds40
 BOOTFILE_DS80		= bootfiles/bootfile_co$(TERMWIDTH)_ds80
