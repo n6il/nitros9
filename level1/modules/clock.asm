@@ -154,6 +154,77 @@ InitCont
          jsr   ,y         call init entry point of Clock2
 
 * Initialize clock hardware
+         IFNE  corsham
+* Corsham SS-50 6809 board -- uses the Arduino as a clock source
+* Timer values:
+*    0 = disable timer interrupts
+*    1 = 10 ms
+*    2 = 20 ms
+*    3 = 30 ms
+*    4 = 40 ms
+*    5 = 50 ms
+*    6 = 100 ms
+*    7 = 250 ms
+*    8 = 500 ms
+*    9 = 1000 ms
+
+         pshs    d,cc
+
+* Check if subroutine module has already been linked
+         IFGT  LEVEL-1
+         ldu   <D.DWSubAddr
+         ELSE
+         ldu   >D.DWSubAddr
+         ENDC
+* The following code is commented because the pio subroutine module has already
+* been linked and its entry point stored prior to us getting here.
+*         bne   SetTimer
+* Link to subroutine module
+*         clra
+*         leax  iosub,pcr
+*         os9   F$Link
+*         bcs   ClkEx
+*         tfr   y,u
+*         IFGT  LEVEL-1
+*         stu   <D.DWSubAddr
+*         ELSE
+*         stu   >D.DWSubAddr
+*         ENDC
+* Initialize the low level device
+*         jsr   ,u
+
+
+SetTimer
+         orcc    #IntMasks
+         ldd     #CSETIMR*256+$02
+         std	1,s
+* Tell Arduino to generate timer interrupts
+	leax	1,s
+	ldy	#2
+	jsr	6,u
+	ldy	#1
+	jsr	3,u
+	lda	,x
+	cmpa	#RACK
+	beq	SETIM1
+	ldy	#1
+	jsr	3,u	read error code
+	bra	ClkEx
+
+SETIM1
+
+* Tell PIA to enable interrupts
+		ldx	#PIA0Base
+         lda     3,x
+         ora     #$01         *enable interrupts
+         sta     3,x
+         lda     2,x   *clear pending ints
+
+ClkEx
+	puls    cc,d,pc
+*iosub	fcs	/pio/
+
+         ELSE
          IFNE  atari
          IFNE  USENMI
          lda   #$40
@@ -196,6 +267,7 @@ InitCont
          lda   2,x        clear possible pending PIA0 VBORD IRQ
           puls  cc,pc      recover IRQ enable status and return
           ENDC       
+          ENDC
                          
 *
 * Clock IRQ Entry Point
@@ -204,6 +276,12 @@ InitCont
 SvcIRQ                   
          clra            
          tfr   a,dp       set direct page to zero
+         IFNE  corsham
+         tst    PIA0Base+3
+         bmi    ClearInt    it's a clock interrupt -- clear it
+         jmp    [>D.SvcIRQ] else service other possible IRQ
+ClearInt tst    PIA0Base+2      clear clock interrupt by reading register
+         ELSE
          IFNE  atari
          IFNE  USENMI
          sta   NMIRES     clear NMI interrupt
@@ -229,6 +307,7 @@ L0032
          bmi   L0032      branch if sync flag on
          jmp   [>D.SvcIRQ] else service other possible IRQ
 L0032    tst   PIA0Base+2 clear interrupt
+          ENDC
           ENDC
          dec   <D.Tick    decrement tick counter
          bne   L007F      go around if not zero

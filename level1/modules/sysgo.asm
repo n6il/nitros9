@@ -109,7 +109,7 @@ ShellPL  equ   *-ShellPrm
 * Default time packet
 DefTime  dtb
 
-       IFEQ  atari
+       IFEQ  atari+corsham
        IFEQ  Level-1
 * BASIC reset code (CoCo port only)
 BasicRst fcb   $55
@@ -203,7 +203,7 @@ SignOn
 
 L0125    equ   *
          pshs  u,y
-       IFEQ  atari
+       IFEQ  atari+corsham
        IFEQ  Level-1
 * Setup BASIC code (CoCo port only)
          leax  >BasicRst,pcr
@@ -242,7 +242,7 @@ L0151    lda   b,y
 
        IFEQ  ROM
 * Fork shell startup here
-       IFEQ  atari
+       IFEQ  atari+corsham
 * Added 12/14/03: If SHIFT is held down, startup is not run (CoCo only)
          lda   #$01                    standard output
          ldb   #SS.KySns
