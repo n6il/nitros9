@@ -88,7 +88,6 @@ name     fcs   /Krn/
 * OS-9 Genesis!
 
 OS9Cold  equ   *
-         
 * clear out system globals from $0000-$0400
 *         ldx   #D.FMBM
          ldx   #$0000
@@ -174,24 +173,25 @@ L00D2    lda   ,x+
          ENDC
          puls  x
 
+* Atari has bootfile already in memory
          IFNE  atari
-         ldy   #$D000
-
+* flag that we've booted and that Boot Low starts appropriately
+         ldy   #$D000           Atari: I/O is at $D000-$D7FF
          inc   <D.Boot
          stx   <D.BTLO
-         ldx	#$FFFF
+         ldx   #$FFFF
          stx   <D.BTHI
-
          ELSE
          ldy	#Bt.Start+Bt.Size
          ENDC
          
          lbsr	ValMods
-         IFNE  atari
 
+* Atari: look for more modules at $D800-$F3FF
+         IFNE  atari
          ldx   #$D800				
          ldy   #$F400
-         lbsr	ValMods
+         lbsr  ValMods
          ENDC
          
 * Copy vectors to system globals
@@ -249,8 +249,9 @@ GetMem   equ   *			Initially I tried GetMem clra
 L0158    ldx   <D.FMBM
 * Free-memory bitmap. Bit7 of 0,x corresponds to page 0, bit6 to page 1 etc.
 * Bit7 of 1,x corresponds to page 8, bit6 to page 9 etc, etc.
+
          IFNE  atari
-* In the Atari, memory $0000-$08FF is used by the system
+* Atari needs $0000-$08FF and $D000-$D7FF reserved
          ldb   #%11111111
          stb   ,x                       mark $0000-$07FF as allocated
          stb   $1A,x                    mark $D000-$D7FF I/O area as allocated
@@ -261,6 +262,7 @@ L0158    ldx   <D.FMBM
          ldb   #%11111000
          stb   ,x
          ENDC
+
 * For all platforms exclude high memory as defined (earlier) by D.MLIM
          clra
          ldb   <D.MLIM
@@ -283,7 +285,7 @@ SWI2     pshs  pc,x,b
          ldb   #P$SWI2
          bra   L018C
 SVCNMI   jmp	[>D.NMI]
-DUMMY	rti
+DUMMY	 rti
 SVCIRQ   jmp   [>D.SvcIRQ]
 SWI      pshs  pc,x,b
          ldb   #P$SWI

@@ -119,6 +119,7 @@ init
          lda   #Sbrtn+Objct
          os9   F$Link    
          bcc   LinkOk    
+
          jmp   >$FFFE     level 1: jump to reset vector
                          
 LinkOk                   
@@ -161,10 +162,10 @@ InitCont
          ELSE
          lda   #IRQST.TIMER1
          pshs  cc
-	    orcc	#IntMasks
-	    ora	<D.IRQENShdw
-	    sta	<D.IRQENShdw
-	    sta   IRQEN
+	 orcc	#IntMasks
+	 ora	<D.IRQENShdw
+	 sta	<D.IRQENShdw
+	 sta   IRQEN
          lda   #%00101001
          sta   AUDCTL
          clr   AUDC1
