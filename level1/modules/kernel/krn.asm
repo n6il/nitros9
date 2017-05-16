@@ -182,9 +182,15 @@ L00D2    lda   ,x+
          ldx   #$FFFF
          stx   <D.BTHI
          ELSE
+         IFNE	corsham
+         ldx	#Bt.Start
+         ldy	#Bt.Start+Bt.Size-1
+         ELSE
+* CoCo
          ldy	#Bt.Start+Bt.Size
          ENDC
-         
+         ENDC
+
          lbsr	ValMods
 
 * Atari: look for more modules at $D800-$F3FF
@@ -258,9 +264,18 @@ L0158    ldx   <D.FMBM
          ldb   #%10000000
          stb   1,x                      mark $0800-$08FF as allocated
          ELSE
-* For all (other) platforms, memory $0000-$04FF is used by the system
+         IFNE  corsham
+* Corsham needs $0000-$04FF and $E000-$EFFF reserved
          ldb   #%11111000
-         stb   ,x
+         stb   ,x                       mark $0000-$04FF as allocated
+         ldb   #%11111111
+         stb   $1C,x                    mark $E000-$E7FF I/O area as allocated
+         stb   $1D,x                    mark $E800-$EFFF I/O area as allocated
+         ELSE
+* CoCo needs $0000-$04FF reserved
+         ldb   #%11111000
+         stb   ,x                       mark $0000-$04FF as allocated
+         ENDC
          ENDC
 
 * For all platforms exclude high memory as defined (earlier) by D.MLIM
@@ -968,20 +983,30 @@ InitNam  fcs   /Init/
 
 P2Nam    fcs   /krnp2/
 
-		emod
-eom      	equ	*
+         
+         
+EOMTop		EQU	*
 
-Vectors  fdb   SWI3                    SWI3 
-         fdb   SWI2                    SWI2
-         fdb   DUMMY                   FIRQ
-         fdb   SVCIRQ                  IRQ
-         fdb   SWI                     SWI
-         fdb   SVCNMI                  NMI
-         
-         
-         IFNE  atari
-         fdb	$F3FE-(*-OS9Cold)
-         ENDC
-         
-eomem    equ   *
-         end
+                IFEQ    corsham
+		emod
+eom      		equ	*
+                ENDC
+
+		IFNE 	atari
+		fdb	$F3FE-(*-OS9Cold)
+		ENDC
+
+Vectors		fdb	SWI3		SWI3
+		fdb	SWI2		SWI2
+		fdb	DUMMY		FIRQ
+		fdb	SVCIRQ		IRQ
+		fdb	SWI		SWI
+		fdb	SVCNMI		NMI
+
+                IFNE    corsham
+		emod
+eom      		equ	*
+                ENDC
+EOMSize		equ	*-EOMTop
+
+		end

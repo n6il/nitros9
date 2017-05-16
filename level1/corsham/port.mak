@@ -1,0 +1,8 @@
+PORT = corsham
+MACHINE = Corsham 6809
+CPU = 6809
+LEVEL = 1
+TELNET_PORT = 6801
+HTTPD_PORT = 8801
+
+include $(NITROS9DIR)/rules.mak

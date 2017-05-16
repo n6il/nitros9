@@ -159,7 +159,11 @@ InstStr  equ   *
          IFNE   coco3fpga
          fcc    "Gary Becker's Coco3FPGA"
          ELSE
+         IFNE   corsham
+         fcc    "Corsham 6809"
+         ELSE
          fcc    "Unknown Machine"
+         ENDC                             match IFNE corsham
          ENDC                             match IFNE coco3fpga
          ENDC                             match IFNE mc09
          ENDC                             match IFNE atari
