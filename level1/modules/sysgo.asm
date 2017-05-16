@@ -185,7 +185,8 @@ SignOn
 * Set default time
          leax  >DefTime,pcr
          os9   F$STime                 set time to default
-       IFEQ  ROM
+
+         IFEQ  ROM
 * Change EXEC and DATA dirs
          leax  >ExecDir,pcr
          lda   #EXEC.
