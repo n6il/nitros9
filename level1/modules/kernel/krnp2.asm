@@ -73,8 +73,10 @@ SvcTbl   fcb   $7F
          fcb   F$Ret64+$80
          fdb   FRet64-*-2
 
+	IFNE UseFDebug
          fcb   F$Debug
          fdb   FDebug-*-2
+	ENDC
 
          fcb   $80
 
@@ -767,7 +769,9 @@ ValBoot2 cmpx  <D.BTHI
          bcs   ValBoot
 JmpBtEr  puls  pc,u
 
+	IFNE UseFDebug
          use   fdebug.asm
+	ENDC
 
          emod
 eom      equ   *
