@@ -89,6 +89,15 @@ TkPerSec       set       60
 *
 *************************************************
 
+********************************
+* Boot defs for NitrOS-9 Level 1
+*
+* These defs are not strictly for 'Boot', but are for booting the
+* system.
+*
+Bt.Start       set       $8000
+Bt.Size        EQU       $1080               Maximum size of bootfile
+Bt.Track       EQU       $0000
 HW.Page        set       $FF                 Device descriptor hardware page
 
 

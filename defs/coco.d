@@ -144,6 +144,40 @@ A.V7           SET       $FFC7
 
                IFEQ      Level-1
 
+********************************
+* Boot defs for NitrOS-9 Level 1
+*
+* These defs are not strictly for 'Boot', but are for booting the
+* system.
+*
+Bt.Start       EQU       $EE00               Start address of the boot track in memory
+
+               ELSE
+
+******************************************
+* Boot defs for NitrOS-9 Level 2 and above
+*
+* These defs are not strictly for 'Boot', but are for booting the
+* system.
+*
+Bt.Start       SET       $ED00               Start address of the boot track in memory
+Bt.Block       EQU       $3B                 Block to map in for the 'OS9BOOT' screen
+Bt.Flag        EQU       $8A34               Flag in Bt.Block to verify that it's unchanged
+Bt.Offst       EQU       2                   Offset into the screen where the current ptr is
+
+               ENDC
+
+* On the CoCo, the boot track is all of track 34
+
+Bt.Track       EQU       34                  Boot track
+Bt.Sec         EQU       0                   Start LSN of boot area on boot track
+
+
+Bt.Size        EQU       $1080               Maximum size of bootfile
+
+
+               IFEQ      Level-1
+
 *************************************************
 *
 * NitrOS-9 Level 1 Section

@@ -70,9 +70,6 @@
 
          ifp1
          use   defsfile
-         IFNE	atari
-         use   atari.d
-         ENDC
          endc
 
 tylg     set   Systm+Objct
@@ -149,23 +146,13 @@ ChkRAM   leay  ,x
          bne   L00C2                   nope, not RAM here!
          std   ,y                      else restore org contents
          leax  >$0100,y                check top of next 256 block
-         IFNE  atari
-         cmpx  #$8000                  stop short of ROM starting at $8000
-         ELSE
          cmpx  #Bt.Start               stop short of boot track mem
-         ENDC
          bcs   ChkRAM
          leay  ,x
 * Here, Y = end of RAM
 L00C2    leax  ,y                      X = end of RAM
-         
          ELSE
-         
-         IFNE  atari
-         ldx   #$8000
-         ELSE
-         ldx   #Bt.Start         
-         ENDC
+         ldx 	#Bt.Start
          ENDC
          stx   <D.MLIM                 save off memory limit
 
