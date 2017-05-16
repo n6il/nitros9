@@ -236,4 +236,17 @@ NotRMask 	EQU   	%10000000
 DensMask 	EQU   	%00000001 
 T80Mask  	EQU   	%00000010 
 
-		ENDC
+********************************
+* Boot defs for NitrOS-9 Level 1
+*
+* These defs are not strictly for 'Boot', but are for booting the
+* system.
+*
+* Boot area size on Dragon is only 16 sectors=4K
+Bt.Size        EQU       $1000               Max size of boot file
+* Boot area on the Dragon starts on track 0 sector 2, immediately
+* after the blockmap.
+Bt.Track       EQU       0                   Boot track
+Bt.Sec         EQU       2                   Start LSN of boot area on boot track
+
+         ENDC
