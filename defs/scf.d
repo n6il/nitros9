@@ -219,6 +219,7 @@ PARODD         EQU       %00100000
 PAREVEN        EQU       %01100000
 PARMARK        EQU       %10100000
 PARSPACE       EQU       %11100000
+PARMASK        EQU       %11100000
 
 * PD.BAU definitions
 *
