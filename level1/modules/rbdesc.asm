@@ -80,7 +80,7 @@ initsize equ   *
          IFNE  DD
 name     fcs   /DD/
          ELSE
-name     fcs   /RTST/
+name     fcc   /RTST/
          fcb   '0+DNum+$80
          ENDC
 mgrnam   fcs   /RBF/
