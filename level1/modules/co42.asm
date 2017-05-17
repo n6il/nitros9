@@ -611,7 +611,7 @@ L03BA
          pshs  b         
          bitb  #$07      
          bne   L03CB     
-         lda   #$05      
+         lda   #$06      
          mul             
          bra   L03F3     
 L03CB    lda   #$01      
@@ -628,7 +628,7 @@ L03CF    lda   #$20
 L03E3    dec   ,s        
          bpl   L03CF     
          lda   V.51XPos,u
-         ldb   #$05      
+         ldb   #$06      
          mul             
          bitb  #$08      
          bne   L03CF     
