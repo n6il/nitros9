@@ -1,5 +1,8 @@
 ********************************************************************
-* mc09rtc - read/write DS1802 RTC attached to multicomp09 GPIO
+* mc09rtc - read/write DS1302 RTC attached to multicomp09 GPIO
+* Details of the hook-up can be inferred from the code or see the
+* description here:
+* https://github.com/nealcrook/multicomp6809/wiki/Adding-a-RTC
 *
 * Rather than bloat the timer module (which is memory-resident)
 * this is a stand-alone utility that can either read the RTC and
@@ -42,7 +45,7 @@
 * Created.
 *
          nam   mc09rtc
-         ttl   Read/write DS1802 RTC, copy to/from system time
+         ttl   Read/write DS1302 RTC, copy to/from system time
 
          use   defsfile
 
@@ -518,7 +521,7 @@ wr_nxt  lda     ,y+             get byte to write
 
 
 ********************************************************************
-* Low-level DS1802 read/write. Broken into the following parts:
+* Low-level DS1302 read/write. Broken into the following parts:
 *
 * initio   - GPIO init
 * putcmd   - write 1st (cmd) byte
