@@ -17,7 +17,7 @@ BOOTERS		= boot_sdc
 BOOTTRACK	= rel_80 $(BOOTERS) mc09krn
 
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
-SYSMODS		= ioman init sysgo_dd rominfo vectors
+SYSMODS		= ioman init sysgo_dd
 CLOCKS		= clock2_soft clock2_dw mc09clock_50hz mc09clock_91hz
 
 RBF		= rbf.mn \
