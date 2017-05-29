@@ -3,10 +3,12 @@
 *
 * $Id$
 *
+* From "Inside OS9 Level II", by Kevin Darling
+*
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
-*   1      ????/??/??  
+*   1      ????/??/??
 * Original version.
 
          nam   SMap
@@ -18,26 +20,27 @@
          use   defsfile
          endc
 
-tylg     set   Prgrm+Objct   
+tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
 edition  set   1
 
-         mod   eom,name,tylg,atrv,start,size
+         mod   eom,name,tylg,atrv,start,msize
 
-u0000    rmb   1
-decbuff  rmb   3		decimal buffer (100, 10, 1s place)
-free     rmb   1		number of free 256 byte pages in system memory
-u0005    rmb   1
-u0006    rmb   1
-wrbuf    rmb   1
-u0008    rmb   6
-u000E    rmb   1
-memmap   rmb   256
-         rmb   200
-size     equ   .
+leadflag rmb   1
+decbuff  rmb   3                        decimal buffer (100, 10, 1s place)
+free     rmb   1                        number of free 256 byte pages in system memory
+row      rmb   1
+spc      rmb   1
+out      rmb   3                        ONLY 2 BYTES USED
+mapsiz   rmb   2                        NEVER USED
+blksiz   rmb   2                        NEVER USED
+blknum   rmb   1
+buffer   rmb   256
+stack    rmb   200
+msize    equ   .
 
-name	 fcs   /SMap/
+name     fcs   /SMap/
          fcb   edition
 
 H1       fcc   "    0 1 2 3 4 5 6 7 8 9 A B C D E F"
@@ -48,99 +51,108 @@ H2       fcc   " #  = = = = = = = = = = = = = = = ="
 H2L      equ   *-H2
 SysDat   fcb   $00,$00,$00,$00
 
-start    lbsr  WriteCR			Write a carriage return to standard out
-         leax  <H1,pcr			point to header 1
+start    lbsr  WriteCR                  Write a carriage return to standard out
+         leax  <H1,pcr                  point to header 1
          lda   #$01
          ldy   #H1L
-         os9   I$WritLn 		and write it to standard out
-         leax  <H2,pcr			same with header 2
+         os9   I$WritLn                 and write it to standard out
+         leax  <H2,pcr                  same with header 2
          ldy   #H2L
-         os9   I$Write  
+         os9   I$Write
+
+* Get SysMap pointer
          leax  <SysDat,pcr
          tfr   x,d
-         ldx   #D.SysMem		point to System Memory global
-         ldy   #$0002			get 2 byte pointer into system RAM
-         pshs  u			save statics
-         leau  memmap,u			point to destination
-         os9   F$CpyMem 		get it
-         puls  u			restore statics
-         lbcs  L013F			branch if error
-         ldx   memmap,u			get pointer into system memory table in system space
-         ldy   #256			all 256 bytes
-         pshs  u			save statics
-         leau  memmap,u			point to destination
-         os9   F$CpyMem 		copy memory
-         puls  u			restore statics
-         lbcs  L013F			branch if error
-         clr   <u000E
-         clr   <free			clear free counter
-         leax  memmap,u
+         ldx   #D.SysMem                point to System Memory global
+         ldy   #$0002                   get 2 byte pointer into system RAM
+         pshs  u                        save statics
+         leau  buffer,u                 point to destination
+         os9   F$CpyMem                 get it
+         puls  u                        restore statics
+         lbcs  error                    branch if error
+
+* Get SysMap
+         ldx   buffer,u                 get pointer into system memory table in system space
+         ldy   #256                     all 256 bytes
+         pshs  u                        save statics
+         leau  buffer,u                 point to destination
+         os9   F$CpyMem                 copy memory
+         puls  u                        restore statics
+         lbcs  error                    branch if error
+
+         clr   <blknum
+         clr   <free                    clear free counter
+         leax  buffer,u
          lda   #$30
-         sta   <u0005
-         clr   ,-s
-L00B2    lda   ,s
+         sta   <row
+         clr   ,-s                      save count
+loop     lda   ,s
          bita  #$0F
-         bne   L00DF
+         bne   loop2
          pshs  x
          lbsr  WriteCR
-         leax  u0006,u
+         leax  spc,u
          ldy   #$0004
-         lda   <u0005
+         lda   <row
          cmpa  #':
-         bne   L00CD
+         bne   oknum
          lda   #'A
-         sta   <u0005
-L00CD    sta   <wrbuf
-         inc   <u0005
+         sta   <row
+oknum    sta   <out
+         inc   <row
          ldd   #C$SPAC*256+C$SPAC
-         sta   <u0006
-         std   <u0008
+         sta   <spc
+         std   <out+1
          lda   #$01
-         os9   I$Write  
+         os9   I$Write
          puls  x
-L00DF    ldb   ,x+
-         beq   L00ED
-         bmi   L00E9
-         ldb   #'U
-         bra   L00F1
-L00E9    ldb   #'.
-         bra   L00F1
-L00ED    ldb   #'_
-         inc   <free			increment free page counter
-L00F1    stb   <wrbuf
+
+loop2    ldb   ,x+                      get next block
+         beq   unused
+         bmi   noram
+         ldb   #'U                      RAM-in-use
+         bra   put
+noram    ldb   #'.                      not RAM
+         bra   put
+unused   ldb   #'_                      not used
+         inc   <free                    increment free page counter
+
+put      stb   <out
          ldb   #C$SPAC
-         stb   <u0008
+         stb   <out+1
          pshs  x
-         leax  wrbuf,u
+         leax  out,u
          ldy   #$0002
          lda   #$01
-         os9   I$Write  
+         os9   I$Write
          puls  x
          dec   ,s
-         lbhi  L00B2
+         lbhi  loop
          puls  a
+
          bsr   WriteCR
          bsr   WriteCR
          leax  >FreePgs,pcr
          ldy   #FreePgsL
          lda   #$01
-         os9   I$Write  
+         os9   I$Write
          ldb   <free
-         clra  
-         lbsr  L0194
+         clra
+         lbsr  outdec
          bsr   WriteCR
+
          leax  >FreeRAM,pcr
          ldy   #FreeRAML
          lda   #$01
-         os9   I$Write  
+         os9   I$Write
          ldb   <free
-         clra  
-         lsrb  
-         lsrb  
-         lbsr  L0194
+         clra
+         lsrb
+         lsrb
+         lbsr  outdec
          bsr   WriteCR
-         clrb  
-L013F    os9   F$Exit   
+         clrb
+error    os9   F$Exit
 
 FreePgs  fcc   " Number of Free Pages: "
 FreePgsL equ   *-FreePgs
@@ -148,54 +160,53 @@ FreeRAM  fcc   "   RAM Free in KBytes: "
 FreeRAML equ   *-FreeRAM
 
 WriteCR  pshs  x,a
-*         lda   #C$CR
-*         sta   <wrbuf
          leax  CrRt,pcr
          ldy   #$0001
          lda   #$01
-         os9   I$WritLn 
+         os9   I$WritLn
          puls  pc,x,a
 
-L0183    sta   <wrbuf
+print    sta   <out
          pshs  x
-         leax  wrbuf,u
+         leax  out,u
          ldy   #$0001
          lda   #$01
-         os9   I$Write  
+         os9   I$Write
          puls  pc,x
 
-L0194    leax  decbuff,u
-         clr   <u0000
+outdec   leax  decbuff,u                D=number
+         clr   <leadflag
          clr   ,x
          clr   $01,x
          clr   $02,x
-L019E    inc   ,x
+hundred  inc   ,x
          subd  #100
-         bcc   L019E
+         bcc   hundred
          addd  #100
-L01A8    inc   $01,x
+ten      inc   $01,x
          subd  #10
-         bcc   L01A8
-L01AF    addd  #10
-         incb  
+         bcc   ten
+         addd  #10
+         incb
          stb   $02,x
-         bsr   L01BF
-         bsr   L01BF
-L01B9    lda   ,x+
-         adda  #$2F
-         bra   L0183
-L01BF    tst   <u0000
-         bne   L01B9
-         ldb   ,x
-         inc   <u0000
-         decb  
-         bne   L01B9
-         clr   <u0000
+         bsr   printled
+         bsr   printled
+
+printnum lda   ,x+
+         adda  #$2F                     make ASCII
+         bra   print
+
+printled tst   <leadflag                print leading zero?
+         bne   printnum                 ..yes
+         ldb   ,x                       is it zero?
+         inc   <leadflag
+         decb
+         bne   printnum                 ..no, print zeroes
+         clr   <leadflag                else supress
          lda   #C$SPAC
          leax  1,x
-         bra   L0183
+         bra   print
 
          emod
 eom      equ   *
-	 end
-
+         end
