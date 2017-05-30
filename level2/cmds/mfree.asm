@@ -18,28 +18,27 @@
          use   defsfile
          endc
 
-tylg     set   Prgrm+Objct   
+tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
 edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   1
-u0001    rmb   1
-u0002    rmb   2
-u0004    rmb   1
-u0005    rmb   1
+freeblks rmb   2
+mapsiz   rmb   2
+* pages per block (ie, MS byte of block size)
+ppblk    rmb   1
+* 0: print number with leading spaces. 1: print number with leading 0.
+leadzero rmb   1
+* u0006,7,8 store a 24-bit block begin/end address.
 u0006    rmb   1
 u0007    rmb   1
 u0008    rmb   1
-u0009    rmb   1
-u000A    rmb   1
-u000B    rmb   2
+bufstrt  rmb   2
+bufcur   rmb   2
 linebuf  rmb   80
-u005D    rmb   7
-u0064    rmb   132
-u00E8    rmb   1135
+mapbuf   rmb   1274
 size     equ   .
 
 name     fcs   /Mfree/
@@ -50,148 +49,190 @@ Hdr      fcs   " Blk Begin   End   Blks  Size"
 Ftr      fcs   "                   ==== ======"
          fcs   "            Total: "
 
-start    leax  linebuf,u		get line buffer address
-         stx   <u0009
-         stx   <u000B
-         lbsr  L016E
+start    leax  linebuf,u                get line buffer address
+         stx   <bufstrt                 and store it away
+         stx   <bufcur                  current output position output buffer
+
+         lbsr  wrbuf                    print CR
          leay  <Hdr,pcr
-         lbsr  L0183
-         lbsr  L016E
-         lbsr  L0183
-         lbsr  L016E
-         clr   <u0000
-         clr   <u0001
-         leax  <u005D,u
-         os9   F$GBlkMp 
-         sty   <u0002
-         sta   <u0004
-         ldy   #$0000
-L00AA    ldu   #$0000
-L00AD    tst   ,x+
-         beq   L00BA
-         leay  $01,y
-         cmpy  <u0002
-         bcs   L00AD
-         bra   L0109
+         lbsr  tobuf                    1st line of header to output buffer
+         lbsr  wrbuf                    ..print it
+         lbsr  tobuf                    2nd line of header to output buffer
+         lbsr  wrbuf                    ..print it
+
+         clr   <freeblks                total number of free blocks
+         clr   <freeblks+1
+         leax  <mapbuf,u
+* In:  X = 1024-byte buffer
+* Out: D = number of bytes per block
+*      Y = system memory block map size
+         os9   F$GBlkMp
+         sty   <mapsiz                  save map size
+         sta   <ppblk                   save MS byte of bytes per block
+         ldy   #$0000                   count of how many blocks we have inspected
+
+* Main loop
+* look for a free block (an entry of 0 in the block map)
+loop     ldu   #$0000                   number of free blocks in this sequence
+L00AD    tst   ,x+                      is this block 0?
+         beq   L00BA                    yes - found a free block
+         leay  $01,y                    total number of blocks we have inspected
+         cmpy  <mapsiz                  at the end of the map?
+         bcs   L00AD                    no, so carry on looking
+         bra   alldone                  yes, and the last block was not free, so we're done.
+
+* Block number in Y is the first free block of a sequence (tho maybe a sequence of 1)
 L00BA    tfr   y,d
-         bsr   L0123
-         lda   <u0004
+         bsr   buf4hex                  append start block, in hex, to output buffer
+         lda   <ppblk
          pshs  y,a
-         clra  
-         clrb  
-L00C4    addd  $01,s
-         dec   ,s
+         clra
+         clrb
+L00C4    addd  $01,s                    multiply start block by block size to get
+         dec   ,s                       begin address
          bne   L00C4
          leas  $03,s
-         std   <u0006
-         clr   <u0008
-         bsr   L0133
-L00D2    leau  u0001,u
+         std   <u0006                   2 MS bytes of block begin address
+         clr   <u0008                   1 LS byte  of block begin address is 0
+         bsr   buf6hex                  append block begin address in hex, to output buffer
+
+* Look for the last free block in this sequence
+L00D2    leau  $01,u
          leay  $01,y
-         cmpy  <u0002
-         beq   L0109
+         cmpy  <mapsiz
+         beq   alldone                  ??should never exit at this point, but
+*                                       on mc09 we do - terminate part-way through an entry.
          tst   ,x+
-         beq   L00D2
-         lda   <u0004
+         beq   L00D2                    haven't found it yet..
+last     lda   <ppblk
          pshs  y,a
-         clra  
-         clrb  
-L00E5    addd  $01,s
-         dec   ,s
+         clra
+         clrb
+L00E5    addd  $01,s                    multiply end block by block size to get
+         dec   ,s                       end address
          bne   L00E5
          leas  $03,s
          subd  #$0001
-         std   <u0006
+         std   <u0006                   2 MS bytes of block end address
          lda   #$FF
-         sta   <u0008
-         bsr   L0133
+         sta   <u0008                   1 LS byte  of block end address is $FF
+         bsr   buf6hex                  append block end address in hex, to output buffer
          leax  -$01,x
          tfr   u,d
-         bsr   L0123
-         lbsr  L0199
-         addd  <u0000
-         std   <u0000
-         bsr   L016E
-         bra   L00AA
-L0109    leay  >Ftr,pcr
-         bsr   L0183
-         bsr   L016E
-         bsr   L0183
-         tfr   u,d
-         addd  <u0000
-         std   <u0000
-         bsr   L0123
-         bsr   L0199
-         bsr   L016E
-         clrb  
-         os9   F$Exit   
-L0123    pshs  b,a
-         clr   <u0005
+         bsr   buf4hex                  append number of blocks, in hex, to output buffer
+         lbsr  L0199                    append size, in decimal, to output buffer
+
+         addd  <freeblks
+         std   <freeblks                total number of blocks
+         bsr   wrbuf                    print this entry
+         bra   loop                     loop for next entry
+
+* All of the entries have been printed. Print the trailer and totals.
+* Bug: if the last block is unused, it and any unused blocks before it will
+* not get reported, *and* the formatting of the last entry will be messed up.
+* That never happens on the Coco, because the last block is always used.
+* It does happen on mc09 though.
+alldone  leay  >Ftr,pcr
+         bsr   tobuf                    1st line of footer to output buffer
+         bsr   wrbuf                    ..print it
+         bsr   tobuf                    2nd line of footer to output buffer
+         tfr   u,d                      ..add total #blocks, total memory size
+         addd  <freeblks
+         std   <freeblks
+         bsr   buf4hex                  append total number of blocks, in hex, to output buffer
+         bsr   L0199                    append total size, in decimal, to output buffer
+         bsr   wrbuf                    ..print it
+* Successful exit
+         clrb
+         os9   F$Exit
+
+* convert value in D to ASCII hex (4 chars). Append to output buffer, then append "SPACE" to output buffer
+buf4hex  pshs  b,a
+         clr   <leadzero
          bsr   L0145
          tfr   b,a
          bsr   L0145
-         lda   #$20
-         bsr   L0164
+         lda   #C$SPAC                  append a space
+         bsr   bufchr
          puls  pc,b,a
-L0133    clr   <u0005
+
+* convert value in u0006,7,8 to ASCII hex (6 chars). Append to output buffer, then append "SPACE" to output buffer
+buf6hex  clr   <leadzero
          lda   <u0006
          bsr   L0145
          lda   <u0007
          bsr   L0145
          lda   <u0008
          bsr   L0145
-         lda   #$20
-         bra   L0164
+         lda   #C$SPAC                  append a space
+         bra   bufchr
+
+* convert value in A to ASCII hex (2 chars). Append to output buffer.
 L0145    pshs  a
-         lsra  
-         lsra  
-         lsra  
-         lsra  
+         lsra
+         lsra
+         lsra
+         lsra
          bsr   L014F
          puls  a
 L014F    anda  #$0F
-         tsta  
+         tsta
          beq   L0156
-         sta   <u0005
-L0156    tst   <u0005
+         sta   <leadzero
+L0156    tst   <leadzero
          bne   L015C
          lda   #$F0
+
+* FALL THROUGH
+* Convert digit to ASCII with leading spaces, add to output buffer
+* A is a 0-9 or A-F or $F0.
+* Add $30 converts 0-9 to ASCII "0" - "9"), $F0 to ASCII "SPACE"
+* leaves A-F >$3A so a further 7 is added so $3A->$41 etc. (ASCII "A" - "F")
 L015C    adda  #$30
          cmpa  #$3A
-         bcs   L0164
+         bcs   bufchr
          adda  #$07
-L0164    pshs  x
-         ldx   <u000B
+
+* FALL THROUGH
+* Store A at next position in output buffer.
+bufchr   pshs  x
+         ldx   <bufcur
          sta   ,x+
-         stx   <u000B
+         stx   <bufcur
          puls  pc,x
 
-L016E    pshs  y,x,a
+* Append CR to the output buffer then print the output buffer
+wrbuf    pshs  y,x,a
          lda   #C$CR
-         bsr   L0164
-         ldx   <u0009
-         stx   <u000B
-         ldy   #80
-         lda   #$01
-         os9   I$WritLn 
+         bsr   bufchr
+         ldx   <bufstrt                address of data to write
+         stx   <bufcur                 reset output buffer pointer, ready for next line.
+         ldy   #80                     maximum # of bytes - otherwise, stop at CR
+         lda   #$01                    to STDOUT
+         os9   I$WritLn
          puls  pc,y,x,a
-L0183    lda   ,y
+
+* Append string at Y to output buffer. String is terminated by MSB=1
+tobuf    lda   ,y
          anda  #$7F
-         bsr   L0164
+         bsr   bufchr
          tst   ,y+
-         bpl   L0183
-         rts   
+         bpl   tobuf
+         rts
 
 DecTbl   fdb   10000,1000,100,10,1
          fcb   $FF
 
+* value in ?? is a number of blocks. Convert to bytes by multiplying by the page size.
+* Convert to ASCII decimal, append to output buffer, append "k" to output buffer
 L0199    pshs  y,x,b,a
-         lda   <u0004
+         lda   <ppblk
          pshs  a
          lda   $01,s
          lsr   ,s
          lsr   ,s
          bra   L01A9
+
 L01A7    lslb
          rola
 L01A9    lsr   ,s
@@ -212,12 +253,13 @@ L01B6    leay  >256,y
          bne   L01D8
          ldy   #$2F20
          lda   #C$SPAC
-L01D8    bsr   L0164
+L01D8    bsr   bufchr
          puls  b,a
          bra   L01B6
-L01DE    bsr   L0164
+
+L01DE    bsr   bufchr
          lda   #'k
-         bsr   L0164
+         bsr   bufchr
          leas  $02,s
          puls  pc,y,x,b,a
 
