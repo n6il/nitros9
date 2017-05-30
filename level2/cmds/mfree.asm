@@ -8,6 +8,11 @@
 * ------------------------------------------------------------------
 *   2      ????/??/??
 * Original Tandy/Microware version.
+*   3      2017/05/30  Neal Crook
+* Original version misbehaved if final block in the map was free.
+* That situation never occurs on coco, but it does occur on the mc09
+* target. Inferred behaviour and added comments as a side-effect of
+* debugging effort.
 
          nam   Mfree
          ttl   Show free memory
@@ -21,7 +26,7 @@
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   2
+edition  set   3
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -78,7 +83,7 @@ L00AD    tst   ,x+                      is this block 0?
          beq   L00BA                    yes - found a free block
          leay  $01,y                    total number of blocks we have inspected
          cmpy  <mapsiz                  at the end of the map?
-         bcs   L00AD                    no, so carry on looking
+         bne   L00AD                    no, so carry on looking
          bra   alldone                  yes, and the last block was not free, so we're done.
 
 * Block number in Y is the first free block of a sequence (tho maybe a sequence of 1)
@@ -100,8 +105,8 @@ L00C4    addd  $01,s                    multiply start block by block size to ge
 L00D2    leau  $01,u
          leay  $01,y
          cmpy  <mapsiz
-         beq   alldone                  ??should never exit at this point, but
-*                                       on mc09 we do - terminate part-way through an entry.
+         beq   last
+
          tst   ,x+
          beq   L00D2                    haven't found it yet..
 last     lda   <ppblk
@@ -118,27 +123,22 @@ L00E5    addd  $01,s                    multiply end block by block size to get
          sta   <u0008                   1 LS byte  of block end address is $FF
          bsr   buf6hex                  append block end address in hex, to output buffer
          leax  -$01,x
-         tfr   u,d
+         tfr   u,d                      number of blocks in this sequence u->d
          bsr   buf4hex                  append number of blocks, in hex, to output buffer
          lbsr  L0199                    append size, in decimal, to output buffer
 
          addd  <freeblks
          std   <freeblks                total number of blocks
          bsr   wrbuf                    print this entry
-         bra   loop                     loop for next entry
+         cmpy  <mapsiz
+         bne   loop                     loop for next entry
 
 * All of the entries have been printed. Print the trailer and totals.
-* Bug: if the last block is unused, it and any unused blocks before it will
-* not get reported, *and* the formatting of the last entry will be messed up.
-* That never happens on the Coco, because the last block is always used.
-* It does happen on mc09 though.
 alldone  leay  >Ftr,pcr
          bsr   tobuf                    1st line of footer to output buffer
          bsr   wrbuf                    ..print it
          bsr   tobuf                    2nd line of footer to output buffer
-         tfr   u,d                      ..add total #blocks, total memory size
-         addd  <freeblks
-         std   <freeblks
+         ldd   <freeblks                get total number of blocks
          bsr   buf4hex                  append total number of blocks, in hex, to output buffer
          bsr   L0199                    append total size, in decimal, to output buffer
          bsr   wrbuf                    ..print it
