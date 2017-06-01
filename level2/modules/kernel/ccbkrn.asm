@@ -302,7 +302,7 @@ L00EF   stu     ,x++            store free "flag"
         deca                    bump counter
         bne     L00EF           loop if not done
 
-        ldu     #$003F          Block $3F is in use, at the top of system DAT image
+        ldu     #KrnBlk         Block where the kernel will live
         stu     ,x
 
         ldx     <D.Tasks        Point to task user table
@@ -323,7 +323,7 @@ L0104   inc     ,x+             Mark it as used
         * OS9Boot it can only be loaded into block x1 through x6 and 3f so
         * we should be safe.
         ldx     <D.BlkMap       get ptr to 8k block map
-        inc     <$3F,x          mark block $3F as used (kernel)
+        inc     <KrnBlk,x       mark block holding kernel as used
         IFNE    H6309
         ldq     #$00080100      e=Marker, D=Block # to check
 L0111   asld                    get next block #
@@ -461,7 +461,7 @@ L01E1   sta     ,x+             save it
         decb                    done?
         bne     L01E1           no, keep going
         ldx     <D.BlkMap       get pointer to start of block map
-        sta     <$3f,x          mark kernel block as RAMinUse, instead of ModInBlk
+        sta     <KrnBlk,x       mark kernel block as RAMinUse, instead of ModInBlk
 S.AltIRQ        rts             return
 
 * Link module pointed to by X
