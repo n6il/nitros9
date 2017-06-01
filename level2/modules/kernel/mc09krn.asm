@@ -39,9 +39,6 @@ Where   equ     $F000   absolute address of where Kernel starts in memory
 MName   fcs     /Krn/
         fcb     Edition
 
-* The 8K RAM block that is mapped to $E000-$FFFF and holds
-* the kernel and I/O space. $3f for COCO, $7 for mc09.
-KrnBlk  set     $7
 
 
 * Might as well have this here as just past the end of Kernel...
@@ -310,9 +307,7 @@ L00EF   stu     ,x++            store free "flag"
         deca                    bump counter
         bne     L00EF           loop if not done
 
-* [NAC HACK 2016Dec06] on the Coco, block $3F holds the I/O space so it cannot
-* be used for anything else. Future: We can remove that restriction for mc09
-        ldu     #KrnBlk         Block $3F is in use, at the top of system DAT image
+        ldu     #KrnBlk         Block where the kernel will live
         stu     ,x
 
         ldx     <D.Tasks        Point to task user table
@@ -346,7 +341,7 @@ L0104   inc     ,x+             Mark it as used
 * Deduce how many 8Kbyte blocks of physical memory are available and
 * update the memory block map end pointer (D.BlkMap+2) accordingly
         ldx     <D.BlkMap       get ptr to 8k block map
-        inc     <KrnBlk,x       mark block $3F as used (kernel)
+        inc     <KrnBlk,x       mark block holding kernel as used
       IFNE  mc09
         inc     <$00,x          mark block $00 as used (global memory)
 * For mc09 memory size is 512Kbyte or 1MByte. For now, hard-wire

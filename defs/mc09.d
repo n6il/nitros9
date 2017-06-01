@@ -341,6 +341,9 @@ PalAdr         EQU       $FFB0               Palette registers
 
 HW.Page        SET       $07                 Device descriptor hardware page
 
-               ENDC
+* The 8K RAM block that is mapped to $E000-$FFFF and holds
+* the kernel and I/O space. Always $07 for mc09
+KrnBlk         SET       $07
 
+               ENDC
                ENDC
