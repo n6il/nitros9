@@ -121,8 +121,9 @@ SVCVO		RMB	2	SUPERVISOR CALL VECTOR ORGIN
 SVCVL		RMB	2	SUPERVISOR CALL VECTOR LIMIT
 LRARAM		RMB	16	LRA ADDRESSES
 
-Bt.Start		EQU	$F000	Start address of the boot ROM in memory
+Bt.Start	EQU	$F000	Start address of the boot ROM in memory
 Bt.Size		EQU	$1000
+Bt.Track	EQU	0
 
 ;*****************************************************
 ; Parallel port protocol
