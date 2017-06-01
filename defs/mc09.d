@@ -268,6 +268,13 @@ A.V5           SET       $FFC5
 A.V6           SET       $FFC6
 A.V7           SET       $FFC7
 
+***********************************
+* Needed for building generic tools 
+Bt.Start       EQU       $EE00               Address of boot track in memory
+Bt.Size        EQU       $1080               Maximum size of bootfile
+Bt.Track       EQU       0                   Boot track
+Bt.Sec         EQU       0                   Start LSN of boot area on boot track
+
 
                IFEQ      Level-1
 

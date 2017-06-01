@@ -248,5 +248,6 @@ Bt.Size        EQU       $1000               Max size of boot file
 * after the blockmap.
 Bt.Track       EQU       0                   Boot track
 Bt.Sec         EQU       2                   Start LSN of boot area on boot track
+Bt.Start       EQU       $EE00               Start address of the boot track in memory
 
          ENDC
