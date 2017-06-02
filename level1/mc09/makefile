@@ -4,9 +4,9 @@ include port.mak
 #WHICHSHELL	= shellplus
 WHICHSHELL	= shell_21
 
-DISTRO		= $(CPU)L$(LEVEL)
-DISTRONAME	= nos9$(CPU)l$(LEVEL)
-DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
+DISTRO		= $(CPU)_L$(LEVEL)
+DISTRONAME	= NOS9_$(CPU)_L$(LEVEL)
+DISTROVER	= $(DISTRONAME)_$(NITROS9VER)_$(PORT)
 # The BOOTFILE is for 80D (720K) virtual drive on SD, 50Hz timer interrupt
 BOOTFILE_MC09SD	= bootfiles/bootfile_mc09sd
 KERNELFILE	= bootfiles/kernel_mc09sd
@@ -32,7 +32,7 @@ STARTUP		= startup
 STARTUP_DW	= startup.dw
 
 DSK720K         = $(DISTROVER)_80d.dsk
-LDSK720K        = $(DISTRONAME)$(PORT)_80d.dsk
+LDSK720K        = $(DISTRONAME)_$(PORT)_80d.dsk
 
 DSKS		= $(DSK720K)
 LDSKS		= $(LDSK720K)

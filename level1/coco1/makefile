@@ -4,9 +4,9 @@ include port.mak
 #WHICHSHELL	= shellplus
 WHICHSHELL	= shell_21
 
-DISTRO		= $(CPU)L$(LEVEL)
-DISTRONAME	= nos9$(CPU)l$(LEVEL)
-DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
+DISTRO		= $(CPU)_L$(LEVEL)
+DISTRONAME	= NOS9_$(CPU)_L$(LEVEL)
+DISTROVER	= $(DISTRONAME)_$(NITROS9VER)_$(PORT)
 BOOTFILE_COVDG	= bootfiles/bootfile_covdg
 BOOTFILE_COHR	= bootfiles/bootfile_cohr
 BOOTFILE_CO42	= bootfiles/bootfile_co42
@@ -51,25 +51,25 @@ STARTUP		= startup
 STARTUP_DW	= startup.dw
 
 DSKDW           = $(DISTROVER)_dw.dsk
-LDSKDW          = $(DISTRONAME)$(PORT)_dw.dsk
+LDSKDW          = $(DISTRONAME)_$(PORT)_dw.dsk
 DSKDWHEADLESS   = $(DISTROVER)_dw_headless.dsk
-LDSKDWHEADLESS  = $(DISTRONAME)$(PORT)_dw_headless.dsk
+LDSKDWHEADLESS  = $(DISTRONAME)_$(PORT)_dw_headless.dsk
 DSK360K_1       = $(DISTROVER)_40d_1.dsk
-LDSK360K_1      = $(DISTRONAME)$(PORT)_40d_1.dsk
+LDSK360K_1      = $(DISTRONAME)_$(PORT)_40d_1.dsk
 DSK360K_2       = $(DISTROVER)_40d_2.dsk
-LDSK360K_2      = $(DISTRONAME)$(PORT)_40d_2.dsk
+LDSK360K_2      = $(DISTRONAME)_$(PORT)_40d_2.dsk
 DSK720K         = $(DISTROVER)_80d.dsk
-LDSK720K        = $(DISTRONAME)$(PORT)_80d.dsk
+LDSK720K        = $(DISTRONAME)_$(PORT)_80d.dsk
 DSKBECKER	= $(DISTROVER)_becker.dsk
-LDSKBECKER	= $(DISTRONAME)$(PORT)_becker.dsk
+LDSKBECKER	= $(DISTRONAME)_$(PORT)_becker.dsk
 DSKBECKERHEADLESS	= $(DISTROVER)_becker_headless.dsk
-LDSKBECKERHEADLESS	= $(DISTRONAME)$(PORT)_becker_headless.dsk
+LDSKBECKERHEADLESS	= $(DISTRONAME)_$(PORT)_becker_headless.dsk
 DSKARDUINO	= $(DISTROVER)_arduino.dsk
-LDSKARDUINO	= $(DISTRONAME)$(PORT)_arduino.dsk
+LDSKARDUINO	= $(DISTRONAME)_$(PORT)_arduino.dsk
 DSKARDUINOHEADLESS	= $(DISTROVER)_arduino_headless.dsk
-LDSKARDUINOHEADLESS	= $(DISTRONAME)$(PORT)_arduino_headless.dsk
+LDSKARDUINOHEADLESS	= $(DISTRONAME)_$(PORT)_arduino_headless.dsk
 DSKCOCOSDC	= $(DISTROVER)_cocosdc.dsk
-LDSKCOCOSDC	= $(DISTRONAME)$(PORT)_cocosdc.dsk
+LDSKCOCOSDC	= $(DISTRONAME)_$(PORT)_cocosdc.dsk
 
 DSKS		= $(DSKDW) $(DSKDWHEADLESS) $(DSKBECKER) $(DSKBECKERHEADLESS) \
 		$(DSKARDUINO) $(DSKARDUINOHEADLESS) $(DSK360K_1) $(DSK360K_2) \
