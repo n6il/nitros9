@@ -269,10 +269,9 @@ A.V6           SET       $FFC6
 A.V7           SET       $FFC7
 
 ***********************************
-* Needed for building generic tools 
-Bt.Start       EQU       $EE00               Address of boot track in memory
+* Needed for building generic tools
 Bt.Size        EQU       $1080               Maximum size of bootfile
-Bt.Track       EQU       0                   Boot track
+Bt.Track       EQU       34                  Boot track
 Bt.Sec         EQU       0                   Start LSN of boot area on boot track
 
 
@@ -284,6 +283,9 @@ Bt.Sec         EQU       0                   Start LSN of boot area on boot trac
 *
 *************************************************
 
+* Needed for boot
+Bt.Start       EQU       $EE00               Address of boot track in memory
+
 HW.Page        SET       $FF                 Device descriptor hardware page
 
                ELSE
@@ -293,6 +295,9 @@ HW.Page        SET       $FF                 Device descriptor hardware page
 * NitrOS-9 Level 2 Section
 *
 *************************************************
+
+* Needed for boot
+Bt.Start       EQU       $ED00               Address of boot track in memory
 
 ****************************************
 * Dynamic Address Translator Definitions
