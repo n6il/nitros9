@@ -1,8 +1,8 @@
 include port.mak
 
-DISTRO		= $(CPU)L$(LEVEL)
-DISTRONAME	= nos9$(CPU)l$(LEVEL)
-DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
+DISTRO		= $(CPU)_L$(LEVEL)
+DISTRONAME	= NOS9_$(CPU)_L$(LEVEL)
+DISTROVER	= $(DISTRONAME)_$(NITROS9VER)_$(PORT)
 BOOTFILE_DW	= bootfiles/bootfile_dw
 BOOTFILE_40D	= bootfiles/bootfile_40d
 BOOTFILE_80D	= bootfiles/bootfile_80d

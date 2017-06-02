@@ -5,9 +5,9 @@ include port.mak
 #WHICHSHELL	= shellplus
 #WHICHSHELL	= shell_21
 
-DISTRO		= $(CPU)L$(LEVEL)
-DISTRONAME	= nos9$(CPU)l$(LEVEL)
-DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
+DISTRO		= $(CPU)_L$(LEVEL)
+DISTRONAME	= NOS9_$(CPU)_L$(LEVEL)
+DISTROVER	= $(DISTRONAME)_$(NITROS9VER)_$(PORT)
 BOOTFILE_COCO3FPGA = bootfiles/bootfile_coco3fpga
 BOOTFILE_COCO3FPGA_SD = bootfiles/bootfile_coco3fpga_sd
 BOOTFILE_COCO3FPGA_SD_RTC = bootfiles/bootfile_coco3fpga_sd_rtc
