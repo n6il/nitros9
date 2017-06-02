@@ -88,7 +88,7 @@ LOSETUP		= sudo losetup
 LINK		= ln
 SOFTLINK	= $(LINK) -s
 ARCHIVE		= zip -D -9 -j
-MKDSKINDEX	= $(NITROS9DIR)/scripts/mkdskindex
+MKDSKINDEX	= perl $(NITROS9DIR)/scripts/mkdskindex
 
 # Directories
 3RDPARTY	= $(NITROS9DIR)/3rdparty

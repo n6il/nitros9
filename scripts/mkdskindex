@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!perl
 
 # generate pretty index.html from directory of .dsks
 # AAW 4/5/10
