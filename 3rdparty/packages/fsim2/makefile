@@ -2,9 +2,9 @@ include ../../../rules.mak
 
 DEPENDS		= ./makefile
 
-DSK_FLOPPY	= fsim2.dsk
-DSK_DW		= fsim2_dw.dsk
-DSK_DW_BECKER	= fsim2_becker.dsk
+DSK_FLOPPY	= FlightSimulator2.dsk
+DSK_DW		= FlightSimulator2_dw.dsk
+DSK_DW_BECKER	= FlightSimulator2_becker.dsk
 
 CMDS		= fs f2 f3 f4
 MD		= $(LEVEL2)/coco3/modules

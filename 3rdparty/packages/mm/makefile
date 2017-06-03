@@ -2,9 +2,9 @@ include ../../../rules.mak
 
 DEPENDS		= ./makefile
 
-DSK_FLOPPY	= mm.dsk
-DSK_DW		= mm_dw.dsk
-DSK_DW_BECKER	= mm_dw_becker.dsk
+DSK_FLOPPY	= MicroscopicMission.dsk
+DSK_DW		= MicroscopicMission_dw.dsk
+DSK_DW_BECKER	= MicroscopicMission_dw_becker.dsk
 
 CMDS		= mm mod1.dat mod2.dat mod3.dat mod4.dat mod5.dat \
 		mod6.sbr mod7.sbr mod8.sbr

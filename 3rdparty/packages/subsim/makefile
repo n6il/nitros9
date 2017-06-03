@@ -2,9 +2,9 @@ include ../../../rules.mak
 
 DEPENDS		= ./makefile
 
-DSK_FLOPPY	= subsim.dsk
-DSK_DW		= subsim_dw.dsk
-DSK_DW_BECKER	= subsim_becker.dsk
+DSK_FLOPPY	= SubBattleSimulator.dsk
+DSK_DW		= SubBattleSimulator_dw.dsk
+DSK_DW_BECKER	= SubBattleSimulator_becker.dsk
 
 CMDS		= presub sub sub1 sub2 sub3 sub4 sub5 sub6
 MD		= $(LEVEL2)/coco3/modules
@@ -117,5 +117,5 @@ dskclean:
 	$(RM) $(DSKS)
 
 info:
-	@$(ECHO) "*** Sub Battle Simluator ***"
+	@$(ECHO) "*** Sub Battle Simulator ***"
 	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
