@@ -241,8 +241,18 @@ PalAdr         EQU       $FFB0               Palette registers
 
 HW.Page        SET       $07                 Device descriptor hardware page
 
-* The 8K RAM block that is mapped to $E000-$FFFF and holds
-* the kernel and I/O space. Always $3F for COCO
+* KrnBlk defines the block number of the 8K RAM block that is mapped to
+* the top of CPU address space ($E000-$FFFF) for the system process, and
+* which holds the Kernel. The top 2 pages of this CPU address space ($FFE0-
+* $FFFF) has two special properties. Firstly, it contains the I/O space.
+* Secondly, the parts that contain RAM map are not affected by the DAT
+* mappings but, instead, *always* map that RAM to a fixed RAM block
+* (KrnBlk). When a user process is mapped in, and requests enough memory,
+* it will end up with its own block assigned for CPU address space $E000-
+* $FFFF but the top of the address space is unusable by the user process:
+* it still contains the I/O and the bit of RAM that's mapped to KrnBlk.
+* Usually, the value of KrnBlk is fixed for a particular hardware design;
+* For the COCO GIME, it's always $3F.
 KrnBlk         SET       $3F
 
                ENDC
