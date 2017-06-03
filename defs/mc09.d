@@ -207,7 +207,7 @@ TIMER          EQU $FFDD
 * 6:0 - PHYSICAL BLOCK FOR CURRENT MAPSEL
 *
 *
-* Magic: for NitrosL2, want a fixed 512byte region of r/w memory
+* For NitrOS-9 Level 2, want a fixed 512byte region of r/w memory
 * at the top of the address space. There is no space to provide
 * an enable for this behaviour (which I call FRT for FixedRamTop)
 * and so some special magic is used, as follows:
@@ -346,8 +346,18 @@ PalAdr         EQU       $FFB0               Palette registers
 
 HW.Page        SET       $07                 Device descriptor hardware page
 
-* The 8K RAM block that is mapped to $E000-$FFFF and holds
-* the kernel and I/O space. Always $07 for mc09
+* KrnBlk defines the block number of the 8K RAM block that is mapped to
+* the top of CPU address space ($E000-$FFFF) for the system process, and
+* which holds the Kernel. The top 2 pages of this CPU address space ($FFE0-
+* $FFFF) has two special properties. Firstly, it contains the I/O space.
+* Secondly, the parts that contain RAM map are not affected by the DAT
+* mappings but, instead, *always* map that RAM to a fixed RAM block
+* (KrnBlk). When a user process is mapped in, and requests enough memory,
+* it will end up with its own block assigned for CPU address space $E000-
+* $FFFF but the top of the address space is unusable by the user process:
+* it still contains the I/O and the bit of RAM that's mapped to KrnBlk.
+* Usually, the value of KrnBlk is fixed for a particular hardware design;
+* For mc09 it is always $07.
 KrnBlk         SET       $07
 
                ENDC
