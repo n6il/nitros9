@@ -2,9 +2,9 @@ include ../../../rules.mak
 
 DEPENDS		= ./makefile
 
-DSK_FLOPPY	= rof.dsk
-DSK_DW		= rof_dw.dsk
-DSK_DW_BECKER	= rof_becker.dsk
+DSK_FLOPPY	= RescueOnFractalus.dsk
+DSK_DW		= RescueOnFractalus_dw.dsk
+DSK_DW_BECKER	= RescueOnFractalus_becker.dsk
 
 CMDS		= rescue
 MD		= $(LEVEL2)/coco3/modules

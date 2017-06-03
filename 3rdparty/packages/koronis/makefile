@@ -2,9 +2,9 @@ include ../../../rules.mak
 
 DEPENDS		= ./makefile
 
-DSK_FLOPPY	= koronis.dsk
-DSK_DW		= koronis_dw.dsk
-DSK_DW_BECKER	= koronis_becker.dsk
+DSK_FLOPPY	= KoronisRift.dsk
+DSK_DW		= KoronisRift_dw.dsk
+DSK_DW_BECKER	= KoronisRift_becker.dsk
 CMDS		= koronis
 MD		= $(LEVEL2)/coco3/modules
 
