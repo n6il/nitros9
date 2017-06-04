@@ -53,7 +53,7 @@ MC09.D         SET       1
                ENDC
 
 
-**********************
+********************************************************************
 * CPU Type Definitions
 *
 Color          SET       1
@@ -65,7 +65,7 @@ CPUType        SET       Color3
                ENDC
 
 
-******************************
+********************************************************************
 * Clock Speed Type Definitions
 *
 OneMHz         EQU       1
@@ -77,7 +77,7 @@ CPUSpeed       SET       TwoMHz
                ENDC
 
 
-**********************************
+********************************************************************
 * Power Line Frequency Definitions
 * Multicomp09 has no dependency on power line frequency but setting
 * it to Hz50 is the simplest way to make TkPerSec 50, which is important
@@ -91,7 +91,7 @@ PwrLnFrq       SET       Hz50                Set to Appropriate freq
                ENDC
 
 
-**********************************
+********************************************************************
 * Ticks per second
 *
                IFNDEF    TkPerSec
@@ -103,28 +103,11 @@ TkPerSec       SET       60
                ENDC
 
 
-******************
-* ACIA type set up
-*
-* [NAC HACK 2015Sep06] is this used anywhere?
-               ORG       1
-ACIA6850       RMB       1                   MC6850 acia.
-ACIA6551       RMB       1                   SY6551 acia.
-ACIA2661       RMB       1                   SC2661 acia.
-ACIATYPE       SET       ACIA6551
-
-
-****************************************
+********************************************************************
 * Special character Bit position equates
 *
+* [NAC HACK 2017Jun04] used in level1/modules/sysgo.asm
 SHIFTBIT       EQU       %00000001
-CNTRLBIT       EQU       %00000010
-ALTERBIT       EQU       %00000100
-UPBIT          EQU       %00001000
-DOWNBIT        EQU       %00010000
-LEFTBIT        EQU       %00100000
-RIGHTBIT       EQU       %01000000
-SPACEBIT       EQU       %10000000
 
 
 ********************************************************************
@@ -243,33 +226,17 @@ MMU_TR1FRT     EQU     (MMUADR_MMUEN|MMUADR_TR)
 
 
 ********************************************************************
-********************************************************************
 * Coco stuff that's needed to allow other files to compile
-* [NAC HACK 2015Oct17] need to get rid of this eventually.
 
-A.AciaP        SET       $FF68               Aciapak Address
-A.ModP         SET       $FF6C               ModPak Address
+* [NAC HACK 2017Jun04] needed by level1/modules/boot_sdc.asm
 DPort          SET       $FF40               Disk controller base address
-MPI.Slct       SET       $FF7F               Multi-Pak slot select
-MPI.Slot       SET       $03                 Multi-Pak default slot
+* [NAC HACK 2017Jun04] needed by level1/modules/sysgo.asm
 PIA0Base       EQU       $FF00
 PIA1Base       EQU       $FF20
 
 
-******************
-* VDG Devices
-*
-A.TermV        SET       $FFC0               VDG Term
-A.V1           SET       $FFC1               Possible additional VDG Devices
-A.V2           SET       $FFC2
-A.V3           SET       $FFC3
-A.V4           SET       $FFC4
-A.V5           SET       $FFC5
-A.V6           SET       $FFC6
-A.V7           SET       $FFC7
-
-***********************************
-* Needed for building generic tools
+********************************************************************
+* Needed for building generic tools (eg cobbler.asm)
 Bt.Size        EQU       $1080               Maximum size of bootfile
 Bt.Track       EQU       34                  Boot track
 Bt.Sec         EQU       0                   Start LSN of boot area on boot track
@@ -277,11 +244,11 @@ Bt.Sec         EQU       0                   Start LSN of boot area on boot trac
 
                IFEQ      Level-1
 
-*************************************************
+********************************************************************
 *
 * NitrOS-9 Level 1 Section
 *
-*************************************************
+********************************************************************
 
 * Needed for boot
 Bt.Start       EQU       $EE00               Address of boot track in memory
@@ -290,16 +257,16 @@ HW.Page        SET       $FF                 Device descriptor hardware page
 
                ELSE
 
-*************************************************
+********************************************************************
 *
 * NitrOS-9 Level 2 Section
 *
-*************************************************
+********************************************************************
 
 * Needed for boot
 Bt.Start       EQU       $ED00               Address of boot track in memory
 
-****************************************
+********************************************************************
 * Dynamic Address Translator Definitions
 *
 DAT.BlCt       EQU       8                   D.A.T. blocks/address space
@@ -315,8 +282,6 @@ DAT.BMSz       EQU       $40                 Memory Block Map size
 DAT.WrPr       EQU       0                   no write protect
 DAT.WrEn       EQU       0                   no write enable
 SysTask        EQU       0                   Coco System Task number
-IOBlock        EQU       $3F
-ROMBlock       EQU       $3F
 IOAddr         EQU       $7F
 ROMCount       EQU       1                   number of blocks of ROM (High RAM Block)
 RAMCount       EQU       1                   initial blocks of RAM
@@ -329,20 +294,10 @@ UnLimitd       EQU       2                   chk all NotRAM for modules
 *       always start with $87CD in first two bytes of block
 RAMCheck       EQU       BlockTyp            chk only beg bytes of block
 ROMCheck       EQU       Limited             chk only upper few blocks for ROM
-LastRAM        EQU       IOBlock             maximum RAM block number
 
-***************************
-* Color Computer 3 Specific
-*
-MappedIO       EQU       true                (Actually False but it works better this way)
-
-********************
+********************************************************************
 * Hardware addresses
 *
-GIMERegs       EQU       $FF00               Base address of GIME registers
-IrqEnR         EQU       $FF92               GIME IRQ enable/status register
-BordReg        EQU       $FF9A               Border color register
-PalAdr         EQU       $FFB0               Palette registers
 
 HW.Page        SET       $07                 Device descriptor hardware page
 
