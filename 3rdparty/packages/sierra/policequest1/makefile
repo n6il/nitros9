@@ -4,11 +4,11 @@ vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
-DISK_1_40D	= policequest1_d1_40d.dsk
-DISK_2_40D	= policequest1_d2_40d.dsk
-DISK_3_40D	= policequest1_d3_40d.dsk
-DISK_DW	= policequest1_dw.dsk
-DISK_DW_BECKER	= policequest1_becker.dsk
+DISK_1_40D	= PoliceQuestI_d1_40d.dsk
+DISK_2_40D	= PoliceQuestI_d2_40d.dsk
+DISK_3_40D	= PoliceQuestI_d3_40d.dsk
+DISK_DW	= PoliceQuestI_dw.dsk
+DISK_DW_BECKER	= PoliceQuestI_becker.dsk
 
 DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_DW) $(DISK_DW_BECKER)
 

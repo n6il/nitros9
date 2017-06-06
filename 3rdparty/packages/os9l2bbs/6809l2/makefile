@@ -2,7 +2,7 @@ include $(NITROS9DIR)/rules.mak
 
 vpath %.asm ../cmds
 
-DSK	= os9l2bbs.dsk
+DSK	= OS9L2BBS.dsk
 BBS	= ../bbs
 
 PROBCMDS = AnsiEd AnsiFilt BBS.chat New_user Quikterm pause suser

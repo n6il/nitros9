@@ -7,7 +7,7 @@ SUBS		= winfo
 
 ALLOBJS		= $(CMDS) $(SUBS)
 
-DSKWINFO	= winfo.dsk
+DSKWINFO	= WInfo.dsk
 
 DSKS		= $(DSKWINFO)
 

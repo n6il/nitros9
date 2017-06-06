@@ -4,13 +4,13 @@ vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
-DISK_1_40D	= spacequest0_d1_40d.dsk
-DISK_2_40D	= spacequest0_d2_40d.dsk
-DISK_3_40D	= spacequest0_d3_40d.dsk
-DISK_1_80D	= spacequest0_d1_80d.dsk
-DISK_2_80D	= spacequest0_d2_80d.dsk
-DISK_DW	= spacequest0_dw.dsk
-DISK_DW_BECKER	= spacequest0_becker.dsk
+DISK_1_40D	= SpaceQuest0_d1_40d.dsk
+DISK_2_40D	= SpaceQuest0_d2_40d.dsk
+DISK_3_40D	= SpaceQuest0_d3_40d.dsk
+DISK_1_80D	= SpaceQuest0_d1_80d.dsk
+DISK_2_80D	= SpaceQuest0_d2_80d.dsk
+DISK_DW	= SpaceQuest0_dw.dsk
+DISK_DW_BECKER	= SpaceQuest0_becker.dsk
 
 DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_1_80D) $(DISK_2_80D) $(DISK_DW) $(DISK_DW_BECKER)
 

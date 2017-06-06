@@ -6,7 +6,7 @@ CMDS		= snake sdir sdrive
 
 ALLOBJS		= $(CMDS)
 
-DSKTLU		= tlindner_utils.dsk
+DSKTLU		= TLindner_Utils.dsk
 
 DSKS		= $(DSKTLU)
 

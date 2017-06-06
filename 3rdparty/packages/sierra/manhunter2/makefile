@@ -4,11 +4,11 @@ vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
-DISK_1_80D	= manhunter2_d1_80d.dsk
-DISK_2_80D	= manhunter2_d2_80d.dsk
-DISK_3_80D	= manhunter2_d3_80d.dsk
-DISK_DW	= manhunter2_dw.dsk
-DISK_DW_BECKER	= manhunter2_becker.dsk
+DISK_1_80D	= ManHunterII_d1_80d.dsk
+DISK_2_80D	= ManHunterII_d2_80d.dsk
+DISK_3_80D	= ManHunterII_d3_80d.dsk
+DISK_DW	= ManHunterII_dw.dsk
+DISK_DW_BECKER	= ManHunterII_becker.dsk
 
 DSKS		= $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) $(DISK_DW) $(DISK_DW_BECKER)
 

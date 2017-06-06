@@ -4,11 +4,11 @@ vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
-DISK_1_40D	= blackcauldron_d1_40d.dsk
-DISK_2_40D	= blackcauldron_d2_40d.dsk
-DISK_80D	= blackcauldron_80d.dsk
-DSK_DW		= blackcauldron_dw.dsk
-DSK_DW_BECKER	= blackcauldron_becker.dsk
+DISK_1_40D	= BlackCauldron_d1_40d.dsk
+DISK_2_40D	= BlackCauldron_d2_40d.dsk
+DISK_80D	= BlackCauldron_80d.dsk
+DSK_DW		= BlackCauldron_dw.dsk
+DSK_DW_BECKER	= BlackCauldron_becker.dsk
 
 DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_80D) $(DSK_DW) $(DSK_DW_BECKER)
 

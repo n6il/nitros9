@@ -1,11 +1,11 @@
 include $(NITROS9DIR)/rules.mak
 
-DSK68_FLOPPY	= multivue_6809.dsk
-DSK63_FLOPPY	= multivue_6309.dsk
-DSK68_DW	= multivue_6809_dw.dsk
-DSK63_DW	= multivue_6309_dw.dsk
-DSK68_DW_BECKER	= multivue_6809_becker.dsk
-DSK63_DW_BECKER	= multivue_6309_becker.dsk
+DSK68_FLOPPY	= MultiVue_6809.dsk
+DSK63_FLOPPY	= MultiVue_6309.dsk
+DSK68_DW	= MultiVue_6809_dw.dsk
+DSK63_DW	= MultiVue_6309_dw.dsk
+DSK68_DW_BECKER	= MultiVue_6809_becker.dsk
+DSK63_DW_BECKER	= MultiVue_6309_becker.dsk
 
 CMDS68	= $(shell $(CD) cmds_6809; make --no-print-directory showobjs)
 CMDS63	= $(shell $(CD) cmds_6309; make --no-print-directory showobjs)

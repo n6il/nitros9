@@ -6,7 +6,7 @@ CMDS		= supercomm
 
 ALLOBJS		= $(CMDS)
 
-DSKSUPERCOMM	= supercomm.dsk
+DSKSUPERCOMM	= SuperComm.dsk
 
 DSKS		= $(DSKSUPERCOMM)
 

@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-DSK	= basic09v010100.dsk
+DSK	= Basic09_v010100.dsk
 
 # NitrOS-9
 H6309		= $(AFLAGS) -DH6309=1

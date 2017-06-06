@@ -4,11 +4,11 @@ vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
-DSKDW		= goldrush_dw.dsk
-DSKDWBECKER	= goldrush_becker.dsk
-DISK_1_80D	= goldrush_d1_80d.dsk
-DISK_2_80D	= goldrush_d2_80d.dsk
-DISK_3_80D	= goldrush_d3_80d.dsk
+DSKDW		= GoldRush_dw.dsk
+DSKDWBECKER	= GoldRush_becker.dsk
+DISK_1_80D	= GoldRush_d1_80d.dsk
+DISK_2_80D	= GoldRush_d2_80d.dsk
+DISK_3_80D	= GoldRush_d3_80d.dsk
 
 DSKS		= $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) $(DSKDW) $(DSKDWBECKER)
 

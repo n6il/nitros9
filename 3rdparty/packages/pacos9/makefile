@@ -5,7 +5,7 @@ OBJS = main90.o board90.o caged90.o check90.o ghosts90.o movpac90.o \
        score90.o scrns90.o setup90.o
 LFLAGS += -L$(NITROS9DIR)/lib -lnos96809l2
 
-DSK = $(TARGET).dsk
+DSK = PacOS9.dsk
 
 $(TARGET): $(OBJS)
 	$(LINKER) $(LFLAGS) $^ -o$@
