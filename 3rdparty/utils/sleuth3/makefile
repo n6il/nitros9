@@ -6,7 +6,7 @@ AS		= lwasm --6309 --format=os9 --pragma=forwardrefmax,pcaspcr,nosymbolcase,cond
 
 ALLOBJS		= $(OBJS)
 
-DSKSLEUTH3	= sleuth3.dsk
+DSKSLEUTH3	= Sleuth3.dsk
 
 DSKS		= $(DSKSLEUTH3)
 

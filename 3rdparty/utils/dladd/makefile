@@ -6,7 +6,7 @@ CMDS		= cls
 
 ALLOBJS		= $(CMDS)
 
-DSKDLADDUTILS	= dladd_utils.dsk
+DSKDLADDUTILS	= DLadd_Utils.dsk
 
 DSKS		= $(DSKDLADDUTILS)
 

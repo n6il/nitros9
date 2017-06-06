@@ -6,7 +6,7 @@ CMDS		= getclk swread swset
 
 ALLOBJS		= $(CMDS)
 
-DSKSMARTWATCH	= smartwatch.dsk
+DSKSMARTWATCH	= SmartWatch.dsk
 
 DSKS		= $(DSKSMARTWATCH)
 

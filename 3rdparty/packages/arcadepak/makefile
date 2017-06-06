@@ -4,10 +4,10 @@ include $(NITROS9DIR)/rules.mak
 DEPENDS		= ./makefile
 
 CMD		= $(6809L2)/cmds
-DISK_40D	= arcadepack_40d.dsk
-DISK_80D	= arcadepack_80d.dsk
-DISK_DW 	= arcadepack_dw.dsk
-DISK_BECKER	= arcadepack_becker.dsk
+DISK_40D	= ArcadePack_40d.dsk
+DISK_80D	= ArcadePack_80d.dsk
+DISK_DW 	= ArcadePack_dw.dsk
+DISK_BECKER	= ArcadePack_becker.dsk
 CMDS		= grfdrv runb
 SHELLMODS	= $(CMD)/shell_21 $(CMD)/dir $(CMD)/echo $(CMD)/link $(CMD)/load $(CMD)/mdir
 		

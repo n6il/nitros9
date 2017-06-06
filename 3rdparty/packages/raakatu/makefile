@@ -2,7 +2,7 @@ include ../../../rules.mak
 
 DEPENDS		= ./makefile
 
-DSK		= raakatu.dsk
+DSK		= Raakatu.dsk
 CMDS		= raaka-tu raakatu
 MD		= $(LEVEL2)/coco3/modules
 

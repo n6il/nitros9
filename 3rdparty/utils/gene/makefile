@@ -10,7 +10,7 @@ CMDS		= bootlink vfy
 
 ALLOBJS		= $(CMDS)
 
-DSKGENEUTILS	= gene_utils.dsk
+DSKGENEUTILS	= Gene_Utils.dsk
 
 DSKS		= $(DSKGENEUTILS)
 

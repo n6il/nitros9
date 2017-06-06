@@ -10,7 +10,7 @@ CMDS		= bawk del grep mode send timer bigbro font makdir \
 
 ALLOBJS		= $(CMDS)
 
-DSKBOISYUTILS	= boisy_utils.dsk
+DSKBOISYUTILS	= Boisy_Utils.dsk
 
 DSKS		= $(DSKBOISYUTILS)
 

@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-DSK	= deskmate3.dsk
+DSK	= DeskMate3.dsk
 
 CD68	= $(LEVEL2)/coco3/cmds
 MD68	= $(LEVEL2)/coco3/modules

@@ -2,9 +2,9 @@ include ../../../rules.mak
 
 DEPENDS		= ./makefile
 
-DSK_FLOPPY	= kyumgai.dsk
-DSK_DW		= kyumgai_dw.dsk
-DSK_DW_BECKER	= kyumgai_becker.dsk
+DSK_FLOPPY	= Kyumgai.dsk
+DSK_DW		= Kyumgai_dw.dsk
+DSK_DW_BECKER	= Kyumgai_becker.dsk
 
 CMDS		= ninja ninja.snd1 ninja.snd2
 MD		= $(LEVEL2)/coco3/modules

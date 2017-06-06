@@ -6,7 +6,7 @@ CMDS		= dasm
 
 ALLOBJS		= $(CMDS)
 
-DSKDASM		= dasm.dsk
+DSKDASM		= DAsm.dsk
 
 DSKS		= $(DSKDASM)
 

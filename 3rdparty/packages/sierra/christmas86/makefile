@@ -4,9 +4,9 @@ vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
-DSK_FLOPPY	= christmas86.dsk
-DSK_DW		= christmas86_dw.dsk
-DSK_DW_BECKER	= christmas86_becker.dsk
+DSK_FLOPPY	= Christmas86.dsk
+DSK_DW		= Christmas86_dw.dsk
+DSK_DW_BECKER	= Christmas86_becker.dsk
 
 DSKS		= $(DSK_FLOPPY) $(DSK_DW) $(DSK_DW_BECKER)
 

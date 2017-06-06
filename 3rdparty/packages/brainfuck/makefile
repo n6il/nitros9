@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-DSK	= brainfuck.dsk
+DSK	= BrainFuck.dsk
 
 # NitrOS-9
 H6309		= $(AFLAGS) -DH6309=1

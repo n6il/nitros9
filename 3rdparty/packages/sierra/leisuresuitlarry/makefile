@@ -4,9 +4,9 @@ vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
-DSK_FLOPPY	= leisuresuitlarry.dsk
-DSK_DW		= leisuresuitlarry_dw.dsk
-DSK_DW_BECKER	= leisuresuitlarry_becker.dsk
+DSK_FLOPPY	= LeisureSuitLarry.dsk
+DSK_DW		= LeisureSuitLarry_dw.dsk
+DSK_DW_BECKER	= LeisureSuitLarry_becker.dsk
 
 DSK_NAME	= "Leisure Suit Larry"
 
