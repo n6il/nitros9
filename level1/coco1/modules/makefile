@@ -48,10 +48,10 @@ RBF		= rbf.mn \
 
 SCF		= scf.mn \
 		sc6551.dr vrn.dr scbbp.dr scbbt.dr scdwp.dr sspak.dr vtio.dr \
-		covdg.io cohr.io co42.io co80.io \
+		covdg.io cohr.io co42.io co80.io cowprs.io \
 		nil.dd p_scbbp.dd p_scdwp.dd pipe.dd ssp.dd \
 		term_scbbt.dt term_sc6551.dt t1_scbbt.dd t2_sc6551.dd t3_sc6551.dd \
-		term_vdg.dt term_hr.dt term_42.dt term_80.dt \
+		term_vdg.dt term_hr.dt term_42.dt term_80.dt term_wprs.dt \
 		scdwv.dr term_scdwv.dt n_scdwv.dd n1_scdwv.dd n2_scdwv.dd \
 		n3_scdwv.dd n4_scdwv.dd n5_scdwv.dd n6_scdwv.dd n7_scdwv.dd \
 		n8_scdwv.dd n9_scdwv.dd n10_scdwv.dd n11_scdwv.dd n12_scdwv.dd \

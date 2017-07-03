@@ -38,6 +38,8 @@ VTIO_COVDG	= $(MD)/vtio.dr $(MD)/covdg.io $(MD)/term_vdg.dt
 VTIO_COHR	= $(MD)/vtio.dr $(MD)/cohr.io $(MD)/term_hr.dt
 VTIO_CO80	= $(MD)/vtio.dr $(MD)/co80.io $(MD)/term_80.dt
 VTIO_CO42	= $(MD)/vtio.dr $(MD)/co42.io $(MD)/term_42.dt
+VTIO_COWPRS = $(MD)/vtio.dr $(MD)/cowprs.io $(MD)/term_wprs.dt
+
 PIPE		= $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd
 CLOCK60HZ	= $(MD)/clock_60hz $(MD)/clock2_soft
 CLOCK60HZDW	= $(MD)/clock_60hz $(MD)/clock2_dw
@@ -109,6 +111,18 @@ BOOTFILE_CO80	= $(MD)/ioman \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn \
 		$(VTIO_CO80) \
+		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
+		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
+		$(PIPE) \
+		$(CLOCK60HZ) \
+		$(MD)/sysgo_dd
+		
+BOOTFILE_COWPRS	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(FLOPPY_40D) \
+		$(MD)/ddd0_40d.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COWPRS) \
 		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
 		$(PIPE) \
@@ -361,7 +375,7 @@ BOOTFILE_CO42_DS80	= $(MD)/ioman \
 		$(CLOCK60HZ) \
 		$(MD)/sysgo_dd
 
-BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_co42  \
+BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_co42 bootfile_cowprs \
 		bootfile_dw_headless bootfile_covdg_becker \
 		bootfile_covdg_becker_game bootfile_covdg_dw_game \
 		bootfile_covdg_cocosdc bootfile_co42_cocosdc bootfile_covdg_cocosdc_game \
@@ -369,7 +383,7 @@ BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_co42  \
 		bootfile_covdg_ds80 bootfile_cohr_ds80 bootfile_co42_ds80 \
 		bootfile_cohr_becker bootfile_becker_headless \
 		bootfile_covdg_arduino bootfile_arduino_headless \
-		bootfile_cohr_arduino bootfile_covdg_arduino_game 
+		bootfile_cohr_arduino bootfile_covdg_arduino_game
 
 KERNELS		= kernel_1773 kernel_dw kernel_becker kernel_arduino kernel_cocosdc
 
@@ -388,6 +402,9 @@ bootfile_co42: $(BOOTFILE_CO42) $(DEPENDS)
 
 bootfile_co80: $(BOOTFILE_CO80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_CO80)>$@
+	
+bootfile_cowprs: $(BOOTFILE_COWPRS) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COWPRS)>$@
 
 bootfile_covdg_ds80: $(BOOTFILE_COVDG_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DS80)>$@

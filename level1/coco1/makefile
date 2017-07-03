@@ -10,6 +10,7 @@ DISTROVER	= $(DISTRONAME)_$(NITROS9VER)_$(PORT)
 BOOTFILE_COVDG	= bootfiles/bootfile_covdg
 BOOTFILE_COHR	= bootfiles/bootfile_cohr
 BOOTFILE_CO42	= bootfiles/bootfile_co42
+BOOTFILE_COWPRS	    = bootfiles/bootfile_cowprs
 BOOTFILE_COVDG_DS80	= bootfiles/bootfile_covdg_ds80
 BOOTFILE_DW_HEADLESS	= bootfiles/bootfile_dw_headless
 BOOTFILE_BECKER_HEADLESS	= bootfiles/bootfile_becker_headless
