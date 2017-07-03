@@ -965,8 +965,10 @@ GoCoVDG  stb   <V.CFlag,u save flag for later
                          
 GoCoWP   bita  #ModCoWP   ; CoWP needed ?
          beq   GOCo42    
-         lda   #ModCoWP   'CoWP is loaded' bit
-         ldx   #$5018     80x24
+         stb   <V.CFlag,u  allow lowercase
+         clr   <V.Caps,u   set caps off
+         lda   #ModCoWP    'CoWP is loaded' bit
+         ldx   #$5019      80x25     WordPark RS supports 25 lines
          pshs  u,y,x,a   
          leax  >CoWP,pcr 
                          
