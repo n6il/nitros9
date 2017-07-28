@@ -77,7 +77,7 @@ L0056    ldd   #256		and return last 256 bytes
          stx   <V.CrsrA,u 	save start cursor position
          leax  >512,x		point to end of screen
          stx   <V.ScrnE,u 	save it
-         lda   #$60		get default character
+LDClrCh  lda   #$60		get default character
          sta   <V.CChar,u 	put character under the cursor
          sta   <V.Chr1,u	only referenced here ??
          lbsr  ClrScrn		clear the screen
@@ -138,6 +138,13 @@ NoOp     clrb
 
 * Screen Scroll Routine
 SScrl    ldx   <V.ScrnA,u	get address of screen
+         IFNE  H6309
+         ldd   #$2060
+         leay  a,x              down one line
+         ldw   #512-32
+         tfm   y+,x+            scroll screen up
+         stx   <V.CrsrA,u       save new cursor address
+         ELSE
          leax  <32,x		move to 2nd line
 L00E9    ldd   ,x++		copy from this line
          std   <-34,x		to prevous
@@ -147,6 +154,7 @@ L00E9    ldd   ,x++		copy from this line
          stx   <V.CrsrA,u	save address of cursor (first col of last row)
          lda   #32		clear out row...
          ldb   #$60		...width spaces
+         ENDC
 L00FD    stb   ,x+		do it...
          deca  			end of rope?
          bne   L00FD		branch if not
@@ -183,9 +191,13 @@ DCodeTbl fdb   NoOp-DCodeTbl		$00:no-op (null)
 
 * $0D - move cursor to start of line (carriage return)
 Retrn    bsr   HideCrsr		hide cursor
+         IFNE  H6309
+         aim   #$E0,<V.CrsAL,u
+         ELSE
          tfr   x,d		put cursor address in D
          andb  #$E0		place at start of line
          stb   <V.CrsAL,u	and save low cursor address
+         ENDC
 ShowCrsr ldx   <V.CrsrA,u 	get cursor address
          lda   ,x		get char at cursor position
          sta   <V.CChar,u 	save it
@@ -229,10 +241,18 @@ ErEOScrn bsr   HideCrsr		kill the cusror
 
 * $0C - clear screen
 ClrScrn  bsr   CurHome		home cursor
-L0189    lda   #$60		get default char
+L0189    equ   *
+         IFNE  H6309
+         ldw <V.ScrnE,u
+         subr x,w
+         leay LDClrCh+1,pc
+         tfm y,x+
+         ELSE
+         lda   #$60		get default char
 L018B    sta   ,x+		save at location
          cmpx  <V.ScrnE,u 	end of screen?
          bcs   L018B		branch if not
+         ENDC
          bra   ShowCrsr		now show cursor
 
 * $01 - home cursor
