@@ -49,7 +49,7 @@ dskcopy: $(DSKS)
 $(DSK):
 	$(RM) $@
 	$(OS9FORMAT_DW) -e -q $@ -n"NitrOS-9/$(CPU) Level 1"
-#	$(OS9GEN) $@ -b=$(BOOTFILE)
+	$(OS9GEN) $@ -b=$(BOOTFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS

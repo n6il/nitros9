@@ -44,10 +44,10 @@ dsk: all $(DSKS)
 dskcopy: $(DSKS)
 	$(CP) $(DSKS) $(DSKDIR)
 
-#	$(OS9GEN) $@ -b=$(BOOTFILE)	
 $(DSK):
 	$(RM) $@
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 1"
+	$(OS9GEN) $@ -b=$(BOOTFILE)	
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
