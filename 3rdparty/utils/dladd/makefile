@@ -2,7 +2,7 @@ include ../../../rules.mak
 
 DEPENDS		:= ./makefile
 
-CMDS		= cls
+CMDS		= cls fast slow
 
 ALLOBJS		= $(CMDS)
 
