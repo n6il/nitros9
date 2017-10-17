@@ -87,7 +87,13 @@ Init
 L002E    sta   ,x+        clear mem
          decb             decrement counter
          bne   L002E      continue if more
-                         
+              
+         IFEQ  PwrLnFreq-Hz60
+         lda   #CFlash60hz initialize           
+         ELSE
+         lda   #CFlash50hz initialize           
+         ENDC
+         sta   <V.FlashTime,u                
          leax  FlashCursor,pcr * Point to dummy cursor flash
          stx   V.Flash,u  * Setup cursor flash
                          
@@ -220,7 +226,7 @@ CheckFlash
                          
 FlashTime                 
          jsr   [V.Flash,u] Call flash routine
-         lda   #CFlash50hz Re-init count
+         lda   <V.FlashTime,u Re-init count
          sta   V.FlashCount,u
                          
 AltIRQEnd                 
@@ -700,6 +706,7 @@ GrfDrv   fcs   /GrfDrv/
 CoVDG    fcs   /CoVDG/    
 CoWP     fcs   /CoWP/    
 CoHR     fcs   /CoHR/    
+CoVGA    fcs   /CoVGA/    
                          
 * GetStat
 *
@@ -948,8 +955,8 @@ BadMode  comb
                          
 SSCOMST  ldd   R$Y,x      Get caller's Y
 SetupTerm                 
-         bita  #ModCoVDG   CoWP?
-         beq   GoCoWP     branch if so
+         bita  #ModCoVDG   VDG?
+         beq   GoCoWP     branch if not
          ldb   #$10       assume true lower case TRUE
          bita  #$01       true lowercase bit set?
          bne   GoCoVDG     branch if so
@@ -962,8 +969,8 @@ GoCoVDG  stb   <V.CFlag,u save flag for later
          leax  >CoVDG,pcr 
          bra   SetupCoModule
                          
-GoCoWP   bita  #ModCoWP   ; CoWP needed ?
-         beq   GoCoHR    
+GoCoWP   bita  #ModCoWP   CoWP?
+         beq   GoCoVGA	  branch if not
          lda   #ModCoWP   'CoWP is loaded' bit
          ldx   #$5018     80x24
          pshs  u,y,x,a   
@@ -974,10 +981,17 @@ SetupCoModule
          puls  u,y,x,a   
          bcs   L0600     
          stx   <V.Col,u   save screen size
-         sta   <V.CurCo,u current module in use? ($02=CoVDG, $04=C080)
+         sta   <V.CurCo,u store current module in use
 L0600    rts             
                          
-GOCoHR   ldx   #$3318     51x24
+GoCoVGA  bita  #ModCoVGA
+         beq   GoCoHR
+         ldx   #$4020     64x32
+         pshs  u,y,x,a   
+         leax  >CoVGA,pcr 
+         bra   SetupCoModule
+                         
+GoCoHR   ldx   #$3318     51x24
          pshs  u,y,x,a   
          leax  >CoHR,pcr 
          bra   SetupCoModule

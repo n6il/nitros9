@@ -20,8 +20,14 @@ atrv     set   ReEnt+rev
 rev      set   $00
 
 * Window descriptor definitions
+         IFNE  COCOVGA
+szx      set   64         number of columns for display
+szy      set   32         number for rows for display
+         ELSE
 szx      set   32         number of columns for display
 szy      set   16         number for rows for display
+         ENDC
+         
          IFGT  Level-1
 wnum     set   0          window number
 sty      set   1          window type
@@ -61,10 +67,14 @@ prn3     set   Black.     border color
          IFGT  Level-1
          fcb   $01        init value for dev ctl reg
          ELSE
+         IFNE  COCOVGA
+         fcb   ModCoVGA   init value for dev ctl reg
+         ELSE
          IFEQ  coco2b+deluxe-1
          fcb   ModCoVDG+1 init value for dev ctl reg
          ELSE
          fcb   ModCoVDG   init value for dev ctl reg
+         ENDC
          ENDC
          ENDC
          fcb   $00        baud rate

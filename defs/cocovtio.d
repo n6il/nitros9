@@ -108,8 +108,10 @@ V.GrfDrvE      RMB       2                   GrfDrv entry point
 V.CoVDGE       RMB       2                   CoVDG entry point
 V.CoWPE        RMB       2                   CoWP entry point
 V.CoHRE        RMB       2                   CoHR entry point
+V.CoVGAE       RMB       2                   CoVGA entry point
 
 V.Flash        RMB       2                   Cursor flash routine address.
+v.FlashTime    RMB       1                   Cursor flash time
 v.FlashCount   RMB       1                   Cursor flash count
 V.NoFlash      RMB       1                   When this is non-zero do not flash cursor
 
@@ -161,6 +163,7 @@ V.Last         EQU       .
 ModCoVDG       EQU       %00000010           CoVDG, Built-in VDG 32x16.
 ModCoWP        EQU       %00000100           CoWP, WordPak, 80x25
 ModCoHR        EQU       %00001000           CoHR, PMODE 4 51x25 text
+ModCoVGA       EQU       %00010000           CoVGA, 64x32 text
 
 *
 * Defs for cursor flash counter

@@ -37,6 +37,7 @@ FLOPPY_80D	= $(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd
 VTIO_COVDG	= $(MD)/vtio.dr $(MD)/covdg.io $(MD)/term_vdg.dt
 VTIO_COHR	= $(MD)/vtio.dr $(MD)/cohr.io $(MD)/term_hr.dt
 VTIO_CO80	= $(MD)/vtio.dr $(MD)/co80.io $(MD)/term_80.dt
+VTIO_COVGA	= $(MD)/vtio.dr $(MD)/covga.io $(MD)/term_vga.dt
 PIPE		= $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd
 CLOCK60HZ	= $(MD)/clock_60hz $(MD)/clock2_soft
 CLOCK60HZDW	= $(MD)/clock_60hz $(MD)/clock2_dw
@@ -102,6 +103,18 @@ BOOTFILE_CO80	= $(MD)/ioman \
 		$(CLOCK60HZ) \
 		$(MD)/sysgo_dd
 
+BOOTFILE_COVGA	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(FLOPPY_40D) \
+		$(MD)/ddd0_40d.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
+		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
+		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
+		$(PIPE) \
+		$(CLOCK60HZ) \
+		$(MD)/sysgo_dd
+
 BOOTFILE_DW_HEADLESS	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(RBDW) \
@@ -148,6 +161,21 @@ BOOTFILE_COVDG_DW	= $(MD)/ioman \
 		$(MD)/ddx0.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COVDG) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
+		$(SCDWV_WIN) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd
+
+BOOTFILE_COVGA_DW	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(FLOPPY_40D) \
+		$(RBDW) \
+		$(MD)/ddx0.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
 		$(MD)/scdwv.dr \
 		$(SCDWV_NET) \
 		$(SCDWV_WIN) \
@@ -310,6 +338,7 @@ BOOTFILE_COHR_DS80	= $(MD)/ioman \
 		$(MD)/sysgo_dd
 
 BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_covdg_dw \
+		bootfile_covga_dw \
 		bootfile_dw_headless bootfile_covdg_becker \
 		bootfile_covdg_becker_game bootfile_covdg_dw_game \
 		bootfile_covdg_cocosdc bootfile_covdg_cocosdc_game \
@@ -347,6 +376,9 @@ bootfile_arduino_headless: $(BOOTFILE_ARDUINO_HEADLESS) $(DEPENDS)
 
 bootfile_covdg_dw: $(BOOTFILE_COVDG_DW) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DW)>$@
+
+bootfile_covga_dw: $(BOOTFILE_COVGA_DW) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_DW)>$@
 
 bootfile_covdg_dw_game: $(BOOTFILE_COVDG_DW_GAME) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DW_GAME)>$@
