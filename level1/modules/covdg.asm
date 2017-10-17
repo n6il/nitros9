@@ -156,6 +156,7 @@ L0086    stb   <V.COLoad,u
          clrb  
          puls  pc,y,x
 
+         IFNE  COCOVGA
 ***** START OF COCOVGA 64x32 MODE         
 VGASetup fcb   $00              Reset register
          fcb   $81              Edit mask
@@ -168,6 +169,7 @@ VGASetup fcb   $00              Reset register
          fcb   $02              Enhanced Modes
 VGASetupLen equ *-VGASetup
 ***** END OF COCOVGA 64x32 MODE         
+		 ENDC
 
 * Write
 * Entry: A = char to write
