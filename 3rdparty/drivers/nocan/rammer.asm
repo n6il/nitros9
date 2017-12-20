@@ -29,8 +29,8 @@
 * the drive is by default 6Meg, 14Meg, or 62Meg but can be changed by altering
 * the descriptor, r0.
 
-H6309 set 1  0=6809  1=6309
-Nocan set 0 0=64Meg Nocan 1=8Meg MESS and Nocan3 2=16Meg Collyer
+* H6309 set 1  0=6809  1=6309
+Nocan set 1 0=64Meg Nocan 1=8Meg MESS and Nocan3 2=16Meg Collyer
 
 * Select the correct pair for the system RAM
 
@@ -56,7 +56,7 @@ MaxLSW set $DFFF
  ttl   nitros-9 level 2 ram disk
 
  ifp1
- use   /dd/defs/defsfile
+ use   defsfile
  endc
 
 tylg set   drivr+objct   

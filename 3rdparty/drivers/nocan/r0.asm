@@ -6,17 +6,17 @@
 * comment
 * Modified by R.Gault for Nocan 2004/2/1
 * ------------------------------------------------------------------
-Nocan set 2   0=64Meg 1=8Meg 2=16Meg based on "hardware" in use
+Nocan set 1   0=64Meg 1=8Meg 2=16Meg based on "hardware" in use
 
-   nam   r0
-   ttl   rammer device descriptor
+		nam   r0
+		ttl   rammer device descriptor
 
-   ifp1  
-   use   /dd/defs/defsfile
-   endc  
+		ifp1
+		use   defsfile
+		endc
 
-tylg     set   devic+objct
-atrv     set   reent+rev
+tylg     set   Devic+Objct
+atrv     set   ReEnt+rev
 rev      set   $00
 
  ifeq  Nocan
@@ -55,6 +55,6 @@ name     fcs   /r0/
 mgrnam   fcs   /rbf/
 drvnam   fcs   /rammer/
 
-         emod  
+         emod
 eom      equ   *
          end
