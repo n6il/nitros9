@@ -26,11 +26,11 @@ optns EQU *
  FCB $00 step rate
  FCB $80 type=nonstd,coco
  FCB $01 double density
- FDB $005a tracks
- FCB $40 one side
+ FDB $71c6 tracks
+ FCB $01 one side
  FCB $01 no verify
- FDB $0040 sectors/track
- FDB $0040 "", track 0
+ FDB $0012 sectors/track
+ FDB $0012 "", track 0
  FCB $03 interleave
  FCB $20 min allocation
 optl EQU *-optns
