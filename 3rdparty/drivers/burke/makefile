@@ -13,3 +13,7 @@ all:	$(ALLOBJS) $(DEPENDS)
 clean:
 	$(RM) $(ALLOBJS)
 
+dsk:
+dskcopy:
+dskclean:
+
