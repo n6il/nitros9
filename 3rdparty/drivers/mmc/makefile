@@ -49,3 +49,7 @@ dd_mmc_l2.dd: mmcdesc.asm
 clean:
 	$(RM) $(ALLOBJS)
 
+dsk:
+dskcopy:
+dskclean:
+
