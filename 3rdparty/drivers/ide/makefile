@@ -41,3 +41,7 @@ dd_ide_l2.dd: idedesc.asm
 clean:
 	$(RM) $(ALLOBJS)
 
+dsk:
+dskcopy:
+dskclean:
+
