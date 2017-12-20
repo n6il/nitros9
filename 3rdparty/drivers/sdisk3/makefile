@@ -60,3 +60,7 @@ d1_80d.dd: sdisk3desc.asm
 clean:
 	$(RM) $(ALLOBJS)
 
+dsk:
+dskcopy:
+dskclean:
+
