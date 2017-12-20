@@ -84,3 +84,7 @@ r0_512_l2.dd: r0.asm
 clean:
 	$(RM) $(ALLOBJS)
 
+dsk:
+dskcopy:
+dskclean:
+
