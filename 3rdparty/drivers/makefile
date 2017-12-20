@@ -1,6 +1,6 @@
 include ../../rules.mak
 
-dirs	= burke disto emudsk ide mmc s16550 sdisk sdisk3 tccc
+dirs	= burke disto emudsk ide mmc s16550 sdisk sdisk3 tccc nocan
 
 # Make all components
 all:
@@ -15,6 +15,19 @@ all:
 clean:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make clean);)
 
+# Make DSK images
 dsk:
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dsk &&) :
+
+# Clean DSK images
+dskclean:
+	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)
+
+# Copy DSK images
 dskcopy:
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dskcopy &&) :
+
+# Info
+info:
+	@$(foreach dir, $(dirs), $(MAKE) -C $(dir) info;)
 
