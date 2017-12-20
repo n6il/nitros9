@@ -19,6 +19,7 @@
 *    the community, is prohibited without the consent of the author.
 *    Please share any extensions or modifications with the author, who
 *    would be interested in hearing about them.
+* Small optimizations for size by L. Curtis Boyle 11/26/2017
 *
 *  NOTE
 *    Quick poll... how does the above sound as a copyright notice?  Clearly,
@@ -52,6 +53,8 @@
 * ------------------------------------------------------------------
 *   1      1987/06/23  Peter E. Durham
 * First release.
+*   2      2017/11/26  L. Curtis Boyle
+*
 
          nam   krnp3
          ttl   Printerr functionality for Level 2
@@ -60,38 +63,40 @@
          use   defsfile
          endc  
 
-type     set   Systm      ;System module, 6809 object code
-revs     set   0          ;
-edition  set   1
+Type     set   Systm      ;System module, 6809 object code
+atrv     set   ReEnt+rev
+rev      set   1          ;
+edition  set   2
 
-         mod   eom,name,type,ReEnt+revs,entry,256
+         mod   eom,name,Type,atrv,Entry,256
 
 name     fcs   "KrnP3"
          fcb   edition
+
+SvcTbl   fcb   F$PErr     ;System call number
+         fdb   PErr-*-2   ;Offset to code
+         fcb   $80        ;End of table
+
+P4Name   fcc   "krnp4"
+         fcb   C$CR
 
 *+
 *  Initialization routine and table
 *-
 Entry    equ   *
-         leay  SvcTbl,pcr ;Get address of table
+         leay  SvcTbl,pc ;Get address of table
          os9   F$SSvc     ;Install services in table
          lda   #Type      ;Get system module type for KrnP4
-         leax  P4Name,pcr ;Get name for KrnP4
+         leax  P4Name,pc ;Get name for KrnP4
          os9   F$Link     ;Try to link to it
-         bcs   Exit       ;If not found, exit
-         jsr   ,y         ;Go execute it!
-Exit     rts              ;Return to KrnP2
-
-SvcTbl   equ   *
-         fcb   F$PErr     ;System call number
-         fdb   PErr-*-2   ;Offset to code
-         fcb   $80        ;End of table
+         bcs   PErrBye    ;If not found, exit
+         jmp   ,y         ;Execute it, return from there
 
 *+
 *  The new F$Perr service call
 *-
 *+
-*  Data (in user space!)
+*  Data (in user space!) - reserved in users stack. 89 bytes
 *-
 BufLen   equ   80
 Buf      rmb   BufLen
@@ -99,6 +104,13 @@ HunDig   equ   Buf+7
 TenDig   equ   Buf+8
 OneDig   equ   Buf+9
 DataMem  equ   .
+
+ErrMsg   fcc   "Error #000"
+ErrLen   equ   *-ErrMsg
+
+FilNam   fcc   "/dd/sys/errmsg"
+         fcb   C$CR
+FilLen   equ   *-FilNam
 
 *+
 *  FUNCTION     PErr
@@ -110,43 +122,46 @@ DataMem  equ   .
 *               X = Pointer to strings
 *-
 PErr     equ   *
-         bsr   Setup      ;Go set up registers
-         leax  ErrMsg,pcr ;Get pointer to "Error #000"
+         ldb   R$B,u      ;Get error code
+         ldy   D.Proc     ;Get user's process descriptor
+         ldu   P$SP,y     ;Get user's stack pointer
+         leau  -DataMem,u ;Reserve a little space (89 bytes) to build string
+         leax  <ErrMsg,pc ;Get pointer to "Error #000"
          bsr   MoveBuf    ;Go copy it over
          bsr   WritNum    ;Go copy the number into it
-         lbsr  PrinMsg    ;Go print the message
+         pshs  x,y,a      ;Save regs
+         lda   P$Path+2,y ;Get Std Err path
+         leax  Buf,u      ;Get ptr to message
+         ldy   #ErrLen    ;Maximum ErrLen characters to print
+         os9   I$Write    ;Write out Error message
+         puls  x,y,a      ;Restore regs
          bcs   PErrBye    ;If error, abort
-         leax  FilNam,pcr ;Get pointer to "/dd/sys/errmsg"
+         leax  <FilNam,pc ;Get pointer to "/dd/sys/errmsg"
          bsr   MoveBuf    ;Go copy it over
-         lbsr  OpenFil    ;Go open the file
+         pshs  x          ;Preserve X
+         lda   #READ.     ;Open path for read access
+         leax  Buf,u      ;Get ptr to string
+         os9   I$Open     ;Open errmsg file
+         puls  x          ;Restore X
          bcs   PErrBye    ;If error, abort
-Loop     lbsr  RdBuf      ;Go read a line from the file
+Loop     pshs  y,x        ;Save regs
+         leax  Buf,u      ;Point to buffer
+         ldy   #BufLen    ;Maximum BufLen characters to read
+         os9   I$ReadLn   ;Read a line
+         puls  y,x        ;Restore regs
          bcs   Error      ;If error, print CR, and abort
          pshs  b          ;Save error code
          pshs  b          ;Save error code again for compare
+* Only called once, but may be to big to embed?
          bsr   CalcNum    ;What number is on this line?
          cmpb  ,s+        ;Is this line the right line?
          puls  b          ;Restore error code
          bne   Loop       ;If not right line, loop again
-         lbsr  PrinBuf    ;If right line, write line out
+         bsr   PrinBuf    ;If right line, write line out
          bra   Close      ;Done, so close the file
-Error    lbsr  DoCR       ;Go print a carriage return
-Close    lbsr  ClosFil    ;Go close the file
+Error    bsr   DoCR       ;Go print a carriage return
+Close    os9   I$Close    ;Close the file
 PErrBye  rts              ;Return from system call
-
-*+
-*  FUNCTION     SetUp
-*  PURPOSE      Sets up registers
-*  GIVES        B = Error code
-*               U = Pointer to data memory on user stack in user space
-*               Y = Pointer to user process descriptor in system space
-*-
-SetUp    equ   *
-         ldb   R$B,u      ;Get error code
-         ldy   D.Proc     ;Get user's process descriptor
-         ldu   P$SP,y     ;Get user's stack pointer
-         leau  -DataMem,u ;Reserve a little space
-         rts   
 
 *+
 *  FUNCTION     MoveBuf
@@ -200,7 +215,7 @@ WritDig  equ   *
          pshs  d          ;Save registers
          adda  #'0        ;Convert A to ASCII
          ldb   P$Task,y   ;Get task number
-         os9   F$StABX    ;Write that digit to user space
+         os9   F$STABX    ;Write that digit to user space
          puls  d,pc       ;Restore registers and return
 
 *+
@@ -213,8 +228,11 @@ WritDig  equ   *
 CalcNum  equ   *
          pshs  a          ;Save register
          leax  Buf,u      ;Get pointer to buffer
-         clrb             ;Set accumulator to zero
-NextDig  bsr   LoadDig    ;Get digit from user space
+         clrb             ;Clear result to 0 to start
+NextDig  pshs  b          ;Save current result
+         ldb   P$Task,y   ;Get user process task #
+         os9   F$LDABX    ;Get digit from user space
+         puls  b          ;Get current result back
          suba  #'0        ;Convert to binary; is it less than zero?
          bmi   CalcBye    ;If so, return
          cmpa  #9         ;Is the digit more than nine?
@@ -225,42 +243,19 @@ NextDig  bsr   LoadDig    ;Get digit from user space
          addb  ,s+        ;Add new digit to number
          leax  1,x        ;Advance X to next digit
          bra   NextDig    ;Go get the next digit
+         
 CalcBye  puls  a,pc       ;Restore register and return
-
-*+
-*  FUNCTION     LoadDig
-*  PURPOSE      Get digit from user space
-*  TAKES        X = pointer to digit in user space
-*  GIVES        A = digit in user space
-*-
-LoadDig  equ   *
-         pshs  b          ;Save register
-         ldb   P$Task,y   ;Get user process task number
-         os9   F$LdABX    ;Get digit
-         puls  b,pc       ;Restore register and return
-
-*+
-*  FUNCTION     PrinMsg
-*  PURPOSE      Prints out the Error #xxx message
-*-
-PrinMsg  equ   *
-         pshs  y,x,a      ;Save registers
-         lda   P$Path+2,y ;Get StdErr path number
-         leax  Buf,u      ;Get pointer to message
-         ldy   #ErrLen    ;Maximum ErrLen characters to print
-         os9   I$Write    ;Write out error message
-         puls  a,x,y,pc   ;Restore registers and return
 
 *+
 *  FUNCTION     DoCR
 *  PURPOSE      Prints a carriage return
-*-
+*- 6809/6309 - only called once, embed above
 DoCR     equ   *
          pshs  x,d        ;Save registers
          ldb   P$Task,y   ;Get user task number
          lda   #C$CR      ;Load A with a CR
          leax  Buf,u      ;Get pointer to buffer
-         os9   F$StABX    ;Move the CR to the buffer
+         os9   F$STABX    ;Move the CR to the buffer
          bsr   PrinBuf    ;Go print it
          puls  d,x,pc     ;Restore registers and return
 
@@ -275,49 +270,7 @@ PrinBuf  equ   *
          ldy   #BufLen    ;Maximum BufLen characters to print
          os9   I$WritLn   ;Write out message
          puls  a,y,pc     ;Restore registers and return
-
-*+
-*  FUNCTION     RdBuf
-*  PURPOSE      Reads in a string from file to user space
-*  TAKES        A = path number
-*  GIVES        Buf (in user space) = String read in
-*-
-RdBuf    equ   *
-         pshs  y,x        ;Save registers
-         leax  Buf,u      ;Get pointer to buffer
-         ldy   #BufLen    ;Maximum BufLen characters to read
-         os9   I$ReadLn   ;Read in line from file
-         puls  x,y,pc     ;Restore registers and return
-
-*+
-*  FUNCTION     OpenFil
-*  PURPOSE      Open path to error message file
-*  TAKES        Buf (in user space) = name of file
-*  GIVES        A = Path number
-*-
-OpenFil  equ   *
-         pshs  x          ;Save register
-         lda   #READ.     ;Open path for read access
-         leax  Buf,u      ;Get pointer to string
-         os9   I$Open     ;Open path
-         puls  x,pc       ;Restore registers and return A
-
-*+
-*  FUNCTION     ClosFil
-*  PURPOSE      Close path to error message file
-*  TAKES        A = Path number
-*-
-ClosFil  equ   *
-         os9   I$Close    ;Close file
-         rts              ;Return
-P4Name   fcc   "krnp4"
-         fcb   C$CR
-ErrMsg   fcc   "Error #000"
-ErrLen   equ   *-ErrMsg
-FilNam   fcc   "/dd/sys/errmsg"
-         fcb   C$CR
-FilLen   equ   *-FilNam
-
+         
          emod  
 eom      equ   *
          end   
