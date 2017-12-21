@@ -84,10 +84,10 @@ P4Name   fcc   "krnp4"
 *  Initialization routine and table
 *-
 Entry    equ   *
-         leay  SvcTbl,pc ;Get address of table
+         leay  SvcTbl,pcr ;Get address of table
          os9   F$SSvc     ;Install services in table
          lda   #Type      ;Get system module type for KrnP4
-         leax  P4Name,pc ;Get name for KrnP4
+         leax  P4Name,pcr ;Get name for KrnP4
          os9   F$Link     ;Try to link to it
          bcs   PErrBye    ;If not found, exit
          jmp   ,y         ;Execute it, return from there
@@ -126,7 +126,7 @@ PErr     equ   *
          ldy   D.Proc     ;Get user's process descriptor
          ldu   P$SP,y     ;Get user's stack pointer
          leau  -DataMem,u ;Reserve a little space (89 bytes) to build string
-         leax  <ErrMsg,pc ;Get pointer to "Error #000"
+         leax  ErrMsg,pcr ;Get pointer to "Error #000"
          bsr   MoveBuf    ;Go copy it over
          bsr   WritNum    ;Go copy the number into it
          pshs  x,y,a      ;Save regs
@@ -136,7 +136,7 @@ PErr     equ   *
          os9   I$Write    ;Write out Error message
          puls  x,y,a      ;Restore regs
          bcs   PErrBye    ;If error, abort
-         leax  <FilNam,pc ;Get pointer to "/dd/sys/errmsg"
+         leax  FilNam,pcr ;Get pointer to "/dd/sys/errmsg"
          bsr   MoveBuf    ;Go copy it over
          pshs  x          ;Preserve X
          lda   #READ.     ;Open path for read access
