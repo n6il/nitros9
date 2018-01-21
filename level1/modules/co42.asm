@@ -37,6 +37,14 @@
 *          2017/04/23  Felipe Antoniosi
 * Create this driver as 42x24 column
 *
+*          2018/01/20  David Ladd
+* Moved Driver Entry Table closer to Term to allow fall through.
+* This is to save bytes and cycles.  Changed lbra Write to bra
+* Write to save cyrcles each time characters are written to screen.
+* Also changed lda and ldb to a ldd to save cycle(s) and space.
+* Also a few other optimizations to code.
+*
+
          nam   Co42      
          ttl   Hi-Res 42x24 Graphics Console Output Subroutine for VTIO
                          
@@ -61,12 +69,6 @@ ScreenSize equ   $1800      * Screen Size in Bytes
                          
 name     fcs   /Co42/    
          fcb   edition   
-                         
-start    lbra  Init      
-         lbra  Write     
-         lbra  GetStat   
-         lbra  SetStat   
-         lbra  Term      
                          
 Init     pshs  u,a       
          ldd   #ScreenSize+$100 * Request a screenful of ram + $100 bytes
@@ -107,6 +109,12 @@ InitExit
                          
 InitFlag fcb   $00       
                          
+start    lbra  Init      
+         bra   Write     
+         nop
+         lbra  GetStat   
+         lbra  SetStat   
+                         
 Term     pshs  y,x       
          pshs  u          * save U
          ldd   #ScreenSize * Graphics memory size
@@ -138,10 +146,9 @@ L0139    rts
                          
 CheckForNormal                 
          cmpa  #$20      
-         bcs   DoCtrlChar * Control charater ?
+         blo   DoCtrlChar * Control charater ?
          cmpa  #$7F      
-         bcc   DoCtrlChar * or upper bit set	
-         bra   DoNormalChar
+         blo   DoNormalChar
                          
 DoCtrlChar                 
          leax  >CtrlCharDispatch,pcr
@@ -206,8 +213,8 @@ L01A5
 *         lbsr  DoDisplayCursor * Display cursor
                          
          lbra  WriteExit2
-         clrb             * Flag no error
-         rts              * Return to caller
+*         clrb             * Flag no error
+*         rts              * Return to caller
                          
 *
 * Draw the normal character $20..$7f, in the a register
@@ -500,8 +507,9 @@ L02D2    bsr   L0314
          ora   #$F0      
          sta   $02,x     
          ldx   #$FFC0    
-         lda   #$06      
-         ldb   #$03      
+         ldd   #$0603
+*         lda   #$06      
+*         ldb   #$03      
          bsr   L0305     
          lda   V.51ScrnA,u
          lsra            
@@ -759,8 +767,9 @@ DoCursorRight
 * $1b46 - reverse on
 *
 DoReverseOn               
-         lda   #$FF      
-         coma            
+         clra
+*         lda   #$FF      
+*         coma            
 L046F    sta   V.51ReverseFlag,u
          lbra  CancelEscSequence
                          
