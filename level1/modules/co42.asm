@@ -107,7 +107,7 @@ InitSaveExit
 InitExit                 
          puls  pc,u,a    
                          
-InitFlag fcb   $00       
+* InitFlag fcb   $00       
                          
 start    lbra  Init      
          bra   Write     
@@ -139,8 +139,8 @@ L012C    inc   V.Noflash,u * Flag do not flash cursor
          inc   V.51EscSeq,u * flag ESC seq
                          
 WriteExit2                 
-         clr   V.NoFlash,u * Allow cursor to flash
          clrb            
+         stb   V.NoFlash,u * Allow cursor to flash
 L0139    rts             
                          
                          
