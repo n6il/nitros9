@@ -361,7 +361,7 @@ L0211    lda   ,x         * row 0
 *         bne   L0211      * all done ?
          dec   V.51CursorChanged,u * Flag character update finished
          clrb             * flag no error
-         puls  pc         * return to caller
+         rts              * return to caller
                          
                          
 *L0227    ldb   V.51BytePixOffset,u
@@ -607,7 +607,7 @@ L0382    ldx   ,u
 DelLine
          clrb
          stb   V.51XPos,u
-         clr   V.51CursorOn,u
+         stb   V.51CursorOn,u
 *         lbsr  DoDisplayCursor
 *
 * $1b42 - clear to end of line
