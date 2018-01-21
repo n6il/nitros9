@@ -179,12 +179,12 @@ L0165    inc   V.51EscSeq,u
          jmp   [V.51CtrlDispatch,u]
                          
 DoNormalChar                 
-         pshs  y,a       
+*         pshs  y,a       
 *         lbsr  DoEraseCursor
-         puls  y,a       
+*         puls  y,a       
          inc   V.51CursorChanged,u
          bsr   DrawCharacter
-         tst   V.51UnderlineFlag,u * Are we underlining ?
+         lda   V.51UnderlineFlag,u * Are we underlining ?
          beq   L0185      * no : update cursor
          lda   #$FC       * Yes : do underline, then update cursor
          leay  <-$20,y   
@@ -238,9 +238,12 @@ DrawCharacter
          rorb            
          lsra            
          rorb            
-         puls  a          * restore pixel X
+         lda   ,s
          anda  #$07       * Calculate offset within byte where character begins
-         pshs  b         
+         stb   ,s
+*         puls  a          * restore pixel X
+*         anda  #$07       * Calculate offset within byte where character begins
+*         pshs  b         
          sta   V.51BytePixOffset,u
          tst   V.51XORFlag,u
          bne   L01FF     
