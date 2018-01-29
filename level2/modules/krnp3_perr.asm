@@ -54,7 +54,12 @@
 *   1      1987/06/23  Peter E. Durham
 * First release.
 *   2      2017/11/26  L. Curtis Boyle
+*          Speed and size optimizations
 *
+*   3      2018/01/26  L. Curtis Boyle
+*          More speed optimizations (MoveBuf only copies 15 bytes,not 80,
+*          since it never needs more than that, and other minor mods.) Also
+*          shrank it some more.
 
          nam   krnp3
          ttl   Printerr functionality for Level 2
@@ -65,8 +70,8 @@
 
 Type     set   Systm      ;System module, 6809 object code
 atrv     set   ReEnt+rev
-rev      set   1          ;
-edition  set   2
+rev      set   1
+edition  set   3
 
          mod   eom,name,Type,atrv,Entry,256
 
@@ -83,8 +88,7 @@ P4Name   fcc   "krnp4"
 *+
 *  Initialization routine and table
 *-
-Entry    equ   *
-         leay  SvcTbl,pcr ;Get address of table
+Entry    leay  SvcTbl,pcr ;Get address of table
          os9   F$SSvc     ;Install services in table
          lda   #Type      ;Get system module type for KrnP4
          leax  P4Name,pcr ;Get name for KrnP4
@@ -121,45 +125,50 @@ FilLen   equ   *-FilNam
 *               A = Error file path number (after OpenFil)
 *               X = Pointer to strings
 *-
-PErr     equ   *
-         ldb   R$B,u      ;Get error code
+PErr     ldb   R$B,u      ;Get error code
          ldy   D.Proc     ;Get user's process descriptor
          ldu   P$SP,y     ;Get user's stack pointer
          leau  -DataMem,u ;Reserve a little space (89 bytes) to build string
          leax  ErrMsg,pcr ;Get pointer to "Error #000"
          bsr   MoveBuf    ;Go copy it over
          bsr   WritNum    ;Go copy the number into it
-         pshs  x,y,a      ;Save regs
+         pshs  x,y        ;Save regs
          lda   P$Path+2,y ;Get Std Err path
          leax  Buf,u      ;Get ptr to message
          ldy   #ErrLen    ;Maximum ErrLen characters to print
          os9   I$Write    ;Write out Error message
-         puls  x,y,a      ;Restore regs
+         puls  x,y        ;Restore regs
          bcs   PErrBye    ;If error, abort
          leax  FilNam,pcr ;Get pointer to "/dd/sys/errmsg"
+* Tried skipping copy to Buf, but does not work
+*  and using direct ptr
          bsr   MoveBuf    ;Go copy it over
-         pshs  x          ;Preserve X
          lda   #READ.     ;Open path for read access
          leax  Buf,u      ;Get ptr to string
          os9   I$Open     ;Open errmsg file
-         puls  x          ;Restore X
-         bcs   PErrBye    ;If error, abort
-Loop     pshs  y,x        ;Save regs
+         bcs   PErrBye    ;If couldn't open, abort
+Loop     pshs  y          ;Save users prc dsc ptr
          leax  Buf,u      ;Point to buffer
          ldy   #BufLen    ;Maximum BufLen characters to read
          os9   I$ReadLn   ;Read a line
-         puls  y,x        ;Restore regs
+         puls  y          ;Restore reg
          bcs   Error      ;If error, print CR, and abort
          pshs  b          ;Save error code
-         pshs  b          ;Save error code again for compare
-* Only called once, but may be to big to embed?
          bsr   CalcNum    ;What number is on this line?
-         cmpb  ,s+        ;Is this line the right line?
+         cmpb  ,s         ;Is this line the right line?
          puls  b          ;Restore error code
          bne   Loop       ;If not right line, loop again
          bsr   PrinBuf    ;If right line, write line out
          bra   Close      ;Done, so close the file
-Error    bsr   DoCR       ;Go print a carriage return
+
+* should be able to only preserve A (path to errmsg file)
+Error    pshs  a          ;Save path to errmsg file
+         ldb   P$Task,y   ;Get user task number
+         lda   #C$CR      ;Load A with a CR
+         leax  Buf,u      ;Get pointer to buffer
+         os9   F$STABX    ;Move the CR to the buffer
+         bsr   PrinBuf    ;Go print it
+         puls  a          ;Restore path to errmsg file
 Close    os9   I$Close    ;Close the file
 PErrBye  rts              ;Return from system call
 
@@ -168,12 +177,11 @@ PErrBye  rts              ;Return from system call
 *  PURPOSE      Copies string to user space
 *  TAKES        X = location of string in system space
 *-
-MoveBuf  equ   *
-         pshs  u,y,d      ;Save registers
+MoveBuf  pshs  u,y,d      ;Save registers
          lda   D.SysTsk   ;Get system process task number
          ldb   P$Task,y   ;Get user process task number
          leau  Buf,u      ;Get pointer to destination buffer
-         ldy   #BufLen    ;Copy BufLen characters over (extras, oh well)
+         ldy   #FilLen    ;Copy 15 bytes over max (longest)
          os9   F$Move     ;Move string to user space
          puls  d,y,u,pc   ;Restore registers and return
 
@@ -182,14 +190,14 @@ MoveBuf  equ   *
 *  PURPOSE      Puts the ASCII value of the error code in user space
 *  TAKES        B = error code
 *-
-WritNum  equ   *
-         pshs  x,d        ;Save registers
+WritNum  pshs  x,d        ;Save registers
          clra             ;Start A as 0
 Huns     cmpb  #100       ;Is B >= 100?
          blo   HunDone    ;If not, go do Tens
          inca             ;Increment hundreds digit
          subb  #100       ;Subtract 100 from B
          bra   Huns       ;Go do again
+
 HunDone  leax  HunDig,u   ;Where to put digit
          bsr   WritDig    ;Go put it there
          clra             ;Start A again as 0
@@ -198,6 +206,7 @@ Tens     cmpb  #10        ;Is B >= 10?
          inca             ;Increment hundreds digit
          subb  #10        ;Subtract 10 from B
          bra   Tens       ;Go do again
+
 TenDone  leax  TenDig,u   ;Where to put digit
          bsr   WritDig    ;Go put it there
          tfr   b,a        ;Get ones digit
@@ -210,13 +219,11 @@ TenDone  leax  TenDig,u   ;Where to put digit
 *  PURPOSE      Copy digit into user space
 *  TAKES        A = digit to copy (not in ASCII yet)
 *               X = where to put digit
-*-
-WritDig  equ   *
-         pshs  d          ;Save registers
+WritDig  pshs  b          ;Save working byte
          adda  #'0        ;Convert A to ASCII
          ldb   P$Task,y   ;Get task number
          os9   F$STABX    ;Write that digit to user space
-         puls  d,pc       ;Restore registers and return
+         puls  b,pc       ;Restore registers and return
 
 *+
 *  FUNCTION     CalcNum
@@ -225,8 +232,7 @@ WritDig  equ   *
 *  GIVES        B = number converted
 *               X = points to first nonnumeric character
 *-
-CalcNum  equ   *
-         pshs  a          ;Save register
+CalcNum  pshs  a          ;Save register
          leax  Buf,u      ;Get pointer to buffer
          clrb             ;Clear result to 0 to start
 NextDig  pshs  b          ;Save current result
@@ -247,25 +253,11 @@ NextDig  pshs  b          ;Save current result
 CalcBye  puls  a,pc       ;Restore register and return
 
 *+
-*  FUNCTION     DoCR
-*  PURPOSE      Prints a carriage return
-*- 6809/6309 - only called once, embed above
-DoCR     equ   *
-         pshs  x,d        ;Save registers
-         ldb   P$Task,y   ;Get user task number
-         lda   #C$CR      ;Load A with a CR
-         leax  Buf,u      ;Get pointer to buffer
-         os9   F$STABX    ;Move the CR to the buffer
-         bsr   PrinBuf    ;Go print it
-         puls  d,x,pc     ;Restore registers and return
-
-*+
 *  FUNCTION     PrinBuf
 *  PURPOSE      Prints out the string from user space
 *  TAKES        X (in user space) = String to print
 *-
-PrinBuf  equ   *
-         pshs  y,a        ;Save registers
+PrinBuf  pshs  y,a        ;Save registers
          lda   P$Path+2,y ;Get StdErr path number
          ldy   #BufLen    ;Maximum BufLen characters to print
          os9   I$WritLn   ;Write out message
