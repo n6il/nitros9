@@ -11,6 +11,9 @@
 *
 *          2003/09/22  Rodney Hamilton
 * recoded dispatch table fcbs, fixed cursor color bug
+*
+*          2017/12/20  Boisy Pitre
+* Added support for CoCoVGA 64x32 mode
 
          nam   CoVDG
          ttl   VDG Console Output Subroutine for VTIO
@@ -29,11 +32,26 @@ edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
 
+		 IFNE  COCOVGA
+COLSIZE  equ   64
+ROWSIZE  equ   32
+MODFLAG  equ   ModCoVGA
+		 ELSE
+COLSIZE  equ   32
+ROWSIZE  equ   16
+MODFLAG  equ   ModCoVDG
+		 ENDC
+
 u0000    rmb   0
 size     equ   .
          fcb   $07 
 
-name     fcs   /CoVDG/
+name     equ   *
+		IFNE	COVGA
+         fcs   /CoVGA/
+		ELSE
+         fcs   /CoVDG/
+		ENDC
          fcb   edition
 
 start    equ   *
@@ -43,7 +61,7 @@ start    equ   *
          lbra  SetStat
 Term     pshs  y,x
          pshs  u		save U
-         ldd   #512		32x16 VDG memory size
+         ldd   #COLSIZE*ROWSIZE		VDG memory size
          ldu   <V.ScrnA,u 	get pointer to memory
          os9   F$SRtMem 	return to system
          puls  u		restore U
@@ -55,7 +73,7 @@ Init     pshs  y,x		save regs
          lda   #$AF
          sta   <V.CColr,u	save default color cursor
          pshs  u		save static ptr
-         ldd   #768		allocate 768 bytes for now
+         ldd   #COLSIZE*ROWSIZE+256		allocate screen + 256 bytes for now
          os9   F$SRqMem 	get it
          tfr   u,d		put ptr in D
          tfr   u,x		and X
@@ -63,7 +81,7 @@ Init     pshs  y,x		save regs
          beq   L0052		branch if not
          leax  >256,x		else move X up 256 bytes
          bra   L0056		and return first 256 bytes
-L0052    leau  >512,u		else move X up 512 bytes
+L0052    leau  >COLSIZE*ROWSIZE,u		else move X up 512 bytes
 L0056    ldd   #256		and return last 256 bytes
          os9   F$SRtMem 	free it!
          puls  u		restore static ptr
@@ -75,17 +93,93 @@ L0056    ldd   #256		and return last 256 bytes
          jsr   [<V.DspVct,u]	display screen (routine in VTIO)
          puls  y
          stx   <V.CrsrA,u 	save start cursor position
-         leax  >512,x		point to end of screen
+         leax  >COLSIZE*ROWSIZE,x		point to end of screen
          stx   <V.ScrnE,u 	save it
 LDClrCh  lda   #$60		get default character
          sta   <V.CChar,u 	put character under the cursor
          sta   <V.Chr1,u	only referenced here ??
+
+         IFNE	COCOVGA
+***** START OF COCOVGA 64x32 MODE
+         clr   <V.Caps,u    lowercase mode
+         pshs  cc,u
+         orcc  #IntMasks
+         leax  VGASetup,pcr
+         ldu   <V.CrsrA,u
+         ldb   #VGASetupLen
+x@       lda   ,x+
+         sta   ,u+
+         decb
+         bne   x@
+
+         lda   $FF02 clear any pending vsync
+tlp@     lda   $FF03 wait for flag to indicate
+         bpl   tlp@ falling edge of FS
+         lda   $FF02 clear vsync interrupt flag
+
+
+* PROGRAM THE COCOVGA COMBO LOCK
+BT13	lda		$FF22	GET CURRENT PIA VALUE
+		tfr		A,B		COPY TO B REG TOO
+		anda	#$07	MASK OFF BITS WE'LL CHANGE
+		ora		#$90	SET COMBO LOCK 1 BITS
+		sta		$FF22	WRITE TO PIA FOR COCOVGA
+		anda	#$07	CLEAR UPPER BITS
+		ora		#$48	SET COMBO LOCK 2 BITS
+		sta		$FF22	WRITE TO PIA
+		anda	#$07	CLEAR UPPER BITS
+		ora		#$A0	SET COMBO LOCK 3 BITS
+		sta		$FF22	WRITE TO PIA
+		anda	#$07	CLEAR UPPER BITS
+		ora		#$F8	SET COMBO LOCK 4 BITS
+		sta		$FF22	WRITE TO PIA
+		anda	#$07	CLEAR UPPER BITS
+		ora		#$00	SET REGISTER BANK 0 FOR COCOVGA
+		sta		$FF22	WRITE TO PIA
+
+* Wait for next VSYNC so CoCoVGA can process data from the current video page
+tlp@	lda		$FF03
+		bpl		tlp@
+
+* Restore PIA state and return to text mode - restore original video mode, SAM page
+* VDG -> CG2:
+		lda		$FF22
+		anda	#$8F
+		ora		#$A0
+		sta		$FF22
+
+* SAM -> CG2:
+		sta		$FFC0	clear GM0
+		sta		$FFC3	set GM1
+		sta		$FFC4	clear GM2
+
+         puls  u,cc
+***** END OF COCOVGA 64x32 MODE
+		 ENDC
+
          lbsr  ClrScrn		clear the screen
+
+* Setup page to
          ldb   <V.COLoad,u
          orb   #ModCoVDG	set to CoVDG found (?)
 L0086    stb   <V.COLoad,u
          clrb  
          puls  pc,y,x
+
+         IFNE  COCOVGA
+***** START OF COCOVGA 64x32 MODE         
+VGASetup fcb   $00              Reset register
+         fcb   $81              Edit mask
+         fcb   $00              Reserved
+         fcb   $03              Font
+         fcb   $00              Artifact
+         fcb   $00              Extras
+         fcb   $00              Reserved
+         fcb   $00              Reserved
+         fcb   $02              Enhanced Modes
+VGASetupLen equ *-VGASetup
+***** END OF COCOVGA 64x32 MODE         
+		 ENDC
 
 * Write
 * Entry: A = char to write
@@ -139,20 +233,20 @@ NoOp     clrb
 * Screen Scroll Routine
 SScrl    ldx   <V.ScrnA,u	get address of screen
          IFNE  H6309
-         ldd   #$2060
+         ldd   #COLSIZE*256+$60
          leay  a,x              down one line
-         ldw   #512-32
+         ldw   #COLSIZE*ROWSIZE-COLSIZE
          tfm   y+,x+            scroll screen up
          stx   <V.CrsrA,u       save new cursor address
          ELSE
-         leax  <32,x		move to 2nd line
+         leax  <COLSIZE,x		move to 2nd line
 L00E9    ldd   ,x++		copy from this line
-         std   <-34,x		to prevous
+         std   <-COLSIZE-2,x		to prevous
          cmpx  <V.ScrnE,u	at end of screen yet?
          bcs   L00E9		branch if not
-         leax  <-32,x		else back up one line
+         leax  <-COLSIZE,x		else back up one line
          stx   <V.CrsrA,u	save address of cursor (first col of last row)
-         lda   #32		clear out row...
+         lda   #COLSIZE		clear out row...
          ldb   #$60		...width spaces
          ENDC
 L00FD    stb   ,x+		do it...
@@ -195,7 +289,7 @@ Retrn    bsr   HideCrsr		hide cursor
          aim   #$E0,<V.CrsAL,u
          ELSE
          tfr   x,d		put cursor address in D
-         andb  #$E0		place at start of line
+         andb  #~(COLSIZE-1)		place at start of line
          stb   <V.CrsAL,u	and save low cursor address
          ENDC
 ShowCrsr ldx   <V.CrsrA,u 	get cursor address
@@ -209,10 +303,10 @@ L014D    clrb
 
 * $0A - cursor down (line feed)
 CurDown  bsr   HideCrsr		hide cursor
-         leax  <32,x		move X down one line
+         leax  <COLSIZE,x		move X down one line
          cmpx  <V.ScrnE,u 	at end of screen?
          bcs   L0162		branch if not
-         leax  <-32,x		else go back up one line
+         leax  <-COLSIZE,x		else go back up one line
          pshs  x		save X
          bsr   SScrl		and scroll the screen
          puls  x		restore pointer
@@ -311,7 +405,7 @@ L01E5    stx   <V.RTAdd,u	store routine to return to
 DoCurXY  bsr   HideCrsr		hide cursor
          ldb   <V.NChr2,u 	get ASCII Y-pos
          subb  #C$SPAC		take out ASCII space
-         lda   #32		go down
+         lda   #COLSIZE		go down
          mul   			multiply it
          addb  <V.NChar,u 	add in X-pos
          adca  #$00
@@ -325,15 +419,15 @@ DoCurXY  bsr   HideCrsr		hide cursor
 * $04 - erase to end of line
 ErEOLine bsr   HideCrsr		hide cursor
          tfr   x,d		move current cursor position in D
-         andb  #$1F		number of characters put on this line
+         andb  #COLSIZE-1		number of characters put on this line
          pshs  b
-         ldb   #32
+         ldb   #COLSIZE
          subb  ,s+
          bra   L0223		and clear one line
 
 * $03 - erase line
 DelLine  lbsr  Retrn		do a CR
-         ldb   #32		line length
+         ldb   #COLSIZE		line length
 L0223    lda   #$60		get default character
          ldx   <V.CrsrA,u 	get cursor address
 L0228    sta   ,x+		fill screen line with 'space'
@@ -343,7 +437,7 @@ L0228    sta   ,x+		fill screen line with 'space'
 
 * $09 - cursor up
 CurUp    lbsr  HideCrsr		hide cursor
-         leax  <-32,x		move X up one line
+         leax  <-COLSIZE,x		move X up one line
          cmpx  <V.ScrnA,u 	compare against start of screen
          bcs   L023E		branch if we went beyond
          stx   <V.CrsrA,u 	else store updated X
@@ -379,8 +473,8 @@ Rt.Cursr ldd   <V.CrsrA,u	get address of cursor
          subd  <V.ScrnA,u	subtract screen address
          pshs  b,a		D now holds cursor position relative to screen
          clra  
-         andb  #$1F
-         addb  #$20		compute column position
+         andb  #COLSIZE-1
+         addb  #COLSIZE		compute column position
          std   R$X,x		save column position to caller's X
          puls  b,a		then divide by 32
          lsra  
@@ -388,9 +482,12 @@ Rt.Cursr ldd   <V.CrsrA,u	get address of cursor
          rolb  
          rolb  
          rolb  
+         IFNE  COCOVGA
+         rolb  
+         ENDC
          clra  
-         andb  #$0F		only 16 line to a screen
-         addb  #$20
+         andb  #ROWSIZE-1		lines on the screen
+         addb  #COLSIZE
          std   R$Y,x		and save column to caller's Y
          ldb   <V.CFlag,u
          lda   <V.CChar,u	get character under cursor
@@ -429,4 +526,3 @@ SaveA    sta   R$A,x
          emod
 eom      equ   *
          end
-
