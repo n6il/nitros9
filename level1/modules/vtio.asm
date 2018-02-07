@@ -30,6 +30,11 @@
 *
 *   1      2005/11/26  Boisy G. Pitre
 * Renamed to VTIO.
+*
+*   2      2018/02/07  David Ladd
+*                      L. Curtis Boyle
+* Updated GoGrfo to load GrfDrv if GrfDrv was not found in memory
+* using a new load routine called LoadSub
                          
          nam   VTIO      
          ttl   OS-9 Level One V2 CoCo I/O driver
@@ -621,8 +626,10 @@ CoWrite  ldb   #$03       we want to write
                          
 CallCO   leax  <V.GrfDrvE,u get base pointer to CO-entries
          pshs  a         
+         tsta            Is it GrfDrv we are trying to init?
+         beq   IsGrfDrv
          lbsr  GetModOffset ; Get offset
-         ldx   a,x        get pointer to CoVDG/CoWP
+IsGrfDrv ldx   a,x        get pointer to CoVDG/CoWP
          puls  a         
          beq   NoIOMod    branch if no module
          lda   <V.WrChr,u get character to write
@@ -701,6 +708,7 @@ CoVDG    fcs   /CoVDG/
 CoWP     fcs   /CoWP/    
 CoHR     fcs   /CoHR/
 Co42     fcs   /Co42/    
+CoVGA    fcs   /CoVGA/
                          
 * GetStat
 *
@@ -1050,6 +1058,12 @@ LinkSub  pshs  u
          os9   F$Link    
          puls  pc,u      
                          
+* Load subroutine
+LoadSub  pshs  u         
+         lda   #Systm+Objct
+         os9   F$Load    
+         puls  pc,u      
+                         
 * 128x192 4 color pixel table
 Mode1Clr fdb   $0055,$aaff
                          
@@ -1084,10 +1098,11 @@ GoGrfo   bsr   GfxActv
          ldx   <V.GrfDrvE,u get GrfDrv entry point
          bne   L0681      branch if not zero
          pshs  y,a        else preserve regs
-         bne   L067F     
          leax  >GrfDrv,pcr  get pointer to name string
          bsr   LinkSub    link to GrfDrv
          bcc   L067B      branch if ok
+         bsr   LoadSub
+         bcc   L067B
          puls  pc,y,a     else exit with error
 L067B    sty   <V.GrfDrvE,u save module entry pointer
 L067F    puls  y,a        restore regs
