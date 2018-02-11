@@ -35,6 +35,11 @@
 *                      L. Curtis Boyle
 * Updated GoGrfo to load GrfDrv if GrfDrv was not found in memory
 * using a new load routine called LoadSub
+*
+*   3      2018/02/10  David Ladd
+*                      L. Curtis Boyle
+* Optimized a few routines for speed based on long branches to
+* short branches.
                          
          nam   VTIO      
          ttl   OS-9 Level One V2 CoCo I/O driver
@@ -85,10 +90,8 @@ Init
 *	puls	y
                          
          stu   >D.KbdSta  store devmem ptr
-         clra             clear A
          leax  <V.SCF,u   point to memory after V.SCF
-;         ldb   #$5D		get counter
-         ldb   #V.51End-V.SCF
+         ldd   #V.51End-V.SCF
 L002E    sta   ,x+        clear mem
          decb             decrement counter
          bne   L002E      continue if more
@@ -157,6 +160,7 @@ Read
          bsr   L009D      check for tail wrap
          stb   V.IBufT,u  store updated tail
          andcc  #^(IRQMask+Carry) unmask IRQ
+FlashCursor
          rts             
                          
 Put2Bed  lda   V.BUSY,u   get calling process ID
@@ -220,8 +224,7 @@ l@       stb   <V.Spcl,u  clear for next time
                          
 CheckFlash                 
          dec   V.FlashCount,u Get flash counter
-         beq   FlashTime  count zero, flash cursor
-         bra   AltIRQEnd  Otherwise just call clock module
+         bne   AltIRQEnd  Otherwise just call clock module
                          
 FlashTime                 
          jsr   [V.Flash,u] Call flash routine
@@ -250,7 +253,6 @@ L00F1
          beq   L010A     
          decb            
 L0105    stb   <V.ClkCnt,u
-*         bra   AltIRQEnd
          bra   CheckFlash
 L010A    ldb   #$05      
          bra   L011A     
@@ -550,14 +552,13 @@ DragonToCoCo
          lslb            
          pshs  b         
          ora   ,s+        ; recombine rows
-         puls  b         
+         ldb   ,s
          andb  #%00111100 ; Shift middle 4 rows down 2 places
          lsrb            
          lsrb            
-         pshs  b         
+         stb   ,s
          ora   ,s+        ; recombine rows	
-         puls  b         
-         rts             
+         puls  b,pc
                          
          endc            
                          
@@ -693,8 +694,7 @@ L0401    ldb   #$07
          lsra            
 L0407    lsra            
          bcs   L0410     
-         sta   ,x+       
-         leax  $01,x     
+         sta   ,x++      
          bra   L0414     
 L0410    leax  $01,x     
          sta   ,x+       
@@ -794,9 +794,12 @@ L0494    sta   >PIA0Base+3
          puls  pc,y,cc   
                          
 L04B3    sta   >PIA0Base+1
-         lda   #$7F      
-         ldb   #$40      
-         bra   L04C7     
+         ldd   #$7F40
+L04C7    pshs  b         
+         sta   >PIA1Base 
+         tst   >PIA0Base 
+         bpl   L04D5     
+         adda  ,s+       
 L04BC    lsrb            
          cmpb  #$01      
          bhi   L04C7     
@@ -805,12 +808,6 @@ L04BC    lsrb
          tfr   a,b       
          clra            
          rts             
-L04C7    pshs  b         
-         sta   >PIA1Base 
-         tst   >PIA0Base 
-         bpl   L04D5     
-         adda  ,s+       
-         bra   L04BC     
 L04D5    suba  ,s+       
          bra   L04BC     
                          
@@ -861,10 +858,10 @@ L0517    lsra
          mul             
          addb  ,s+        add offset on stack
          adca  #$00      
-         ldy   <V.SBAdd,u get base address
-         leay  d,y        move D bytes into address
+         ldx   <V.SBAdd,u get base address
+         leax  d,x        move D bytes into address
          lda   ,s         pick up original X coor
-         sty   ,s         put offset addr on stack
+         stx   ,s         put offset addr on stack
          anda  <V.PixBt,u
          ldx   <V.MTabl,u
          lda   a,x       
@@ -1015,12 +1012,10 @@ L0606    clrb             else clear carry
          rts              and return
                          
 L0608    pshs  y,x,a     
-         lbsr  LinkSub   
+         bsr   LinkSub   
          bcc   L061F      branch if link was successful
          ldx   $01,s      get pointer to name on stack
-         pshs  u         
-         os9   F$Load     try to load subroutine I/O module
-         puls  u         
+         bsr   LoadSub
          bcc   L061F     
          puls  y,x,a     
          lbra  NoIOMod   
@@ -1030,7 +1025,7 @@ L061F    leax  <V.GrfDrvE,u get base pointer to CO-entries
          sty   a,x        ; Save address
                          
          puls  y,x,a     
-         ldb   #$00       CO-module init offset
+         clrb  #$00       CO-module init offset
          lbra  CallCO     call it
                          
 ;
@@ -1101,6 +1096,7 @@ GoGrfo   bsr   GfxActv
          leax  >GrfDrv,pcr  get pointer to name string
          bsr   LinkSub    link to GrfDrv
          bcc   L067B      branch if ok
+         leax  >GrfDrv,pcr  get pointer to name string
          bsr   LoadSub
          bcc   L067B
          puls  pc,y,a     else exit with error
@@ -1298,9 +1294,6 @@ L0805    inca
          rts             
                          
 * Dummy flash cursor routine, can be replaced by COxx module.
-                         
-FlashCursor                 
-         rts             
                          
          emod            
 eom      equ   *         
