@@ -71,18 +71,21 @@ L0034    ldb   #$39             RTS instuction
          ldd   #$103F           get SWI2 instruction ('os9')
          pshs  b,a              put on stack (so stack is now 'os9 x$nam' & 'rts')
          ldu   PrmPtr2+4,s      get pointer to caller's registers on stack (+4 is because we just put SWI2 and RTS on stack)
-         ldd   R$D,u            R$D Get copies of registers from caller (no system calls have CC as input, or PC as input)
-         ldx   R$X,u            R$X
-         ldy   R$Y,u            R$Y
-         ldu   R$U,u            R$U
+* Do not change the values on the following 4 lines LDD LDX LDY LDU because these require 6809 offsets only.  Even on 6309 CPU's
+         ldd   $01,u            R$D Get copies of registers from caller (no system calls have CC as input, or PC as input)
+         ldx   $04,u            R$X
+         ldy   $06,u            R$Y
+         ldu   $08,u            R$U
          jsr   ,s               Call our little 4 byte routine on stack (os9 x$nam / rts) with register values passed to us
          pshs  u,cc             Save U and CC
          ldu   PrmPtr2+7,s      Get ptr to caller's registers on stack again (+7 now from our 4 byte routine, plus saving U&CC)
-         leau  R$U,u            Offset to caller's U register on stack (push works up, so we are leaving U alone at this point)
+* The following line needs to be the $08 rather than R$U because it needs to be forced to 6809 offsets only
+         leau  $08,u            R$U Offset to caller's U register on stack (push works up, so we are leaving U alone at this point)
          pshu  y,x,dp,b,a       Put 4 of the registers returned from system call into appropriate spots over callers original ones
          puls  x,a              Get our saved copies of U and CC we got back from system call
          sta   ,-u              Save CC overtop callers original CC (for error flag)
-         stx   R$U,u            Save U return back from system call overtop caller's original U
+* The following line needs to be the $08 rather than R$U because it needs to be forced to 6809 offsets only
+         stx   $08,u            R$U Save U return back from system call overtop caller's original U
          leas  $04,s            Eat the 4 byte instruction sequence we made
          clrb                   Return to caller with no error (it's up to them to read their copies of CC and B to determine if an error happened)
          rts
