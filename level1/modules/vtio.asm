@@ -563,9 +563,12 @@ DragonToCoCo
          pshs  b              Save B
          sta   ,-s            Save Dragon formatted keyboard on stack
          tfr   a,b            Take a copy of keycode
-* 6309 - andd #%0100000000000011 replaces next two lines
+       IFNE  H6309
+         andd  #%0100000000000011 replaces next two lines
+       ELSE
          anda  #%01000000     Top row same on both machines
          andb  #%00000011     shift bottom 2 rows up 4 places
+       ENDC
          lslb
          lslb
          lslb
@@ -760,7 +763,7 @@ SSEOF    clrb
 
 *6809/6309 note: If we move a call or two before GetStat above, may be able to eliminate a
 *  couple of long branch instructions below
-         
+
 L0439    cmpa  #SS.Joy        joystick?
          beq   SSJOY          branch if so
          cmpa  #SS.ScSiz      screen size?
@@ -1187,7 +1190,7 @@ DispGfx  ldb   <V.Rdy,u       already allocated initial buffer?
          bne   L06D1          Yes, skip allocating
          bsr   GetMem         else get graphics memory
 * 6809/6309 - after below E$BMode is change to LBRA, change this to bcs L06B3
-         bcs   L06EF          Couldn't get RAM; return with error
+         bcs   L06B3          Couldn't get RAM; return with error
          std   <V.SBAdd,u     save ptr to graphics RAM
          std   <V.GBuff,u     And again
          inc   <V.Rdy,u       ok, we're ready
@@ -1202,10 +1205,7 @@ L06D1    lda   <V.NChr2,u     get character after next
          lda   <V.NChar,u     get next char, mode byte (0-1)
          cmpa  #$01           compare against max
          bls   L06F0          branch if valid
-* 6809/6309 - change next 3 lines to LBRA BadMode (dont' care about speed on errors
-         comb
-         ldb   #E$BMode       else invalid mode specified, send error
-L06EF    rts
+         lbra  BadMode        else invalid mode specified, send error
 
 * 6809/6309 tsta redundant if we change beq L0710 to blo L0710 (lower than cmpa#1 above)
 L06F0    tsta                 test user supplied mode byte
@@ -1315,28 +1315,21 @@ L07A7    anda  #$03           mask out all but 2 bits (4 colors)
 * NOTE: FOLLOWING CODE IS FOR TESTING CONCEPT AND SPEED. IF IT WORKS, WE WILL
 * MAKE IT MORE GENERIC (CURRENTLY HARDCODED FOR 6K SCREENS ONLY) AND MAKE IT
 * A VECTOR THAT CAN BE CALLED FROM VTIO,CO***, AND GRFDRV)
-*EraseGfx clrb                 Color 0 to clear with
-*L07B2    pshs  y,x,u          Save regs
-*L07B2    tfr b,a              Dupe color to D
-*         tfr d,x              Move to X&Y
-*         leay ,x
-*         ldu  <V.SBAdd,u      Get base address for screen
-*         leau >6144,u         Point to end of screen+1
-*         ldd  #$0600          6 blocks of 256 (how many 4 byte chunks to clear)
-*InCLSLp  pshu x,y             4 bytes cleared
-*         decb
-*         bne  InCLSLp         Not done 256*4 (1k) bytes
-*         deca                 Dec 1K blocks ctr
-*         bne  InCLSLp         Do till done
-*         puls x,y,u           Restore regs         
-
 Do13
-EraseGfx clrb                 value to clear screen with
-L07B2    ldx   <V.SBAdd,u
-         leax  >6144+1,x      point to end of gfx mem + 1
-L07B9    stb   ,-x            clear
-         cmpx  <V.SBAdd,u     X = to start?
-         bhi   L07B9          if not, continue
+EraseGfx clrb                 Color 0 to clear with
+L07B2    pshs  y,x,u          Save regs
+         tfr b,a              Dupe color to D
+         tfr d,x              Move to X&Y
+         leay ,x
+         ldu  <V.SBAdd,u      Get base address for screen
+         leau >6144,u         Point to end of screen+1
+         ldd  #$0600          6 blocks of 256 (how many 4 byte chunks to clear)
+InCLSLp  pshu x,y             4 bytes cleared
+         decb
+         bne  InCLSLp         Not done 256*4 (1k) bytes
+         deca                 Dec 1K blocks ctr
+         bne  InCLSLp         Do till done
+         puls x,y,u           Restore regs
 
 * Home Graphics cursor
 Do14     clra
