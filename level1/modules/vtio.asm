@@ -992,7 +992,7 @@ SSSLGBF  ldb   <V.Rdy,u       was initial buffer allocated with $0F?
          beq   L05C3          if zero, do nothing
          ldb   #$01           else set display flag
 L05C3    stb   <V.CFlg1,u     save display flag
-         clrb
+NoError  clrb
          rts
 
 BadMode  comb                 Exit with Bad Mode error
@@ -1003,10 +1003,6 @@ SSCOMST  ldd   R$Y,x          Get caller's Y
 SetupTerm
          bita  #ModCoVDG      32x16 VDG bit flag set?
          beq   GoCoWP         No, go check next co-module type
-* NOTE: THIS CALL DOES SET UP THE FLAG PROPERLY, BUT DOES NOT CHANGE THE VIDEO MODE
-* ITSELF UNTIL A DISPLAY GRAPHICS OR DISPLAY ALPHA COMMAND IS CALLED FIRST. SHOULD
-* CHANGE TO IMMEDIATELY SWITCH TO TRUE LOWER CASE MODE IF ON HARDWARE 32X16 TEXT
-* SCREEN.
          ldb   #$10           assume true lower case TRUE 
          bita  #$01           true lowercase bit set?
          bne   GoCoVDG        Yes, branch if so
@@ -1016,7 +1012,14 @@ GoCoVDG  stb   <V.CFlag,u     save lowercase flag
          ldx   #$2010         32x16
          pshs  u,y,x,a
          leax  >CoVDG,pcr
-         bra   SetupCoModule
+         bsr   LoadCoModule
+         puls  u,y,x,a
+         bcs   L0600
+         stx   <V.Col,u
+         sta   <V.CurCo,u
+         ldb   <V.Alpha,u
+         bne   NoError
+         lbra  SetDsply
 
 GoCoWP   bita  #ModCoWP       CoWP needed ?
          beq   GOCo42         No, try next co-module
@@ -1035,7 +1038,6 @@ SetupCoModule
          stx   <V.Col,u       save screen size
          sta   <V.CurCo,u     current module in use? ($02=CoVDG, $04=C080, etc.)
 L0600    rts
-
 
 GOCo42   bita  #ModCo42       42x24 gfx term?
          beq   GOCoHR         No, try 51 column co-module

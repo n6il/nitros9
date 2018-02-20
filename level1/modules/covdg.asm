@@ -76,7 +76,7 @@ Init     pshs  y,x		save regs
          ldd   #COLSIZE*ROWSIZE+256		allocate screen + 256 bytes for now
          os9   F$SRqMem 	get it
          tfr   u,d		put ptr in D
-         tfr   u,x		and X
+         leax  ,u		and X
          bita  #$01		odd page?
          beq   L0052		branch if not
          leax  >256,x		else move X up 256 bytes
@@ -184,7 +184,7 @@ VGASetupLen equ *-VGASetup
 * Write
 * Entry: A = char to write
 *        Y = path desc ptr
-Write    tsta  
+Write    tsta
          bmi   L00D0
          cmpa  #$1F		byte $1F?
          bls   Dispatch		branch if lower or same
@@ -192,7 +192,7 @@ Write    tsta
          beq   L00B0
          cmpa  #$5E
          bne   L00A0
-         lda   #$00
+         clra
          bra   L00D0
 L00A0    cmpa  #$5F
          bne   L00A8
@@ -224,11 +224,7 @@ L00D0    ldx   <V.CrsrA,u	get cursor address in X
          cmpx  <V.ScrnE,u 	end of screen?
          bcs   L00DF		branch if not
          bsr   SScrl		else if at end of screen, scroll it
-L00DF    bsr   ShowCrsr		ends with a CLRB/RTS anyhow
-
-* no operation entry point
-NoOp     clrb  
-         rts   
+L00DF    bra   ShowCrsr		ends with a CLRB/RTS anyhow
 
 * Screen Scroll Routine
 SScrl    ldx   <V.ScrnA,u	get address of screen
@@ -298,6 +294,7 @@ ShowCrsr ldx   <V.CrsrA,u 	get cursor address
          lda   <V.CColr,u 	get cursor character
          beq   L014D		branch if none
 L014B    sta   ,x		else turn on cursor
+NoOp
 L014D    clrb  
          rts   
 
