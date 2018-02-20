@@ -227,23 +227,28 @@ L00D0    ldx   <V.CrsrA,u	get cursor address in X
 L00DF    bra   ShowCrsr		ends with a CLRB/RTS anyhow
 
 * Screen Scroll Routine
-SScrl    ldx   <V.ScrnA,u	get address of screen
+SScrl
          IFNE  H6309
+         ldx   <V.ScrnA,u       get address of screen
          ldd   #COLSIZE*256+$60
          leay  a,x              down one line
          ldw   #COLSIZE*ROWSIZE-COLSIZE
          tfm   y+,x+            scroll screen up
          stx   <V.CrsrA,u       save new cursor address
          ELSE
-         leax  <COLSIZE,x		move to 2nd line
-L00E9    ldd   ,x++		copy from this line
-         std   <-COLSIZE-2,x		to prevous
-         cmpx  <V.ScrnE,u	at end of screen yet?
-         bcs   L00E9		branch if not
-         leax  <-COLSIZE,x		else back up one line
-         stx   <V.CrsrA,u	save address of cursor (first col of last row)
-         lda   #COLSIZE		clear out row...
-         ldb   #$60		...width spaces
+         ldy   <V.ScrnA,u       get address of screen
+         ldx   <V.ScrnE,u       get address of end of screen
+         pshs  u,y,x            save u y x on stack
+         leau  <COLSIZE,y       get address of second line
+ScrlLp@  pulu  d,x              pull D and X off of U stack for line two
+         std   ,y++             write D into new location
+         stx   ,y++             write X into new location
+         cmpu  ,s               compare U to end of screen
+         bls   ScrlLp@          check if we reached end of line if not do more
+         puls  x,y,u            restore U X and D registers
+         leax  -COLSIZE,x
+         stx   <V.CrsrA,u
+         ldd   #COLSIZE*256+$60  A=clear out row... B= with spaces
          ENDC
 L00FD    stb   ,x+		do it...
          deca  			end of rope?
@@ -305,7 +310,7 @@ CurDown  bsr   HideCrsr		hide cursor
          bcs   L0162		branch if not
          leax  <-COLSIZE,x		else go back up one line
          pshs  x		save X
-         bsr   SScrl		and scroll the screen
+         lbsr  SScrl		and scroll the screen
          puls  x		restore pointer
 L0162    stx   <V.CrsrA,u 	save cursor pointer
          bra   ShowCrsr		show cursor
