@@ -36,6 +36,39 @@ loop@     tst    $FF51               ; check for CA1 bit (1=Arduino has byte rea
 
           ELSE
 
+          IFNE SY6551N
+          IFNDEF    SY6551B
+SY6551B   EQU       $FF68            ; Set base address for future use
+          ENDC
+* NOTE: There is no timeout currently on here...
+DWRead    clra                       ; clear Carry (no framing error)
+          deca                       ; clear Z flag, A = timeout msb ($ff)
+          tfr    cc,b
+          pshs   u,x,dp,b,a          ; preserve registers, push timeout msb
+          leau   ,x
+          ldx    #$0000
+          IFEQ   NOINTMASK
+          orcc   #IntMasks
+          ENDC
+loop@     ldb    SY6551B+1
+          andb   #$08
+          beq    loop@
+          ldb    SY6551B
+          stb    ,u+
+          abx
+          leay   ,-y
+          bne    loop@
+
+          tfr    x,y
+          ldb    #0
+          lda    #3
+          leas   1,s                 ; remove timeout msb from stack
+          inca                       ; A = status to be returned in C and Z
+          ora    ,s                  ; place status information into the..
+          sta    ,s                  ; ..C and Z bits of the preserved CC
+          leay   ,x                  ; return checksum in Y
+          puls   cc,dp,x,u,pc        ; restore registers and return
+          ELSE
           IFNE JMCPBCK
 * NOTE: There is no timeout currently on here...
 DWRead    clra                          ; clear Carry (no framing error)
@@ -65,6 +98,9 @@ loop@     ldb    $FF4C
           puls      cc,dp,x,u,pc        ; restore registers and return
           ELSE
           IFNE BECKER
+          IFNDEF    BECKBASE
+BECKBASE  EQU       $FF41               ; Set base address for future use
+          ENDC
 * NOTE: There is no timeout currently on here...
 DWRead    clra                          ; clear Carry (no framing error)
           deca                          ; clear Z flag, A = timeout msb ($ff)
@@ -75,10 +111,10 @@ DWRead    clra                          ; clear Carry (no framing error)
           IFEQ   NOINTMASK
           orcc   #IntMasks
           ENDC
-loop@     ldb    $FF41
+loop@     ldb    BECKBASE
           bitb   #$02
           beq    loop@
-          ldb    $FF42
+          ldb    BECKBASE+1
           stb    ,u+
           abx
           leay   ,-y
@@ -94,6 +130,9 @@ loop@     ldb    $FF41
           puls      cc,dp,x,u,pc        ; restore registers and return
           ELSE
           IFNE BECKERTO
+          IFNDEF    BECKBASE
+BECKBASE  EQU       $FF41               ; Set base address for future use
+          ENDC
 * NOTE: There is now timeout ...
 DWRead    clra                  ; clear Carry, Set Z
           pshs   cc,x,u         ; save regs
@@ -104,7 +143,7 @@ DWRead    clra                  ; clear Carry, Set Z
           ENDC
 ini@      pshs   x              ; save X
           ldx    #0x8000        ; X = timeout
-loop@     ldb    $FF41          ; test for data ready flag
+loop@     ldb    BECKBASE       ; test for data ready flag
           bitb   #$02
           bne    rdy@           ; byte is ready
           leax   -1,x           ; bump timout
@@ -116,7 +155,7 @@ loop@     ldb    $FF41          ; test for data ready flag
           puls   x,u,pc         ; restore registers and return
         ;; a byte is ready
 rdy@      puls   x              ; restore X
-          ldb    $FF42          ; get byte from port
+          ldb    BECKBASE+1     ; get byte from port
           stb    ,u+            ; store in data buffer
           abx                   ; add received byte to checksum
           leay   ,-y            ; decrement byte counter
@@ -128,8 +167,9 @@ rdy@      puls   x              ; restore X
           ENDC
           ENDC
           ENDC
+          ENDC
 
-          IFEQ BECKER+JMCPBCK+ARDUINO+BECKERTO
+          IFEQ BECKER+JMCPBCK+ARDUINO+BECKERTO+SY6551N
           IFNE BAUD38400
 *******************************************************
 * 38400 bps using 6809 code and timimg
