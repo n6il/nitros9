@@ -50,8 +50,13 @@ name           fcs       /dwio/
 * DriveWire subroutine entry table
 start          lbra      Init
                bra       Read
-               nop       
+               nop
+               IFNE      BECKER+ARDUINO
+               bra       Write
+               nop
+               ELSE
                lbra      Write
+               ENDC
 
 * Term
 *
@@ -134,16 +139,26 @@ loop@          clr       ,x+
                else      
                ldu       >D.DWSubAddr
                endc      
-               jsr       DW$Write,u                 ; call DWrite
+               jsr       DW$Write,u          ; call DWrite
                leas      1,s                 ; leave one byte on stack for response 
                
                ; read protocol version response, 1 byte
                leax      ,s                  ; point X to stack head
                ldy       #1                  ; 1 byte to retrieve
-               jsr       DW$Read,u                 ; call DWRead
-               beq       InstIRQ             ; branch if no error
+               jsr       DW$Read,u           ; call DWRead
+               beq       ChkVer              ; branch if no error
                leas      3,s                 ; error, cleanup stack (u and 1 byte from read) 
-               lbra      InitEx            	 ; don't install IRQ handler
+               bra       InitEx            	 ; don't install IRQ handler
+
+* Check Version
+ChkVer
+               lda       ,s                  ; Load value that was gotten back from server
+               cmpa      #4                  ; Check to see if this is version 4 of DriveWire
+               beq       InstIRQ             ; If server is DriveWire 4 then go Install IRQ
+               cmpa      #$ff                ; Check to see if this is pyDriveWire
+               beq       InstIRQ             ; If server is pyDriveWire then go install IRQ
+               leas      3,s                 ; Clean up stack
+               bra       InitEx              ; leave since DriveWire version is not 4.
 
 * install ISR
 InstIRQ                  
@@ -431,7 +446,7 @@ IRQCont
 
           * multiread/status flag is in bit 4 of A
                bita      #$10
-               lbeq       IRQPutch            ; branch for read1 if multiread not set
+               beq       IRQPutch            ; branch for read1 if multiread not set
 
           * all 0s in port means status, anything else is multiread
 
@@ -547,7 +562,7 @@ CkLPRC
 IRQPutCh                 
 		  ; set IRQ freq for bulk
                lda       PollSpd1,pcr
-               lbsr      IRQsetFRQ
+               bsr       IRQsetFRQ
                ldx       RxBufPut,u          ; point X to the data buffer
 
 ; process interrupt/quit characters here

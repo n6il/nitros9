@@ -40,7 +40,7 @@ V.NGChr        RMB       1                   number of additional characters to 
 V.RTAdd        RMB       2                   (2) return address after getting characters
 V.NChar        RMB       1                   character to process
 V.NChr2        RMB       1                   and the next one
-               RMB       1
+               RMB       1                   (I assume reserved for a 3rd parameter byte)
 V.Chr1         RMB       1                   same as under cursor character
 V.CColr        RMB       1                   cursor color
 V.Col          RMB       1                   number of columns for this screen
@@ -56,19 +56,19 @@ V.FFMem        RMB       2                   Flood fill alloc'ed mem
 V.FFSPt        RMB       2                   Flood fill current stack pointer
 V.FFSTp        RMB       1                   Flood fill stack top
 V.FF6          RMB       1                   flood fill flag
-V.FFFlag       RMB       1                   ??
+V.FFFlag       RMB       1                   Error in FloodFill - E$Write if FFill stack overflows, 0 if no error
 V.MTabl        RMB       2                   (2) address of mask table for pixels in byte
 V.PixBt        RMB       1                   bit mask for modes (0=$07, 1=$03 )#pixels/byte
 V.GCrsX        RMB       1                   graphics cursor X value
 V.GCrsY        RMB       1                   graphics cursor Y
 V.Msk1         RMB       1                   mask byte 1
-V.Msk2         RMB       1                   mask byte 2 (00,55,AA,FF)
-V.MCol         RMB       1                   color? (C003,8001)
-V.4A           RMB       1
-V.PMask        RMB       1                   pixel mask for colors (i.e. $55, $CC etc)
+V.Msk2         RMB       1                   mask byte 2 (00,55,AA,FF) Full byte Color Mask
+V.MCol         RMB       1                   Start pixel in a byte mask ($C0=4 color, $80=2 color)
+V.4A           RMB       1                   End pixel in a byte mask ($03=4 color,$01=2 color)
+V.PMask        RMB       1                   Full byte pixel mask for colors (i.e. $55, $CC etc)
 V.4C           RMB       1
 V.4D           RMB       1
-V.4E           RMB       1
+V.4E           RMB       1                   Flood Fill full byte color mask
 V.4F           RMB       1
 V.Caps         RMB       1                   caps lock info: $00=lower $FF=upper
 V.ClkCnt       RMB       1                   clock count ??
@@ -110,28 +110,30 @@ V.CoWPE        RMB       2                   CoWP entry point
 V.CoHRE        RMB       2                   CoHR entry point
 V.Co42E        RMB       2                   Co42 entry point
 V.CoVGAE       RMB       2                   CoVGAE entry point
-
 V.Flash        RMB       2                   Cursor flash routine address.
 v.FlashTime    RMB       1                   Cursor flash time
 v.FlashCount   RMB       1                   Cursor flash count
 V.NoFlash      RMB       1                   When this is non-zero do not flash cursor
-
+* If we make ClrBlk vector, throw it in here so the various comoduels, as well as VTIO,
+* can all use it (clearing text/graphics screens, clearing full width line (pure text or
+* CoHr/Co42 graphics lines), and possibly Clear to end of line could all use it.
+V.ClrBlk       RMB       2                   Vector to mini-stack blast clearing routine
+V.CpyBlk       RMB       2                   Vector to mini-stack blast copying routine
 * CoHR vars
-
 V.51ScrnA      RMB       2                   * Screen address.
 V.51XPos       RMB       1                   * X co-ordinate
 V.51YPos       RMB       1                   * Y co-ordinate
 V.51EscSeq     RMB       1                   * In escape sequence
-V.51ReverseFlag RMB       1                   * Reverse video flag
-V.51UnderlineFlag RMB       1                   * Underline flag
-V.51CtrlDispatch RMB       2                   * Ctrl char dispatch address, currently processing
-V.51BytePixOffset RMB       1                   * byte offset in screen line, of character X position        
-V.51OldCursorPosX RMB       1                   * Position of old cursor before update        
+V.51ReverseFlag RMB       1                  * Reverse video flag
+V.51UnderlineFlag RMB       1                * Underline flag
+V.51CtrlDispatch RMB       2                 * Ctrl char dispatch address, currently processing
+V.51BytePixOffset RMB       1                * byte offset in screen line, of character X position        
+V.51OldCursorPosX RMB       1                * Position of old cursor before update        
 V.51OldCursorPosY RMB       1
-V.51CursorChanged RMB       1                   * Has cursor position changed ? 1=yes,0=no
+V.51CursorChanged RMB       1                * Has cursor position changed ? 1=yes,0=no
 V.51CursorOn   RMB       1                   * Is cursor on ? 1=yes 0=no		         
 V.51XORFlag    RMB       1                   * and data to screen (0) or Xor (1)  		       
-V.51ScreenMask1 RMB       1                   * screen masks for drawing characters on screen         
+V.51ScreenMask1 RMB       1                  * screen masks for drawing characters on screen         
 V.51ScreenMask2 RMB       1
 * End of CoHR vars
 **** Note these have to come at the end of the defs, or the keyboard ****
@@ -421,7 +423,7 @@ MId.Fnt        RMB       1                   Font menu
 ** $0120-$01FF : Virtual DAT tasks (pointed to by <D.TskIPt)                **
 ** $0200-$02FF : memory block usage map ($80=Not RAM,$01=in use,$02=module) **
 ** $0300-$03FF : system's system call dispatch table                        **
-** $0400-$04FF : user's sysem call dispatch table                           **
+** $0400-$04FF : user's system call dispatch table                          **
 ** $0500-$05FF : process descriptor pointer table                           **
 ** $0600-$07FF : System task (Task 0, ID 1) process descriptor              **
 ** $0800-$08FF : System's stack space (initial ptr is $0900)                **
@@ -453,11 +455,11 @@ KeyMse         EQU       %00000001           keyboard mouse enabled
 NumLck         EQU       %00000010           Numlock enabled (TC-9 use only)
 CapsLck        EQU       %00000100           Capslock enabled
 MaxRows        EQU       640                 maximum X co-ordinate allowed on mouse
-               IFEQ      MaxLines-25
+             IFEQ      MaxLines-25
 MaxLine        EQU       198                 maximum Y co-ordinate allowed on mouse
-               ELSE      
+             ELSE      
 MaxLine        EQU       191                 maximum Y co-ordinate allowed on mouse
-               ENDC      
+             ENDC      
 
 *****************************************************************************
 * Static memory area for each window (VTIO/TC9IO)
@@ -719,8 +721,8 @@ gr00AF         RMB       2                   FFill:orig. start Y coord|Circ/Ell 
 gr00B1         RMB       1                   Flag in FFill: 1=1st time through, 0=not 1st time
 gr00B2         RMB       1                   Filled (circle,ellipse) flag 0=Not filled
 *gr00B3   rmb    256-.       ??? UNUSED
-gr00B3         RMB       1                   temp veriable grfdrv
-gr00B4         RMB       1                   temp veriable grfdrv
+gr00B3         RMB       1                   temp variable grfdrv
+gr00B4         RMB       1                   temp variable grfdrv
 gr00B5         RMB       1                   regW for grfdrv
 gr00B6         RMB       1
 gr00B7         RMB       2
