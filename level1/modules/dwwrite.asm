@@ -30,6 +30,28 @@ loop@     tst       $FF53              ; check status register
 
           ELSE
 
+          IFNE SY6551N
+          IFNDEF    SY6551B
+SY6551B   EQU       $FF68             ; Set base address for future use
+          ENDC
+DWWrite   pshs      d,cc              ; preserve registers
+          IFEQ      NOINTMASK
+          orcc      #IntMasks         ; mask interrupts
+          ENDC
+          lda       #$10              ; Set baud to 115K
+          sta       SY6551B+3         ; write the info to register
+          lda       #$0B              ; Set no parity, no irq
+          sta       SY6551B+2         ; write the info to register
+txByte
+          lda       SY6551B+1         ; read status register to check
+          anda      #$10              ; if transmit buffer is empty
+          beq       txByte            ; if not loop back and check again
+          lda       ,x+               ; load byte from buffer
+          sta       SY6551B           ; and write it to data register
+          leay      -1,y              ; decrement byte counter
+          bne       txByte            ; loop if more to send
+          puls      cc,d,pc           ; restore registers and return
+          ELSE
           IFNE JMCPBCK
 DWWrite   pshs      d,cc              ; preserve registers
           orcc      #$50                ; mask interrupts
@@ -43,22 +65,28 @@ txByte
 
           ELSE
           IFNE BECKER
+          IFNDEF    BECKBASE
+BECKBASE  EQU       $FF41            ; Set base address for future use
+          ENDC
 DWWrite   pshs      d,cc              ; preserve registers
           orcc      #$50                ; mask interrupts
 txByte
           lda       ,x+
-          sta       $FF42
+          sta       BECKBASE+1
           leay      -1,y                ; decrement byte counter
           bne       txByte              ; loop if more to send
 
           puls      cc,d,pc           ; restore registers and return
           ELSE
           IFNE BECKERTO
-DWWrite   pshs      d,cc              ; preserve registers
+          IFNDEF    BECKBASE
+BECKBASE  EQU       $FF41               ; Set base address for future use
+          ENDC
+DWWrite   pshs      d,cc                ; preserve registers
           orcc      #$50                ; mask interrupts
 txByte
           lda       ,x+
-          sta       $FF42
+          sta       BECKBASE+1
           leay      -1,y                ; decrement byte counter
           bne       txByte              ; loop if more to send
 
@@ -66,8 +94,9 @@ txByte
           ENDC
           ENDC
           ENDC
+          ENDC
 
-          IFEQ BECKER+JMCPBCK+ARDUINO+BECKERTO
+          IFEQ BECKER+JMCPBCK+ARDUINO+BECKERTO+SY6551N
           IFEQ BAUD38400+H6309
 *******************************************************
 * 57600 (115200) bps using 6809 code and timimg
