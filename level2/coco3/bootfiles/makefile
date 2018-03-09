@@ -10,6 +10,8 @@ KERNEL_1773_50HZ	= $(MD)/rel_80_50hz $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_DW	= $(MD)/rel_80 $(MD)/boot_dw $(MD)/krn
 KERNEL_ARDUINO	= $(MD)/rel_80 $(MD)/boot_dw_arduino $(MD)/krn
 KERNEL_BECKER	= $(MD)/rel_80 $(MD)/boot_dw_becker $(MD)/krn
+KERNEL_RS232PAK	= $(MD)/rel_80 $(MD)/boot_dw_rs232pak $(MD)/krn
+KERNEL_DIRECTMODEMPAK	= $(MD)/rel_80 $(MD)/boot_dw_directmodempak $(MD)/krn
 KERNEL_COCOSDC	= $(MD)/rel_80 $(MD)/boot_sdc $(MD)/krn
 KERNEL_IDE	= $(MD)/rel_80 $(MD)/boot_ide $(MD)/krn
 KERNEL_DIDE	= $(MD)/rel_80 $(MD)/boot_dide $(MD)/krn
@@ -52,6 +54,10 @@ RBCOCOSDC  = $(MD)/rbsuper.dr $(MD)/llcocosdc.dr \
 RBDWARDUINO = $(MD)/rbdw.dr $(MD)/dwio_arduino.sb \
 		$(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
 RBDWBECKER = $(MD)/rbdw.dr $(MD)/dwio_becker.sb \
+		$(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
+RBDWRS232PAK = $(MD)/rbdw.dr $(MD)/dwio_rs232pak.sb \
+		$(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
+RBDWDIRECTMODEMPAK = $(MD)/rbdw.dr $(MD)/dwio_directmodempak.sb \
 		$(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
 RBCOCO3FPGA = $(MD)/rbsuper.dr $(MD)/llcoco3fpga.dr \
 		$(MD)/sd1_coco3fpga.dd $(MD)/ramd_coco3fpga.dr \
@@ -172,6 +178,32 @@ BOOTFILE_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(PIPE) \
 		$(CLOCK60HZDW)
 
+BOOTFILE_RS232PAK	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(RBDWRS232PAK) \
+		$(MD)/ddx0.dd \
+		$(FLOPPY_40D) \
+		$(MD)/scf.mn \
+		$(VTIO_COGRF_80) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW)
+
+BOOTFILE_DIRECTMODEMPAK	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(RBDWDIRECTMODEMPAK) \
+		$(MD)/ddx0.dd \
+		$(FLOPPY_40D) \
+		$(MD)/scf.mn \
+		$(VTIO_COGRF_80) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW)
+
 # NitrOS-9 disk bootfile to allow booting from DriveWire server
 # on an Arduino and CoCoPort
 BOOTFILE_ARDUINO	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
@@ -228,6 +260,36 @@ BOOTFILE_DW_HEADLESS	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 BOOTFILE_BECKER_HEADLESS	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(RBDWBECKER) \
+		$(MD)/ddx0.dd \
+		$(FLOPPY_40D) \
+		$(MD)/scf.mn \
+		$(MD)/scdwv.dr \
+		$(MD)/term_scdwv.dt \
+		$(SCDWV_NET) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW)
+
+# NitrOS-9 disk bootfile to allow booting from DriveWire 3 server
+# Headless mode Deluxe RS232 Pak Port
+BOOTFILE_RS232PAK_HEADLESS	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(RBDWRS232PAK) \
+		$(MD)/ddx0.dd \
+		$(FLOPPY_40D) \
+		$(MD)/scf.mn \
+		$(MD)/scdwv.dr \
+		$(MD)/term_scdwv.dt \
+		$(SCDWV_NET) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW)
+
+# NitrOS-9 disk bootfile to allow booting from DriveWire 3 server
+# Headless mode DirectModem Pak Port
+BOOTFILE_DIRECTMODEMPAK_HEADLESS	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(RBDWDIRECTMODEMPAK) \
 		$(MD)/ddx0.dd \
 		$(FLOPPY_40D) \
 		$(MD)/scf.mn \
@@ -316,10 +378,13 @@ BOOTFILES	= bootfile_40d bootfile_40d_50hz bootfile_80d \
 		bootfile_becker bootfile_arduino bootfile_becker_headless \
 		bootfile_arduino_headless bootfile_cocosdc bootfile_ide \
 		bootfile_coco3fpga bootfile_coco3fpga_sd bootfile_coco3fpga_sd_rtc \
-		bootfile_coco3fpga_rom bootfile_coco3fpga_rom_dw bootfile_coco3fpga_rom_rtc
+		bootfile_coco3fpga_rom bootfile_coco3fpga_rom_dw bootfile_coco3fpga_rom_rtc \
+		bootfile_rs232pak bootfile_directmodempak bootfile_rs232pak_headless \
+		bootfile_directmodempak_headless
 
 KERNELS		= kernel_1773 kernel_1773_50hz kernel_dw kernel_becker \
-		kernel_arduino kernel_cocosdc kernel_ide kernel_dide
+		kernel_arduino kernel_cocosdc kernel_ide kernel_dide \
+		kernel_rs232pak kernel_directmodempak
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
@@ -347,6 +412,12 @@ bootfile_coco3fpga_rom_rtc: $(BOOTFILE_COCO3FPGA_ROM_RTC) $(DEPENDS)
 bootfile_becker: $(BOOTFILE_BECKER) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_BECKER)>$@
 
+bootfile_rs232pak: $(BOOTFILE_RS232PAK) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_RS232PAK)>$@
+
+bootfile_directmodempak: $(BOOTFILE_DIRECTMODEMPAK) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_DIRECTMODEMPAK)>$@
+
 bootfile_arduino: $(BOOTFILE_ARDUINO) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_ARDUINO)>$@
 
@@ -371,6 +442,12 @@ bootfile_dw_headless: $(BOOTFILE_DW_HEADLESS) $(DEPENDS)
 bootfile_becker_headless: $(BOOTFILE_BECKER_HEADLESS) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_BECKER_HEADLESS)>$@
 
+bootfile_rs232pak_headless: $(BOOTFILE_RS232PAK_HEADLESS) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_RS232PAK_HEADLESS)>$@
+
+bootfile_directmodempak_headless: $(BOOTFILE_DIRECTMODEMPAK_HEADLESS) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_DIRECTMODEMPAK_HEADLESS)>$@
+
 bootfile_arduino_headless: $(BOOTFILE_ARDUINO_HEADLESS) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_ARDUINO_HEADLESS)>$@
 
@@ -383,6 +460,12 @@ bootfile_ide: $(BOOTFILE_IDE) $(DEPENDS)
 # Kernels
 kernel_becker: $(KERNEL_BECKER) $(DEPENDS)
 	$(MERGE) $(KERNEL_BECKER)>$@
+
+kernel_rs232pak: $(KERNEL_RS232PAK) $(DEPENDS)
+	$(MERGE) $(KERNEL_RS232PAK)>$@
+
+kernel_directmodempak: $(KERNEL_DIRECTMODEMPAK) $(DEPENDS)
+	$(MERGE) $(KERNEL_DIRECTMODEMPAK)>$@
 
 kernel_arduino: $(KERNEL_ARDUINO) $(DEPENDS)
 	$(MERGE) $(KERNEL_ARDUINO)>$@
