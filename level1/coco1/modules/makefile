@@ -24,6 +24,7 @@ TPB		= $(3RDPARTY)/booters
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		boot_burke boot_rampak boot_wd1002 boot_dw \
 		boot_tc3 boot_ide boot_rom boot_dw_becker \
+		boot_dw_rs232pak boot_dw_directmodempak \
 		boot_dw_arduino boot_dw_38400 boot_sdc
 BOOTTRACK	= rel $(BOOTERS)
 KERNEL		= krn krnp2 wbug
@@ -35,6 +36,7 @@ CLOCKS          = clock_60hz clock_50hz \
 
 RBF		= rbf.mn \
 		rbdw.dr dwio.sb dwio_38400.sb dwio_becker.sb dwio_arduino.sb \
+		dwio_rs232pak.sb dwio_directmodempak.sb \
 		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
 		ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd \
@@ -95,9 +97,25 @@ boot_sdc: boot_sdc.asm
 boot_dw_becker:	boot_dw.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DBECKER=1
 
+# DriveWire Deluxe RS232 Pak Booter
+boot_dw_rs232pak:	boot_dw.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSY6551N=1
+
+# DriveWire Direct Modem Pak Booter
+boot_dw_directmodempak:	boot_dw.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSY6551N=1 -DSY6551B=65388
+
 # DriveWire Becker Submodule
 dwio_becker.sb:	dwio.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DBECKER=1
+
+# DriveWire Deluxe RS232 Pak Submodule
+dwio_rs232pak.sb:	dwio.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSY6551N=1
+
+# DriveWire Direct Modem Pak Submodule
+dwio_directmodempak.sb:	dwio.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSY6551N=1 -DSY6551B=65388
 
 # DriveWire Arduino Booter
 boot_dw_arduino:	boot_dw.asm
