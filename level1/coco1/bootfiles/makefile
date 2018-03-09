@@ -503,7 +503,7 @@ BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_co42 bootfile_cowprs \
 		bootfile_covdg_ds80 bootfile_cohr_ds80 bootfile_co42_ds80 \
 		bootfile_cohr_becker bootfile_becker_headless \
 		bootfile_cohr_rs232pak bootfile_rs232pak_headless \
-		bootfile_cohr_directmodempak \
+		bootfile_cohr_directmodempak bootfile_directmodempak_headless \
 		bootfile_covdg_arduino bootfile_arduino_headless \
 		bootfile_cohr_arduino bootfile_covdg_arduino_game
 
