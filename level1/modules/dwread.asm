@@ -40,6 +40,18 @@ loop@     tst    $FF51               ; check for CA1 bit (1=Arduino has byte rea
           IFNDEF    SY6551B
 SY6551B   EQU       $FF68            ; Set base address for future use
           ENDC
+          IFNDEF    SYDATA
+SYDATA    EQU       SY6551B
+          ENDC
+          IFNDEF    SYCONT
+SYCONT    EQU       SY6551B+3
+          ENDC
+          IFNDEF    SYCOMM
+SYCOMM    EQU       SY6551B+2
+          ENDC
+          IFNDEF    SYSTAT
+SYSTAT    EQU       SY6551B+1
+          ENDC
 * NOTE: There is no timeout currently on here...
 DWRead    clra                       ; clear Carry (no framing error)
           deca                       ; clear Z flag, A = timeout msb ($ff)
@@ -50,10 +62,10 @@ DWRead    clra                       ; clear Carry (no framing error)
           IFEQ   NOINTMASK
           orcc   #IntMasks
           ENDC
-loop@     ldb    SY6551B+1
+loop@     ldb    SYSTAT
           andb   #$08
           beq    loop@
-          ldb    SY6551B
+          ldb    SYDATA
           stb    ,u+
           abx
           leay   ,-y
