@@ -14,11 +14,13 @@ BOOTFILE_COWPRS	    = bootfiles/bootfile_cowprs
 BOOTFILE_COVDG_DS80	= bootfiles/bootfile_covdg_ds80
 BOOTFILE_DW_HEADLESS	= bootfiles/bootfile_dw_headless
 BOOTFILE_BECKER_HEADLESS	= bootfiles/bootfile_becker_headless
+BOOTFILE_COCOLINK_HEADLESS	= bootfiles/bootfile_cocolink_headless
 BOOTFILE_RS232PAK_HEADLESS	= bootfiles/bootfile_rs232pak_headless
 BOOTFILE_DIRECTMODEMPAK_HEADLESS	= bootfiles/bootfile_directmodempak_headless
 BOOTFILE_ARDUINO_HEADLESS	= bootfiles/bootfile_arduino_headless
 BOOTFILE_COVDG_DW	= bootfiles/bootfile_covdg_dw
 BOOTFILE_COVDG_BECKER	= bootfiles/bootfile_covdg_becker
+BOOTFILE_COVDG_COCOLINK	= bootfiles/bootfile_covdg_cocolink
 BOOTFILE_COVDG_RS232PAK	= bootfiles/bootfile_covdg_rs232pak
 BOOTFILE_COVDG_DIRECTMODEMPAK	= bootfiles/bootfile_covdg_directmodempak
 BOOTFILE_COVDG_ARDUINO	= bootfiles/bootfile_covdg_arduino
@@ -28,12 +30,14 @@ BOOTFILE_CO42_DS80	= bootfiles/bootfile_co42_ds80
 BOOTFILE_COHR_DW	= bootfiles/bootfile_cohr_dw
 BOOTFILE_CO42_DW	= bootfiles/bootfile_co42_dw
 BOOTFILE_COHR_BECKER	= bootfiles/bootfile_cohr_becker
+BOOTFILE_COHR_COCOLINK	= bootfiles/bootfile_cohr_cocolink
 BOOTFILE_COHR_RS232PAK	= bootfiles/bootfile_cohr_rs232pak
 BOOTFILE_COHR_DIRECTMODEMPAK	= bootfiles/bootfile_cohr_directmodempak
 BOOTFILE_COHR_ARDUINO	= bootfiles/bootfile_cohr_arduino
 KERNELFILE	= bootfiles/kernel_1773
 KERNELFILE_DW	= bootfiles/kernel_dw
 KERNELFILE_BECKER	= bootfiles/kernel_becker
+KERNELFILE_COCOLINK	= bootfiles/kernel_cocolink
 KERNELFILE_RS232PAK	= bootfiles/kernel_rs232pak
 KERNELFILE_DIRECTMODEMPAK	= bootfiles/kernel_directmodempak
 KERNELFILE_ARDUINO	= bootfiles/kernel_arduino
@@ -71,6 +75,8 @@ DSK720K         = $(DISTROVER)_80d.dsk
 LDSK720K        = $(DISTRONAME)_$(PORT)_80d.dsk
 DSKBECKER	= $(DISTROVER)_becker.dsk
 LDSKBECKER	= $(DISTRONAME)_$(PORT)_becker.dsk
+DSKCOCOLINK	= $(DISTROVER)_dw_cocolink.dsk
+LDSKCOCOLINK	= $(DISTRONAME)_$(PORT)_dw_cocolink.dsk
 DSKRS232PAK	= $(DISTROVER)_dw_rs232pak.dsk
 LDSKRS232PAK	= $(DISTRONAME)_$(PORT)_dw_rs232pak.dsk
 DSKDIRECTMODEMPAK	= $(DISTROVER)_dw_directmodempak.dsk
@@ -91,11 +97,13 @@ LDSKCOCOSDC	= $(DISTRONAME)_$(PORT)_cocosdc.dsk
 DSKS		= $(DSKDW) $(DSKDWHEADLESS) $(DSKBECKER) $(DSKBECKERHEADLESS) \
 		$(DSKARDUINO) $(DSKARDUINOHEADLESS) $(DSK360K_1) $(DSK360K_2) \
 		$(DSK720K) $(DSKCOCOSDC) $(DSKRS232PAK) $(DSKDIRECTMODEMPAK) \
-		$(DSKRS232PAKHEADLESS) $(DSKDIRECTMODEMPAKHEADLESS)
+		$(DSKRS232PAKHEADLESS) $(DSKDIRECTMODEMPAKHEADLESS) \
+		$(DSKCOCOLINK)
 LDSKS		= $(LDSKDW) $(LDSKDWHEADLESS) $(LDSKBECKER) $(LDSKBECKERHEADLESS) \
 		$(LDSKARDUINO) $(LDSKARDUINOHEADLESS) $(LDSK360K_1) $(LDSK360K_2) \
 		$(LDSK720K) $(LDSKCOCOSDC) $(LDSKRS232PAK) $(LDSKDIRECTMODEMPAK) \
-		$(LDSKRS232PAKHEADLESS) $(LDSKDIRECTMODEMPAKHEADLESS)
+		$(LDSKRS232PAKHEADLESS) $(LDSKDIRECTMODEMPAKHEADLESS) \
+		$(LDSKCOCOLINK)
 
 # Make all components
 all:
@@ -225,6 +233,60 @@ $(DSKBECKER):
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/$(DISTRO)/SCRIPTS
 	$(RM) $(LDSKBECKER)
 	$(SOFTLINK) $@ $(LDSKBECKER)
+
+$(DSKCOCOLINK):
+	$(RM) $@
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
+	$(OS9GEN) $@ -b=$(BOOTFILE_COVDG_COCOLINK) -t=$(KERNELFILE_COCOLINK)
+	$(MAKDIR) $@,CMDS
+	$(MAKDIR) $@,SYS
+	$(MAKDIR) $@,DEFS
+	$(MAKDIR) $@,WWWROOT
+	$(CD) cmds; $(OS9COPY) $(sort $(CMDS_DW) $(CMDS_D2)) ../$@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(sort $(CMDS_DW) $(CMDS_D2)),$@,CMDS/$(file))
+	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
+	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
+	$(OS9ATTR_TEXT) $(foreach file,$(SYS),$@,SYS/$(file))
+	$(CD) wwwroot; $(OS9COPY) $(WWWROOT) ../$@,WWWROOT
+	$(OS9ATTR_TEXT) $(foreach file,$(WWWROOT),$@,WWWROOT/$(file))
+	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
+	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
+	$(CPL) $(STARTUP_DW) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
+	$(MAKDIR) $@,NITROS9
+	$(MAKDIR) $@,NITROS9/$(DISTRO)
+	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
+	$(CD) cmds; $(OS9COPY) $(MODULECMDS) ../$@,NITROS9/$(DISTRO)/CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(MODULECMDS),$@,NITROS9/$(DISTRO)/CMDS/$(file))
+	$(OS9RENAME) $@,NITROS9/$(DISTRO)/CMDS/$(WHICHSHELL) shell
+	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES
+	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
+	$(CD) modules; $(OS9COPY) $(BOOTTRACK) ../$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
+	$(OS9ATTR_EXEC) $(foreach file,$(BOOTTRACK),$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file))
+	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/KERNEL
+	$(CD) modules; $(OS9COPY) $(KERNEL) ../$@,NITROS9/$(DISTRO)/MODULES/KERNEL
+	$(OS9ATTR_EXEC) $(foreach file,$(KERNEL),$@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file))
+	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS
+	$(CD) modules; $(OS9COPY) $(SYSMODS) ../$@,NITROS9/$(DISTRO)/MODULES/SYSMODS
+	$(OS9ATTR_EXEC) $(foreach file,$(SYSMODS),$@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file))
+	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS
+	$(CD) modules; $(OS9COPY) $(CLOCKS) ../$@,NITROS9/$(DISTRO)/MODULES/CLOCKS
+	$(OS9ATTR_EXEC) $(foreach file,$(CLOCKS),$@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file))
+	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/RBF
+	$(CD) modules; $(OS9COPY) $(RBF) ../$@,NITROS9/$(DISTRO)/MODULES/RBF
+	$(OS9ATTR_EXEC) $(foreach file,$(RBF),$@,NITROS9/$(DISTRO)/MODULES/RBF/$(file))
+	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SCF
+	$(CD) modules; $(OS9COPY) $(SCF) ../$@,NITROS9/$(DISTRO)/MODULES/SCF
+	$(OS9ATTR_EXEC) $(foreach file,$(SCF),$@,NITROS9/$(DISTRO)/MODULES/SCF/$(file))
+	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/PIPE
+	$(CD) modules; $(OS9COPY) $(PIPE) ../$@,NITROS9/$(DISTRO)/MODULES/PIPE
+	$(OS9ATTR_EXEC) $(foreach file,$(PIPE),$@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file))
+	$(MAKDIR) $@,NITROS9/$(DISTRO)/BOOTLISTS
+	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
+	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
+	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/$(DISTRO)/SCRIPTS
+	$(RM) $(LDSKCOCOLINK)
+	$(SOFTLINK) $@ $(LDSKCOCOLINK)
 
 $(DSKRS232PAK):
 	$(RM) $@
