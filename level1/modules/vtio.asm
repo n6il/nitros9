@@ -39,6 +39,18 @@
 *                      L. Curtis Boyle
 * Fixed bug with SS.Ready GetStat call - it was not saving the # of chars
 * available in the keyboard buffer to caller's B register
+*
+*   4      2018/03/02  David Ladd
+*                      L. Curtis Boyle
+* Fixed SS.ComSt call so that changing Coco 3 or Coco2B T1 VDG between real
+* lowercase and inverse video takes effect as soon as the call is made (it
+* setting flags, but not updating the hardware until the next switch to Graphics
+* mode and back to text mode happened.
+* Also some more general optimizations, and installed the V.ClrBlk and V.CpyBlk
+* vectors calls (to use 6309 TFM and 6809 mini-stack blasting) for memory clears
+* and memory copies. These will also be accessible from VTIO's other co-modules,
+* for a speed increase.
+
          nam   VTIO
          ttl   OS-9 Level One V2 CoCo I/O driver
 
@@ -51,7 +63,7 @@
 tylg     set   Drivr+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   1
+edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -61,13 +73,6 @@ size     equ   V.Last
 
 name     fcs   /VTIO/
          fcb   edition
-
-start    lbra  Init
-         lbra  Read
-         lbra  Write
-         lbra  GetStat
-         lbra  SetStat
-         lbra  Term
 
 * Init
 *
@@ -93,7 +98,7 @@ Init
 L002E    sta   ,x+            clear mem
          decb                 decrement counter
          bne   L002E          continue if more
-         leax  FlashCursor,pcr Point to dummy cursor flash (just an rts). 
+         leax  <FlashCursor,pcr Point to dummy cursor flash (just an rts). 
          stx   V.Flash,u      Setup cursor flash
          coma                 A = $FF
          comb                 B = $FF
@@ -107,29 +112,18 @@ L002E    sta   ,x+            clear mem
 * I presume this should also get IFEQ to specify 50 for PAL systems
          lda   #60            Init clock ctr to 60
          sta   <V.ClkCnt,u
-         leax  >AltIRQ,pcr    get IRQ routine ptr
+         leax  <AltIRQ,pcr    get IRQ routine ptr
          stx   >D.AltIRQ      store in AltIRQ
          leax  >SetDsply,pcr  get display vector
          stx   <V.DspVct,u    store in vector address
          leax  >XY2Addr,pcr   get address of XY2Addr
          stx   <V.CnvVct,u    Save as vector get mem location and pixel mask based on X,Y coords on gfx screen
+         leax  >ClrBlk,pcr    get address for mini-stack blast clear mem routine
+         stx   >V.ClrBlk,u    Save as vector
+         leax  >CpyBlk,pcr    get address for mini-stack blast mem copy (scroll) routine
+         stx   >V.CpyBlk,u    Save as vector
          ldd   <IT.PAR,y      get parity and baud
          lbra  SetupTerm      process them
-
-* Term
-*
-* Entry:
-*    U  = address of device memory area
-*
-* Exit:
-*    CC = carry set on error
-*    B  = error code
-*
-Term     pshs  cc
-         orcc  #IRQMask       mask interrupts
-         ldx   >D.Clock       get clock vector
-         stx   >D.AltIRQ      and put back in AltIRQ
-         puls  pc,cc          Restore interrups & return
 
 * Read
 *
@@ -147,38 +141,38 @@ Read
 *       ldy     #$aa57
 *       puls    y
 
-         leax  V.InBuf,u  point X to input buffer
-         ldb   V.IBufT,u  get tail pointer
-         orcc  #IRQMask   mask IRQ
-         cmpb  V.IBufH,u  same as head pointer
-         beq   Put2Bed    if so, buffer is empty, branch to sleep
-         abx              X now points to curr char
-         lda   ,x         get char
-         bsr   L009D      check for tail wrap
-         stb   V.IBufT,u  store updated tail
+         leax  V.InBuf,u      point X to input buffer
+         ldb   V.IBufT,u      get tail pointer
+         orcc  #IRQMask       mask IRQ
+         cmpb  V.IBufH,u      same as head pointer
+         beq   Put2Bed        if so, buffer is empty, branch to sleep
+         abx                  X now points to curr char
+         lda   ,x             get char
+         bsr   L009D          check for tail wrap
+         stb   V.IBufT,u      store updated tail
          andcc  #^(IRQMask+Carry) unmask IRQ
 FlashCursor
          rts
 
-Put2Bed  lda   V.BUSY,u   get calling process ID
-         sta   V.WAKE,u   store in V.WAKE
-         andcc  #^IRQMask  clear interrupts
+Put2Bed  lda   V.BUSY,u       get calling process ID
+         sta   V.WAKE,u       store in V.WAKE
+         andcc  #^IRQMask     clear interrupts
          ldx   #$0000
-         os9   F$Sleep    sleep forever
-         clr   V.WAKE,u   clear wake
-         ldx   <D.Proc    get pointer to current proc desc
-         ldb   <P$Signal,x get signal recvd
-         beq   Read       branch if no signal
-         cmpb  #S$Window  window signal?
-         bcc   Read       branch if so
-         coma
+         os9   F$Sleep        sleep forever
+         clr   V.WAKE,u       clear wake
+         ldx   <D.Proc        get pointer to current proc desc
+         ldb   <P$Signal,x    get signal recvd
+         beq   Read           branch if no signal
+         cmpb  #S$Window      window signal?
+         bhs   Read           Window signal or higher (none of the main system ones), go read
+         coma                 Otherwise, return with signal code as error
          rts
 
 * Check if we need to wrap around tail pointer to zero
-L009D    incb             increment pointer
-         cmpb  #$7F       at end?
-         bls   L00A3      branch if not
-         clrb             else clear pointer (wrap to head)
+L009D    incb                 increment pointer
+         cmpb  #$7F           at end?
+         bls   L00A3          branch if not
+         clrb                 else clear pointer (wrap to head)
 L00A3    rts
 
 *
@@ -573,8 +567,8 @@ DragonToCoCo
          lslb
          lslb
          lslb
-         pshs  b              Save shifted version
-         ora   ,s+            Combine shifted version with original & remove from stack
+         pshs  b
+         ora   ,s+
          ldb   ,s             Get original dragon formatted one back (-2 cyc)
          andb  #%00111100     Shift middle 4 rows down 2 places
          lsrb
@@ -616,6 +610,22 @@ KeyTbl   fcb   $00,$40,$60 ALT @ `
          fcb   $31,$33,$35 F1 key
          fcb   $32,$34,$36 F2 key
 
+
+start    lbra  Init
+         lbra  Read
+         bra   Write
+         nop                  Could be used for a constant
+         lbra  GetStat
+         lbra  SetStat
+* Term
+* Entry: U  = address of device memory area
+* Exit:  CC = carry set on error
+*        B  = error code
+Term     pshs  cc
+         orcc  #IRQMask       mask interrupts
+         ldx   >D.Clock       get clock vector
+         stx   >D.AltIRQ      and put back in AltIRQ
+         puls  pc,cc          Restore interrupts & return
 
 * Write - move to just after initial jump table to make short branch, since this
 *  will be the most often used routine in VTIO
@@ -679,7 +689,7 @@ L03B0    sta   <V.NChar,u     store 1st parameter byte in V.NChar
 
 Escape   beq   L03C5          if $1E, we conveniently ignore it
          leax  <COEscape,pcr  else it's $1F... set up to get next char
-L03BD    ldb   #$01
+L03BD    ldb   #$01           This entry point requests 1 byte of parameters
 L03BF    stx   <V.RTAdd,u
          stb   <V.NGChr,u
 L03C5    clrb
@@ -690,6 +700,7 @@ COEscape ldb   #$03           'Write' offset into CO-module
 
 * Show VDG or Graphics screen. Set up as a vector (V.DspVct)
 * Entry: B = 0 for VDG, 1 for Graphics
+*        A = color setting of some sort 
 SetDsply pshs  x,a
          stb   <V.Alpha,u     save passed flag in B
          lda   >PIA1Base+2
@@ -700,22 +711,22 @@ SetDsply pshs  x,a
          ora   <V.CFlag,u
 L03DE    sta   >PIA1Base+2
          sta   <V.PIA1,u
+         ldx   #$FFC6         Point to SAM to set up where to map
          tstb                 display graphics?
          bne   DoGfx          Yes, do that
 * Set up VDG screen for text
-DoVDG    stb   >$FFC0         No, set up for 32x16 text screen
-         stb   >$FFC2
-         stb   >$FFC4
+         stb   -6,x           $FFC0  No, set up for 32x16 text screen
+         stb   -4,x           $FFC2
+         stb   -2,x           $FFC4
          lda   <V.ScrnA,u     get pointer to alpha screen
-         bra   L0401
+        bra   L0401
 
 * Set up VDG screen for graphics
-DoGfx    stb   >$FFC0
-         stb   >$FFC3
-         stb   >$FFC5
+DoGfx    stb   -6,x           $FFC0
+         stb   -3,x           $FFC3
+         stb   -1,x           $FFC5
          lda   <V.SBAdd,u     get pointer to graphics screen (just need hi byte-VDG needs 512 byte boundaries)
 L0401    ldb   #$07           7 SAM double-byte settings to do
-         ldx   #$FFC6         Point to SAM to set up where to map
          lsra
 L0407    lsra
          bcs   L0410          If bit set, store on odd byte
@@ -729,16 +740,22 @@ L0414    decb                 Done all 7 mem pairs?
          clrb                 Return w/o error
          puls  pc,x
 
-* Comodule filename list. 6809/6309 - Try to move elsewhere to allow some 8 bit ,pcr's
-GrfDrv   fcs   /GrfDrv/
-CoVDG    fcs   /CoVDG/
-CoWP     fcs   /CoWP/
-CoHR     fcs   /CoHR/
-Co42     fcs   /Co42/
-CoVGA    fcs   /CoVGA/
+* Return key sense information
+SSKYSNS  ldb   <V.KySns,u get key sense info
+         stb   R$A,x      put in caller's A
+         clrb
+         rts
+
+* Return screen size
+SSSCSIZ  clra                 clear upper 8 bits of D
+         ldb   <V.Col,u       get column count
+         std   R$X,x          save in X
+         ldb   <V.Row,u       get row count
+         std   R$Y,x          save in Y
+         clrb                 no error
+         rts
 
 * GetStat
-*
 * Entry:
 *    A  = function code
 *    Y  = address of path descriptor
@@ -761,9 +778,6 @@ GetStat  sta   <V.WrChr,u     save off stat code
 SSEOF    clrb
          rts
 
-*6809/6309 note: If we move a call or two before GetStat above, may be able to eliminate a
-*  couple of long branch instructions below
-
 L0439    cmpa  #SS.Joy        joystick?
          beq   SSJOY          branch if so
          cmpa  #SS.ScSiz      screen size?
@@ -771,26 +785,13 @@ L0439    cmpa  #SS.Joy        joystick?
          cmpa  #SS.KySns      keyboard sense?
          beq   SSKYSNS        branch if so
          cmpa  #SS.DStat      display status?
-         lbeq  SSDSTAT        branch if so
+         beq   SSDSTAT        branch if so
          ldb   #$06           getstat entry into CO-module
          lbra  JmpCO
 
-* Return key sense information
-SSKYSNS  ldb   <V.KySns,u get key sense info
-         stb   R$A,x      put in caller's A
-         clrb
-         rts
-
-* Return screen size
-SSSCSIZ  clra                 clear upper 8 bits of D
-         ldb   <V.Col,u       get column count
-         std   R$X,x          save in X
-         ldb   <V.Row,u       get row count
-         std   R$Y,x          save in Y
-         clrb                 no error
-         rts
-
-* Get joystick values
+* Get joystick values. Could move ldy up to just after ORCC, and then ldx #PIA0Base+1
+* then, for the 8 references to PIA0Base, use no offset/5 bit offset (saves 8 bytes,
+* and 3 cycles - hopefully that doesn't screw up joystick reads with jitter, etc.
 SSJOY    pshs  y,cc
          orcc  #IRQMask       mask interrupts
          lda   #$FF
@@ -808,29 +809,30 @@ L0485    clra
 L0486    sta   R$A,x
          lda   >PIA0Base+3
          ora   #$08
-         ldy   R$X,x
+         leay  ,y 
          bne   L0494
          anda  #$F7
-L0494    sta   >PIA0Base+3
-         lda   >PIA0Base+1
+L0494    ldy   #PIA0Base+1    Point to PIA most used address in following routine
+         sta   2,y            PIA0Base+3
+         lda   ,y             PIA0Base+1
          anda  #$F7
          bsr   L04B3
-         std   R$X,x
-         lda   >PIA0Base+1
+         std   R$X,x          Save X coord of joystick
+         lda   ,y             PIA0Base+1
          ora   #$08
          bsr   L04B3
          pshs  d
          ldd   #63
          subd  ,s++
-         std   R$Y,x
+         std   R$Y,x          Save Y coord of joystick
          clrb
          puls  pc,y,cc
 
-L04B3    sta   >PIA0Base+1
+L04B3    sta   ,y             PIA0Base+1
          ldd   #$7F40
 L04C7    pshs  b
          sta   >PIA1Base
-         tst   >PIA0Base
+         tst   -1,y           PIA0Base
          bpl   L04D5
          adda  ,s+
 L04BC    lsrb
@@ -880,8 +882,8 @@ L04F6    pshs  b              Save pixel color (last 1 or 2 bits)
          clrb
 L050E    rts
 
-* This vector also gets called from Grfdrv
-* Entry: A = X coor, B = Y coor
+* This vector also gets called from Grfdrv via V.CnvVct
+* Entry: A = X coord, B = Y coord
 * Exit: Y=Base address of screen, X=ptr to byte on screen, A=pixel mask for specific pixel
 XY2Addr  pshs  y,d            save off regs
          ldb   <V.Mode,u      get video mode
@@ -889,23 +891,21 @@ XY2Addr  pshs  y,d            save off regs
          lsra                 else divide by 8
 L0517    lsra
          lsra
-         pshs  a              save on stack
+         pshs  a              save on stack (A=horizontal byte on line pixel will be on)
          ldb   #191           get max Y
          subb  2,s            subtract from Y on stack
          lda   #32            bytes per line
          mul
          addb  ,s+            add offset on stack
          adca  #$00
-* 6809/6309 - since we are going to pull X & Y off the stack anyways, use X here (byte shorter, cycle
-*  faster for both ldy and sty)
-         ldx   <V.SBAdd,u     get base address
-         leax  d,x            move D bytes into address
-         lda   ,s             pick up original X coor
+         ldx   <V.SBAdd,u     get base address of gfx screen
+         leax  d,x            Point to byte pixel will be drawing on
+         lda   ,s             pick up original X coord
          stx   ,s             put offset addr on stack
-         anda  <V.PixBt,u
-         ldx   <V.MTabl,u
-         lda   a,x
-         puls  pc,y,x         X = offset address, Y = base
+         anda  <V.PixBt,u     Just keep X pixel 0-7 (or 0-3)
+         ldx   <V.MTabl,u     Get ptr to pixel mask table (already set up for 4 or 8)
+         lda   a,x            Get mask for specific pixel we will be drawing
+         puls  pc,y,x         X = offset address, Y = base, A=pixel mask
 
 * SetStat
 *
@@ -957,7 +957,6 @@ SSAAGBF  ldb   <V.Rdy,u       was initial buffer allocated with $0F?
          leay  2,y            else move to next entry
          inc   ,s             increment B on stack
          ldd   ,y             second entry empty?
-* 6809/6309 - change to bne BadMode2
          bne   L059E          if not, no room for more... error out
 L058E    lbsr  GetMem         allocate graphics buffer memory
          bcs   L05A1          branch if error
@@ -969,12 +968,8 @@ L058E    lbsr  GetMem         allocate graphics buffer memory
          clrb                 call is ok
          rts                  and return
 
-* 6809/6309 - after above change done, delete these 2 lines
 L059E    ldb   #E$BMode
          coma
-
-*6809/6309 - After above changes, move label L05A1 to just before BadMode label,
-* change line to puls a
 L05A1    puls  pc,a
 
 * Select a graphics buffer
@@ -1011,7 +1006,7 @@ GoCoVDG  stb   <V.CFlag,u     save lowercase flag
          lda   #ModCoVDG      CoVDG is loaded bit
          ldx   #$2010         32x16
          pshs  u,y,x,a
-         leax  >CoVDG,pcr
+         leax  <CoVDG,pcr
          bsr   LoadCoModule
          puls  u,y,x,a
          bcs   L0600
@@ -1021,6 +1016,14 @@ GoCoVDG  stb   <V.CFlag,u     save lowercase flag
          bne   NoError
          lbra  SetDsply
 
+* All co-modules except grfdrv
+
+CoVDG    fcs   /CoVDG/
+CoWP     fcs   /CoWP/
+CoHR     fcs   /CoHR/
+Co42     fcs   /Co42/
+CoVGA    fcs   /CoVGA/
+         
 GoCoWP   bita  #ModCoWP       CoWP needed ?
          beq   GOCo42         No, try next co-module
          stb   <V.CFlag,u     allow lowercase
@@ -1028,7 +1031,7 @@ GoCoWP   bita  #ModCoWP       CoWP needed ?
          lda   #ModCoWP       'CoWP is loaded' bit
          ldx   #$5019         80x25 WordPark RS supports 25 lines
          pshs  u,y,x,a
-         leax  >CoWP,pcr
+         leax  <CoWP,pcr
 * 6809/6309 - Try embedding LoadCoModule since short and only called from here.
 * Entry: X=ptr to co-module name
 SetupCoModule
@@ -1047,7 +1050,7 @@ GOCo42   bita  #ModCo42       42x24 gfx term?
          lda   #ModCo42       'Co42 is loaded' bit
          ldx   #$2A18         42x24
          pshs  u,y,x,a
-         leax  >Co42,pcr
+         leax  <Co42,pcr
          bra   SetupCoModule
 
 GOCoHR   ldb   #$10
@@ -1056,7 +1059,7 @@ GOCoHR   ldb   #$10
          lda   #ModCoHR       'CoHR is loaded' bit
          ldx   #$3318         51x24
          pshs  u,y,x,a
-         leax  >CoHR,pcr
+         leax  <CoHR,pcr
          bra   SetupCoModule
 
 LoadCoModule
@@ -1109,9 +1112,6 @@ LoadSub  pshs  u
          os9   F$Load
          puls  pc,u
 
-* 128x192 color mask table for 4 color modes
-Mode1Clr fcb   $00,$55,$aa,$ff
-
 GfxDispatch
          cmpa  #$15           GrfDrv-handled code?
          bhs   GoGrfo         Yep, pass code over to it
@@ -1120,17 +1120,10 @@ GfxDispatch
          suba  #$10
          bsr   GfxActv        check if first gfx screen was alloc'ed
          bcs   L0663          if not, return with error
-         leax  <gfxtbl,pcr    else point to jump table
-         lsla                 multiply by two
-         ldd   a,x            get address of routine
-         jmp   d,x            jump to it
+         leax  gfxtbl,pcr     else point to jump table
+         ldb   a,x            get address of routine
+         jmp   b,x            jump to it
 
-* Jump table for graphics codes $10-$14
-gfxtbl   fdb   Do10-gfxtbl    $10 - Preset Screen
-         fdb   Do11-gfxtbl    $11 - Set Color
-         fdb   Do12-gfxtbl    $12 - End Graphics
-         fdb   Do13-gfxtbl    $13 - Erase Graphics
-         fdb   Do14-gfxtbl    $14 - Home Graphics Cursor
 
 GfxActv  ldb   <V.Rdy,u       gfx screen allocated?
          bne   L0606          Yes, exit with no error
@@ -1143,13 +1136,15 @@ GoGrfo   bsr   GfxActv        Is a graphics screen already active?
          ldx   <V.GrfDrvE,u   get GrfDrv entry point
          bne   L0681          branch if not zero
          pshs  y,a            else preserve regs
-         leax  >GrfDrv,pcr    get pointer to name string
+         leax  <GrfDrv,pcr    get pointer to name string
          bsr   LinkSub        link to GrfDrv
          bcc   L067B          branch if ok
-         leax  >GrfDrv,pcr    get pointer to name string
+         leax  <GrfDrv,pcr    get pointer to name string
          bsr   LoadSub
          bcc   L067B
          puls  pc,y,a         else exit with error
+
+GrfDrv   fcs   /GrfDrv/
 
 L067B    sty   <V.GrfDrvE,u   save module entry pointer
 L067F    puls  y,a            restore regs
@@ -1191,34 +1186,29 @@ Do0F     leax  <DispGfx,pcr   Get address to call after we get 2 parameter bytes
 DispGfx  ldb   <V.Rdy,u       already allocated initial buffer?
          bne   L06D1          Yes, skip allocating
          bsr   GetMem         else get graphics memory
-* 6809/6309 - after below E$BMode is change to LBRA, change this to bcs L06B3
          bcs   L06B3          Couldn't get RAM; return with error
          std   <V.SBAdd,u     save ptr to graphics RAM
          std   <V.GBuff,u     And again
          inc   <V.Rdy,u       ok, we're ready
-         lbsr  EraseGfx       clear gfx mem
-L06D1    lda   <V.NChr2,u     get character after next
+         lbsr  Do13           clear gfx mem
+L06D1    lda   <V.NChr2,u     get 2nd parm (color set/foreground/background color selection)
          sta   <V.PMask,u     save color set (0-15)
          anda  #%00000011     mask out all but lower 2 bits
-         leax  >Mode1Clr,pcr  point to color mask table
+         leax  <Mode1Clr,pcr  point to color mask table
          lda   a,x            get byte
          sta   <V.Msk1,u      save mask byte here
          sta   <V.Msk2,u      and here
-         lda   <V.NChar,u     get next char, mode byte (0-1)
+         lda   <V.NChar,u     get 1st parm (gfx mode) mode byte (0-1)
          cmpa  #$01           compare against max
          bls   L06F0          branch if valid
          lbra  BadMode        else invalid mode specified, send error
 
-* 6809/6309 tsta redundant if we change beq L0710 to blo L0710 (lower than cmpa#1 above)
-L06F0    tsta                 test user supplied mode byte
-         beq   L0710          branch if 256x192
+L06F0    blo   L0710          branch if 256x192
 * NOTE: CHECK CO-MODULES; I DON'T SEE V.MCol or V.MCol+1 being used ANYWHERES in VTIO
          ldd   #$C003         4 color mode; Make pixel masks for start and end pixels in a byte  
          std   <V.MCol,u      Save them for re-use
-* 6809/6309 - change next 3 lines to: ldd #$E001 / stb <V.Mode,u
-         lda   #$01
-         sta   <V.Mode,u      128x192 mode
-         lda   #$E0
+         ldd   #$E001
+         stb   <V.Mode,u      128x192 4 color mode
          ldb   <V.NChr2,u
          andb  #$08
          beq   L0709
@@ -1235,21 +1225,25 @@ L0710    ldd   #$8001         2 color mode; Make pixel masks for start and end p
          sta   <V.Msk1,u
          sta   <V.Msk2,u
 L0723    sta   <V.Mode,u      256x192 mode
-* 6809/6309 - LDD #$F007
-         lda   #$F0
-         ldb   #$07           Base 0 # pixels in a byte
+         ldd   #$F007         ? & Base 0 # pixels in a byte
          leax  <L0746,pcr     Point to 2 color pixel masks table
 L072D    stb   <V.PixBt,u     Save base 0 # pixels in a byte
          stx   <V.MTabl,u     Save ptr to pixel mask table
          ldb   <V.NChr2,u
          andb  #$04
          lslb
-* 6309 - orr b,a replaces two lines
+       IFNE  H6309
+         orr   b,a
+       ELSE
          pshs  b
          ora   ,s+
+       ENDC
          ldb   #$01
 * Indicate screen is current
          lbra  SetDsply
+
+* 128x192 color mask table for 4 color modes
+Mode1Clr fcb   $00,$55,$aa,$ff
 
 * 4 color pixel masks
 L0742    fcb   $c0,$30,$0c,$03
@@ -1267,10 +1261,15 @@ SetColor clr   <V.NChar,u     get next char
          inc   <V.NChar,u
 L075F    lbra  L06D1
 
-* $12 - end graphics
+* $12 - end graphics. This needs to be modified to properly handle CoHR/Co42 co-modules;
+* since they *replace* the original alpha mode, they should never be de-allocated. Only
+* extra pages should be de-allocated.
 Do12     leax  <V.GBuff,u     point to first buffer
-* 6309 - TFR 0,y (same speed, 2 bytes smaller)
+       IFNE  H6309
+         tfr   0,y            Same speed/2 bytes smaller on 6309
+       ELSE
          ldy   #0             Y = 0
+       ENDC
          ldb   #3             free 3 gfx screens max
          pshs  u,b
 L076D    ldd   #6144          size of graphics screen
@@ -1289,50 +1288,46 @@ L0788    puls  u,b            restore regs
          sta   <V.Rdy,u       gfx mem no longer allocated
          lbra  SetDsply
 
+* Jump table for graphics codes $10-$14
+gfxtbl   fcb   Do10-gfxtbl    $10 - Preset Screen
+         fcb   Do11-gfxtbl    $11 - Set Color
+         fcb   Do12-gfxtbl    $12 - End Graphics
+         fcb   Do13-gfxtbl    $13 - Erase Graphics
+         fcb   Do14-gfxtbl    $14 - Home Graphics Cursor
+
 Do10     leax  <Preset,pcr set up return address
          lbra  L03BD
 
-* NOTE! Shouldn't this be lda <V.NChar,u ??
-Preset   lda   <V.NChr2,u     get next char
+Preset   lda   <V.NChr2,u     get param byte
          tst   <V.Mode,u      which mode?
          bpl   L07A7          branch if 128x192 4 color
          ldb   #$FF           assume we will clear with $FF
          anda  #$01           mask out all but 1 bit (2 colors)
-         beq   EraseGfx       erase graphic screen with color $00
+         beq   Do13           erase graphic screen with color $00
          bra   L07B2          else erase screen with color $FF
 
 L07A7    anda  #$03           mask out all but 2 bits (4 colors)
-         leax  >Mode1Clr,pcr  point to color table
+         leax  <Mode1Clr,pcr  point to color table
          ldb   a,x            get appropriate byte
          bra   L07B2          and start the clearing
 
-* Erase graphics screen. Change to mini stack blast for 6809, TFM for 6309
-* NOTE: Make a vector, so that all the various co-modules (including grfdrv)
-* can share this, and make more entry parameters (color mask, start addr of
-* clear, and size). V.ClrBlk or something like that will need to be added
-* to cocovtio.d
+* Erase graphics screen. Changed to use new V.ClrBlk vector (mini stack blast
+* for 6809, TFM for 6309)
 * Long term - make a system call for this, so that all system modules (and
 * even user programs) can use it. Mini-stack blast for 6809, tfm for 6309)
 * This would clear a contiguous chunk of RAM (in 4 byte chunks only).
-* NOTE: FOLLOWING CODE IS FOR TESTING CONCEPT AND SPEED. IF IT WORKS, WE WILL
-* MAKE IT MORE GENERIC (CURRENTLY HARDCODED FOR 6K SCREENS ONLY) AND MAKE IT
-* A VECTOR THAT CAN BE CALLED FROM VTIO,CO***, AND GRFDRV)
-Do13
-EraseGfx clrb                 Color 0 to clear with
-L07B2    pshs  y,x,u          Save regs
-         tfr b,a              Dupe color to D
-         tfr d,x              Move to X&Y
-         leay ,x
-         ldu  <V.SBAdd,u      Get base address for screen
-         leau >6144,u         Point to end of screen+1
-         ldd  #$0600          6 blocks of 256 (how many 4 byte chunks to clear)
-InCLSLp  pshu x,y             4 bytes cleared
-         decb
-         bne  InCLSLp         Not done 256*4 (1k) bytes
-         deca                 Dec 1K blocks ctr
-         bne  InCLSLp         Do till done
-         puls x,y,u           Restore regs
-
+* Entry for clearing with color 0
+Do13     clrb                 Color 0 to clear with
+* Entry for clearing with color in B
+L07B2    pshs  b,u            Save color code & static mem ptr
+         ldy   >V.ClrBlk,u    Get ptr to ClrBlk routine
+         ldd   #6144          Size of gfx screen to clear
+         addd  <V.SBAdd,u     Add size to ptr to start of screen
+         tfr   d,u            U=ptr to end of screen+1
+         ldx   #6144          Size to clear into register for vector
+         puls  b              Get color code back
+         jsr   ,y             Call ClrBlk vector
+         puls  u              Get back static mem ptr
 * Home Graphics cursor
 Do14     clra
          clrb
@@ -1341,21 +1336,27 @@ Do14     clra
 
 *
 * Ding - tickle CoCo's PIA to emit a sound
-*
-Ding     pshs  d
-         lda   >PIA0Base+1
-         ldb   >PIA0Base+3
+* 6809/6309 - preserve X as well, and then ldx #PIA0Base+3 and used ,x offsets
+* NOTE: This is much more sophisticated than the Dragon version. Not sure if
+* it has to be. (See DoBell in CoHR/Co42)
+Ding     pshs  d,x
+         ldx   #PIA0Base+3    Point to most common address we will be using
+         lda   -2,x           >PIA0Base+1
+         ldb   ,x             >PIA0Base+3
          pshs  d
-* 6309 - ANDD #$F7F7
+       IFNE  H6309
+         andd  #$F7F7
+       ELSE
          anda  #$F7
          andb  #$F7
-         sta   >PIA0Base+1
-         stb   >PIA0Base+3
+       ENDC
+         sta   -2,x           >PIA0Base+1
+         stb   ,x             >PIA0Base+3
          lda   >PIA1Base+3
          pshs  a
          ora   #$08
          sta   >PIA1Base+3
-         ldb   #$0A
+         ldb   #10            Outside loop ctr
 L07E6    lda   #$FE
          bsr   DingDuration
          lda   #$02
@@ -1365,9 +1366,9 @@ L07E6    lda   #$FE
          puls  a
          sta   >PIA1Base+3
          puls  d
-         sta   >PIA0Base+1
-         stb   >PIA0Base+3
-         puls  pc,d
+         sta   -2,x           >PIA0Base+1
+         stb   ,x             >PIA0Base+3
+         puls  pc,x,d
 
 DingDuration
          sta   >PIA1Base
@@ -1376,6 +1377,93 @@ L0805    inca
          bne   L0805
          rts
 
+* Since these are called by a JSR vector, they doesn't need to be near anything, so put
+* both ClrBlk & CpyBlk at end of VTIO, and set up vectors to them in VTIO Init routine
+
+* ClrBlk - Clear contiguous block of memory with a byte value (grfdrv level II text mode
+* patches will need 16 bit word value to cover attribute/character bytes)
+* HOPEFULLY OPTIMIZED SMALLER FOR 6809 03/12/2018 LCB
+* Entry: B=byte value to clear with
+*        X=size
+*        U=ptr to end+1 of memory to clear up to
+*  Exit: U=Ptr to start of block of memory cleared (if 6809) OR
+*          Ptr to end of block of memory cleared (if 6309)
+*        NOTE that D and X are destroyed in 6809 version
+* Will need to check all calling routines from various modules, to see which of above
+*  should be default (if ptr is needed), and adjust the other to match
+* ClrBlk (aside from set up and/or leftover bytes) takes 3 cyc/byte in 6309 mode, and
+*   3.5 cyc/byte in 6809 mode (except every 1,024th byte takes a few extra)
+* Since these are called by a JSR vector, they doesn't need to be near anything, so put
+* both ClrBlk & CpyBlk at end of VTIO, and set up vectors to them in VTIO Init routine
+ClrBlk
+       IFNE  H6309
+         pshs  b              Save value to clear with
+         tfr   x,w            Move size to TFM size register
+         subr  w,u            Calc start ptr of block (TFM can't do 1 location to decrementing address)
+         tfm   s,u+           Clear mem
+         puls  b,pc           Eat stack & return
+       ELSE
+         tfr   b,a            D=double copy of value to clear memory with
+         exg   x,d            D=Size to clear (in bytes), X=2 byte value to clear with
+         pshs  b,x            Save 16 bit value to clear with, & LSB of size (to check for leftover bytes)
+         lsra                 Divide size by 4 (since we are doing 4 bytes at a time)
+         rorb
+         lsra
+         rorb
+         pshs  d              Save mini-stackblast counters
+         ldd   2,s            Get A=LSB of # of bytes to clear, B=byte to clear with
+         anda  #$3            Non-even multiple of 4?
+         beq   NoOdd          Even, skip single byte cleanup copy
+OverLp   stb   ,-u            Save odd bytes
+         deca
+         bne   OverLp
+NoOdd    ldd   ,s++           Get Mini-stack blast ctrs back
+         beq   ExitClrB       No 4 byte blocks, done
+         tsta                 Special case: Is A=0?
+         bne   NormClr        No, start stack blasting
+         inca                 If A=0, bump to 1 so we don't wrap and try to do 256 1K copies
+NormClr  leay  ,x             Dupe 16 bit clear value to Y
+ClrLp    pshu  x,y            Clear 4 bytes
+         decb                 Dec "leftover" (<256) 4 byte block counter
+         bne   ClrLp          Keep doing till that chunk is done
+         deca                 Dec 1Kbyte counter
+         bne   ClrLp          Still going (B has been set to 0, so inner loop is 256 now)
+ExitClrB puls  b,x,pc         Eat temp regs & return
+       ENDC
+       
+* CpyBlk - Copy contiguous block of memory with a byte value (for screen scrolling, insert/delete line,etc.)
+* New, more optimized version (I hope) as of March 12, 2018
+* Entry: D=size of copy
+*        Y=ptr to destination of copy
+*        U=ptr to source of copy (PULU from here on 6809 version)
+*  Exit: U=Ptr to end of source copy+1
+*        Y=Ptr to end of dest copy+1
+*        D=NOTE: NEW CODE WILL HAVE D AS END ADDRESS OF SOURCE OF COPY
+* NOTE: No routines in VTIO use this call - it will be called from sub-modules. Putting it in here
+* since VTIO always gets initialized first.
+       IFNE  H6309
+CpyBlk   tfr   d,w            Copy size to TFM size register
+         tfm   u+,y+          Copy memory
+         rts
+       ELSE
+CpyBlk   leax  d,u            Calculate source end address
+         pshs  x              Save on stack to compare with so we know when to stop
+         andb  #$03           Check if we have odd bytes leftover (1-3)
+         beq   CpyLpSt        No, skip to check if copy is done, and stack blast 4 byte chunks if yes
+CpyLp2   lda   ,u+            (6) Copy extra 1-3 bytes
+         sta   ,y+            (6)
+         decb                 (2)
+         bne   CpyLp2         (3)
+         bra   CpyLpSt        Start with cmpu to end of copy (if copy was only 1-3 bytes, we are done already)
+         
+* Now, copy all 4 byte chunks. End address remains the same, so we can eliminate some stuff we had before
+CpyLp    pulu  d,x            Get 4 bytes from source (ascending order)
+         std   ,y++           Copy to destination
+         stx   ,y++
+CpyLpSt  cmpu  ,s             Done 4 byte blast copy?
+         blo   CpyLp          No, keep doing until done
+         puls  pc,d           Get end address of source copy and return
+       ENDC
          emod
 eom      equ   *
          end

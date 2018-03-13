@@ -8,6 +8,7 @@
 * ------------------------------------------------------------------
 *   1      ????/??/??
 * From Tandy OS-9 Level One VR 02.00.00.
+*   2      2018/03/06  Various minor optimizations, and some 6309 optimizations
 
          nam   GrfDrv
          ttl   Graphics module
@@ -22,7 +23,7 @@
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   1
+edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -242,24 +243,33 @@ DrawPnt  lbsr  FixXY          fix coords
          bsr   DrwPt2
          bra   L014A
 
-DrwPt2   jsr   [<V.CnvVct,u]  Get offset into screen memory & bit mask for pixel
+* Draw a single point. Called by set point/erase point, and circle
+* Entry: A=pixel X position to draw
+*        B=pixel Y position to draw
+DrwPt2   jsr   [<V.CnvVct,u]  Get offset into screen memory (X) & bit mask for pixel (A)
+* Draw single point w/o needing conversion of address/mask. Called by Line and Flood Fill
 L0081    tfr   a,b            Duplicate pixel mask
+       IFNE  H6309
+         comb                 Flip to keep background pixels
+         andb  ,x
+         anda  <V.Msk1,u      and pixel mask with color mask
+         orr   b,a            Merge foreground pixel onto background
+         sta   ,x             Save it to screen
+       ELSE
          comb                 Flip to keep background pixels
          andb  ,x
          stb   ,x
          anda  <V.Msk1,u      and pixel mask with color mask
          ora   ,x             Merge foreground pixel onto background
          sta   ,x             Save it to screen
+       ENDC
          rts
 
-
 Circle   leas  -4,s           make room on stack
-* 6809/6309 - Chg next 4 lines to clra / ldb <V.NChr2,u / std ,s
          clra
-         ldb   <V.NChr2,u     get radius
-         std   ,s             store b store on stack and make D=radius (both D and on stack)
-         addb  1,s            Add to itself (D=diameter)
-         adca  #$00
+         ldb   <V.NChr2,u     get radius into D
+         std   ,s             store on stack and make D=radius (both D and on stack)
+         addd  ,s
        IFNE  H6309
          negd                 Invert sign of D
        ELSE
@@ -271,11 +281,11 @@ Circle   leas  -4,s           make room on stack
          std   2,s            Save that
 L0179    lda   ,s
          cmpa  1,s
-         bcc   L01AB
+         bhs   L01AB
          ldb   1,s
          bsr   L01B9
          clra
-         ldb   $02,s
+         ldb   2,s
          bpl   L0193
          ldb   ,s
          lslb
@@ -357,53 +367,83 @@ L01B9    leas  -8,s           Allocate another 8 byte temp stack
          leas  8,s            Eat temp stack & return
          rts
 
-L0202    pshs  d
+* Not sure on these, but I think:
+* Entry: D=X coord of some sort
+*        X=Y coord of some sort
+L0202  
+       IFNE  H6309
+         tfr   d,w
+       ELSE
+         pshs  d
+       ENDC
          ldb   <V.GCrsY,u     Get Y coord of graphics cursor (center of circle)
-* 6809/6309 - B is unsigned, so an abx instead of clra / leax d,x should work (-2 bytes/-7 cyc)
-*         clra
-*         leax  d,x
          abx
          cmpx  #$0000         Off bottom of screen?
          bmi   L0214          Yes, return
          cmpx  #191           Off top of screen?
          ble   L0216          No, go draw pixels
-L0214    puls  pc,d           Off screen vertically, return
-
+L0214
+       IFNE  H6309
+         rts
+       ELSE
+         puls  pc,d           Off screen vertically, return
+       ENDC
+       
 L0216    ldb   <V.GCrsX,u     Get X coord of graphics cursor (center of circle) into D
          clra
          tst   <V.Mode,u      Check graphics mode
          bmi   L0221          2 color, skip ahead
          lslb                 4 color, Shift left 1 bit
          rola
-L0221    addd  ,s++           Add to ?
+L0221  
+       IFNE  H6309
+         addr  w,d            Add to ?
+       ELSE
+         addd  ,s++           Add to ?
+       ENDC
          tsta                 If <256, continue
          beq   L0227
          rts                  Else return
 
-L0227    pshs  b              Save 8 bit version of value
+L0227  
+       IFNE  H6309
+         tfr   b,e            Save Y coord in E         (3 tfr's in native mode 2 cyc faster)
+         tfr   x,d            Move low byte of X to B
+         tfr   e,a            Move Y coord to A
+       ELSE
+         pshs  b              Save 8 bit version of value
          tfr   x,d            Move low byte of X to B
          puls  a              And restore value, this time as A
+       ENDC
          tst   <V.Mode,u      Check graphics mode
          lbmi  DrwPt2         If 2 color, draw pixel on screen & return from there
          lsra                 4 color, shift 1 more first
          lbra  DrwPt2
 
 * $1D - flood fill
+* Change by LCB - keep V.Mode in E, since it gets checked. A lot.
 Do1D     clr   <V.FFFlag,u    Clear flag
-         leas  -$07,s
+         leas  -7,s
          lbsr  L03AB          Allocate 512 byte Flood fill stack, if not already allocated
          lbcs  L0346          Not allocated, and couldn't get it, exit with error
-         lda   #$FF
+       IFNE  H6309
+         lde   <V.Mode,u      Get gfx mode, so we can keep in E for faster checking
+       ENDC
+         lda   #-1            $FF Set direction flag to -1 (X direction, I think)
          sta   <V.4F,u
-         ldd   <V.GCrsX,u
+         ldd   <V.GCrsX,u     Get graphics cursor X,Y coords
          lbsr  L0351
          lda   <V.4C,u
          sta   <V.4D,u
+       IFNE  H6309
+         tste                 which mode?
+       ELSE
          tst   <V.Mode,u      which mode?
+       ENDC
          bpl   L0261          branch if 128x192
          tsta
-         beq   L0267
-         lda   #$FF
+         beq   L0267          Color 0 byte mask for 2 color
+         lda   #$FF           Color 1 byte mask for 2 color
          bra   L0267
 
 * 128x192 4 color pixel table - NOTE THIS IS DUPLICATED IN VTIO
@@ -412,11 +452,11 @@ Mode1Clr fcb   $00,$55,$aa,$ff
 * Entry: A=color # 0-3
 L0261    leax  <Mode1Clr,pcr  Point to 4 color color mask table
          lda   a,x            Get mask for selected color
-L0267    sta   <V.4E,u        Save copy of it
+L0267    sta   <V.4E,u        Save copy of color mask
          cmpa  <V.Msk1,u
          lbeq  L0346
-         ldd   <V.GCrsX,u
-L0274    suba  #$01
+         ldd   <V.GCrsX,u     Get gfx cursor cursory X,Y coords
+L0274    suba  #$01           
          bcs   L027F          Wrapped negative, skip ahead
          lbsr  L0351
          beq   L0274
@@ -424,22 +464,22 @@ L027F    inca
          std   1,s
 L0282    lbsr  L0384
          adda  #$01
-         bcs   L0290
+         bcs   L0290          Wrapped past 256, skip ahead
          lbsr  L0351
          bcs   L0290
          beq   L0282
 L0290    deca
          ldx   1,s
          lbsr  L03D3
-         neg   <V.4F,u
+         neg   <V.4F,u        Flip X direction
          lbsr  L03D3
 L029C    lbsr  L03F9
          lbcs  L0346
-         tst   <V.4F,u
-         bpl   L02B3
-         subb  #$01
-         bcs   L029C
-         std   3,s
+         tst   <V.4F,u        Check current X direction
+         bpl   L02B3          If +1, go increment
+         subb  #$01           negative, so subtract 1
+         bcs   L029C          If wrapped, go back
+         std   3,s            Save coords
          tfr   x,d
          decb
          bra   L02BD
@@ -475,7 +515,7 @@ L02D6    cmpd  3,s
          decb
          cmpd  5,s
          beq   L02FB
-         neg   <V.4F,u
+         neg   <V.4F,u        ?? Maybe direction flag?
          ldx   5,s
          lbsr  L03D3
          neg   <V.4F,u
@@ -529,7 +569,11 @@ L0350    rts
 L0351    pshs  d
          cmpb  #191
          bhi   L0380          If past top of screen, exit with carry set
-         tst   <V.Mode,u      which gfx mode?
+       IFNE  H6309
+         tste                 which mode?
+       ELSE
+         tst   <V.Mode,u      which mode?
+       ENDC
          bmi   L0360          2 color, skip ahead
          cmpa  #127           4 color, check if we are past right side of screen
          bhi   L0380          Yes, exit with carry set
@@ -540,7 +584,11 @@ L0367    bita  #$01           Is far right pixel set in the mask?
          bne   L0376          Yes, exit with carry clear and other flags set (zero, negative,etc.)
          lsra                 No, shift pixel masks right 1 bit
          lsrb
-         tst   <V.Mode,u      If 2 color, check again
+       IFNE  H6309
+         tste                 which mode?
+       ELSE
+         tst   <V.Mode,u      which mode?
+       ENDC
          bmi   L0367
          lsra                 If 4 color, shift once more (2 bits/pixel) and check again
          lsrb
@@ -564,7 +612,11 @@ L0384    pshs  d              Save X,Y coords
          ldb   <V.Msk1,u
          stb   ,x
          puls  d
+       IFNE  H6309
+         tste                 2 color mode?
+       ELSE
          tst   <V.Mode,u      2 color mode?
+       ENDC
          bmi   L03A3          Yes, skip ahead
          adda  #$03
          rts
@@ -597,7 +649,7 @@ AllocOk  tfr   u,d            move pointer to alloced mem to D
          clrb
          rts
 
-* Add FFill stack entry (4 bytes)
+* Add FFill stack entry (4 bytes). Max of 128 entries allowed.
 L03D3    pshs  d
          ldd   <V.FFSPt,u     Get current FFill stack ptr
          subd  #$0004         Add 4 bytes to it
@@ -605,7 +657,7 @@ L03D3    pshs  d
          blo   L03F2          Yes, error out
          std   <V.FFSPt,u     No, Save new FFill stack ptr
          tfr   d,y            Move new ptr to indexable register
-         lda   <V.4F,u        Get?
+         lda   <V.4F,u        Get? (direction flag, maybe?)
          sta   ,y             Save on stack
          stx   1,y            Save (mem ptr on screen, I think?)
          puls  d              Get ?? back
