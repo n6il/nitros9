@@ -50,11 +50,11 @@ RBF		= rbf.mn \
 		ddsd0_cocosdc.dd sd0_cocosdc.dd sd1_cocosdc.dd
 
 SCF		= scf.mn \
-		sc6551.dr vrn.dr scbbp.dr scbbt.dr scdwp.dr sspak.dr vtio.dr \
-		covdg.io cohr.io co42.io co80.io cowprs.io \
+		sc6551.dr vrn.dr scbbp.dr scbbt.dr scdwp.dr sspak.dr vtio.dr vtio_vga.dr \
+		covdg.io covga.io cohr.io co42.io co80.io cowprs.io \
 		nil.dd p_scbbp.dd p_scdwp.dd pipe.dd ssp.dd \
 		term_scbbt.dt term_sc6551.dt t1_scbbt.dd t2_sc6551.dd t3_sc6551.dd \
-		term_vdg.dt term_hr.dt term_42.dt term_80.dt term_wprs.dt \
+		term_vdg.dt term_vga.dt term_hr.dt term_42.dt term_80.dt term_wprs.dt \
 		scdwv.dr term_scdwv.dt n_scdwv.dd n1_scdwv.dd n2_scdwv.dd \
 		n3_scdwv.dd n4_scdwv.dd n5_scdwv.dd n6_scdwv.dd n7_scdwv.dd \
 		n8_scdwv.dd n9_scdwv.dd n10_scdwv.dd n11_scdwv.dd n12_scdwv.dd \
@@ -78,6 +78,12 @@ krn krnp2:
 	$(CP) kernel/$@ .
 
 # Special cases
+
+vtio_vga.dr: vtio.asm
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCOCOVGA=1
+
+covga.io: covdg.asm
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DCOCOVGA=1
 
 rominfo_pak: rominfo.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DROMPak=1
@@ -212,6 +218,10 @@ d1_80d.dd: rb1773desc.asm
 
 d2_80d.dd: rb1773desc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=2
+
+# CoCoVGA SCF descriptors
+term_vga.dt: term_vdg.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DCOCOVGA=1
 
 # DriveWire 3 SCF descriptors
 term_scdwv.dt: scdwvdesc.asm

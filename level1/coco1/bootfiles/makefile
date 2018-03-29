@@ -44,6 +44,7 @@ FLOPPY_40D	= $(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd
 FLOPPY_80D	= $(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd 
 
 VTIO_COVDG	= $(MD)/vtio.dr $(MD)/covdg.io $(MD)/term_vdg.dt
+VTIO_COVGA	= $(MD)/vtio_vga.dr $(MD)/covga.io $(MD)/term_vga.dt
 VTIO_COHR	= $(MD)/vtio.dr $(MD)/cohr.io $(MD)/term_hr.dt
 VTIO_CO80	= $(MD)/vtio.dr $(MD)/co80.io $(MD)/term_80.dt
 VTIO_CO42	= $(MD)/vtio.dr $(MD)/co42.io $(MD)/term_42.dt
@@ -93,6 +94,18 @@ BOOTFILE_COVDG	= $(MD)/ioman \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COVDG) \
+		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
+		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
+		$(PIPE) \
+		$(CLOCK60HZ) \
+		$(MD)/sysgo_dd
+
+BOOTFILE_COVGA	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(FLOPPY_40D) \
+		$(MD)/ddd0_40d.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
 		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
 		$(PIPE) \
@@ -240,12 +253,38 @@ BOOTFILE_COVDG_DW	= $(MD)/ioman \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd
 
+BOOTFILE_COVGA_DW	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(FLOPPY_40D) \
+		$(RBDW) \
+		$(MD)/ddx0.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
+		$(SCDWV_WIN) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd
+
 BOOTFILE_COVDG_DW_GAME	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(RBDW) \
 		$(MD)/ddx0.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COVDG) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd \
+		$(CMDSDIR)/shell_21
+
+BOOTFILE_COVGA_DW_GAME	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBDW) \
+		$(MD)/ddx0.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
 		$(PIPE) \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd \
@@ -258,6 +297,21 @@ BOOTFILE_COVDG_BECKER	= $(MD)/ioman \
 		$(MD)/ddx0.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COVDG) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
+		$(SCDWV_WIN) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd
+
+BOOTFILE_COVGA_BECKER	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBBECKER) \
+		$(FLOPPY_40D) \
+		$(MD)/ddx0.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
 		$(MD)/scdwv.dr \
 		$(SCDWV_NET) \
 		$(SCDWV_WIN) \
@@ -281,6 +335,21 @@ BOOTFILE_COVDG_RS232PAK	= $(MD)/ioman \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd
 
+BOOTFILE_COVGA_RS232PAK	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBRS232PAK) \
+		$(FLOPPY_40D) \
+		$(MD)/ddx0.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
+		$(SCDWV_WIN) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd
+
 BOOTFILE_COVDG_COCOLINK	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(RBCOCOLINK) \
@@ -296,6 +365,21 @@ BOOTFILE_COVDG_COCOLINK	= $(MD)/ioman \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd
 
+BOOTFILE_COVGA_COCOLINK	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBCOCOLINK) \
+		$(FLOPPY_40D) \
+		$(MD)/ddx0.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
+		$(SCDWV_WIN) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd
+
 BOOTFILE_COVDG_DIRECTMODEMPAK	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(RBDIRECTMODEMPAK) \
@@ -303,6 +387,21 @@ BOOTFILE_COVDG_DIRECTMODEMPAK	= $(MD)/ioman \
 		$(MD)/ddx0.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COVDG) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
+		$(SCDWV_WIN) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd
+
+BOOTFILE_COVGA_DIRECTMODEMPAK	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBDIRECTMODEMPAK) \
+		$(FLOPPY_40D) \
+		$(MD)/ddx0.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
 		$(MD)/scdwv.dr \
 		$(SCDWV_NET) \
 		$(SCDWV_WIN) \
@@ -333,6 +432,17 @@ BOOTFILE_COVDG_RS232PAK_GAME	= $(MD)/ioman \
 		$(MD)/sysgo_dd \
 		$(CMDSDIR)/shell_21
 
+BOOTFILE_COVGA_RS232PAK_GAME	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBRS232PAK) \
+		$(MD)/ddx0.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd \
+		$(CMDSDIR)/shell_21
+
 BOOTFILE_COVDG_COCOLINK_GAME	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(RBCOCOLINK) \
@@ -344,12 +454,34 @@ BOOTFILE_COVDG_COCOLINK_GAME	= $(MD)/ioman \
 		$(MD)/sysgo_dd \
 		$(CMDSDIR)/shell_21
 
+BOOTFILE_COVGA_COCOLINK_GAME	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBCOCOLINK) \
+		$(MD)/ddx0.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd \
+		$(CMDSDIR)/shell_21
+
 BOOTFILE_COVDG_DIRECTMODEMPAK_GAME	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(RBDIRECTMODEMPAK) \
 		$(MD)/ddx0.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COVDG) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd \
+		$(CMDSDIR)/shell_21
+
+BOOTFILE_COVGA_DIRECTMODEMPAK_GAME	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBDIRECTMODEMPAK) \
+		$(MD)/ddx0.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
 		$(PIPE) \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd \
@@ -369,7 +501,22 @@ BOOTFILE_COVDG_ARDUINO	= $(MD)/ioman \
 		$(PIPE) \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd
-		
+
+BOOTFILE_COVGA_ARDUINO	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(FLOPPY_40D) \
+		$(RBARDUINO) \
+		$(MD)/ddx0.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
+		$(SCDWV_WIN) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd
+
 BOOTFILE_COVDG_ARDUINO_GAME	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(RBARDUINO) \
@@ -380,13 +527,36 @@ BOOTFILE_COVDG_ARDUINO_GAME	= $(MD)/ioman \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd \
 		$(CMDSDIR)/shell_21
-		
+
+BOOTFILE_COVGA_ARDUINO_GAME	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBARDUINO) \
+		$(MD)/ddx0.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd \
+		$(CMDSDIR)/shell_21
+
 BOOTFILE_COVDG_DS80	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(FLOPPY_80D) \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COVDG) \
+		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
+		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
+		$(PIPE) \
+		$(CLOCK60HZ) \
+		$(MD)/sysgo_dd
+
+BOOTFILE_COVGA_DS80	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(FLOPPY_80D) \
+		$(MD)/ddd0_80d.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
 		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
 		$(PIPE) \
@@ -406,6 +576,19 @@ BOOTFILE_COVDG_COCOSDC	= $(MD)/ioman \
 		$(CLOCK60HZ) \
 		$(MD)/sysgo_dd
 
+BOOTFILE_COVGA_COCOSDC	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBCOCOSDC) \
+		$(MD)/ddsd0_cocosdc.dd \
+		$(FLOPPY_40D) \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
+		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
+		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
+		$(PIPE) \
+		$(CLOCK60HZ) \
+		$(MD)/sysgo_dd
+
 BOOTFILE_CO42_COCOSDC	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(RBCOCOSDC) \
@@ -417,7 +600,7 @@ BOOTFILE_CO42_COCOSDC	= $(MD)/ioman \
 		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
 		$(PIPE) \
 		$(CLOCK60HZ) \
-		$(MD)/sysgo_dd		
+		$(MD)/sysgo_dd
 
 BOOTFILE_COVDG_COCOSDC_GAME	= $(MD)/ioman \
 		$(MD)/rbf.mn \
@@ -425,6 +608,17 @@ BOOTFILE_COVDG_COCOSDC_GAME	= $(MD)/ioman \
 		$(MD)/ddsd0_cocosdc.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COVDG) \
+		$(PIPE) \
+		$(CLOCK60HZ) \
+		$(MD)/sysgo_dd \
+		$(CMDSDIR)/shell_21
+
+BOOTFILE_COVGA_COCOSDC_GAME	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBCOCOSDC) \
+		$(MD)/ddsd0_cocosdc.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVGA) \
 		$(PIPE) \
 		$(CLOCK60HZ) \
 		$(MD)/sysgo_dd \
@@ -565,7 +759,11 @@ BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_co42 bootfile_cowprs \
 		bootfile_cohr_cocolink bootfile_cocolink_headless \
 		bootfile_cohr_directmodempak bootfile_directmodempak_headless \
 		bootfile_covdg_arduino bootfile_arduino_headless \
-		bootfile_cohr_arduino bootfile_covdg_arduino_game
+		bootfile_cohr_arduino bootfile_covdg_arduino_game \
+		bootfile_covga_ds80 bootfile_covga_cocosdc bootfile_covga_dw bootfile_covga_rs232pak \
+		bootfile_covga_directmodempak bootfile_covga_cocolink bootfile_covga_dw_game \
+		bootfile_covga_cocosdc_game bootfile_covga_rs232pak_game bootfile_covga_directmodempak_game \
+		bootfile_covga_cocolink_game bootfile_covga bootfile_covga_arduino
 
 KERNELS		= kernel_1773 kernel_dw kernel_becker kernel_arduino kernel_cocosdc \
 			kernel_rs232pak kernel_directmodempak kernel_cocolink
@@ -577,6 +775,9 @@ all:	$(ALLOBJS)
 bootfile_covdg: $(BOOTFILE_COVDG) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG)>$@
 
+bootfile_covga: $(BOOTFILE_COVGA) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA)>$@
+
 bootfile_cohr: $(BOOTFILE_COHR) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COHR)>$@
 
@@ -585,12 +786,15 @@ bootfile_co42: $(BOOTFILE_CO42) $(DEPENDS)
 
 bootfile_co80: $(BOOTFILE_CO80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_CO80)>$@
-	
+
 bootfile_cowprs: $(BOOTFILE_COWPRS) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COWPRS)>$@
 
 bootfile_covdg_ds80: $(BOOTFILE_COVDG_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DS80)>$@
+
+bootfile_covga_ds80: $(BOOTFILE_COVGA_DS80) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_DS80)>$@
 
 bootfile_dw_headless: $(BOOTFILE_DW_HEADLESS) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_DW_HEADLESS)>$@
@@ -613,47 +817,89 @@ bootfile_arduino_headless: $(BOOTFILE_ARDUINO_HEADLESS) $(DEPENDS)
 bootfile_covdg_dw: $(BOOTFILE_COVDG_DW) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DW)>$@
 
+bootfile_covga_dw: $(BOOTFILE_COVGA_DW) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_DW)>$@
+
 bootfile_covdg_dw_game: $(BOOTFILE_COVDG_DW_GAME) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DW_GAME)>$@
+
+bootfile_covga_dw_game: $(BOOTFILE_COVGA_DW_GAME) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_DW_GAME)>$@
 
 bootfile_covdg_becker: $(BOOTFILE_COVDG_BECKER) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_BECKER)>$@
 
+bootfile_covga_becker: $(BOOTFILE_COVGA_BECKER) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_BECKER)>$@
+
 bootfile_covdg_rs232pak: $(BOOTFILE_COVDG_RS232PAK) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_RS232PAK)>$@
+
+bootfile_covga_rs232pak: $(BOOTFILE_COVGA_RS232PAK) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_RS232PAK)>$@
 
 bootfile_covdg_cocolink: $(BOOTFILE_COVDG_COCOLINK) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_COCOLINK)>$@
 
+bootfile_covga_cocolink: $(BOOTFILE_COVGA_COCOLINK) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_COCOLINK)>$@
+
 bootfile_covdg_directmodempak: $(BOOTFILE_COVDG_DIRECTMODEMPAK) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DIRECTMODEMPAK)>$@
+
+bootfile_covga_directmodempak: $(BOOTFILE_COVGA_DIRECTMODEMPAK) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_DIRECTMODEMPAK)>$@
 
 bootfile_covdg_becker_game: $(BOOTFILE_COVDG_BECKER_GAME) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_BECKER_GAME)>$@
 
+bootfile_covga_becker_game: $(BOOTFILE_COVGA_BECKER_GAME) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_BECKER_GAME)>$@
+
 bootfile_covdg_rs232pak_game: $(BOOTFILE_COVDG_RS232PAK_GAME) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_RS232PAK_GAME)>$@
+
+bootfile_covga_rs232pak_game: $(BOOTFILE_COVGA_RS232PAK_GAME) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_RS232PAK_GAME)>$@
 
 bootfile_covdg_cocolink_game: $(BOOTFILE_COVDG_COCOLINK_GAME) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_COCOLINK_GAME)>$@
 
+bootfile_covga_cocolink_game: $(BOOTFILE_COVGA_COCOLINK_GAME) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_COCOLINK_GAME)>$@
+
 bootfile_covdg_directmodempak_game: $(BOOTFILE_COVDG_DIRECTMODEMPAK_GAME) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DIRECTMODEMPAK_GAME)>$@
+
+bootfile_covga_directmodempak_game: $(BOOTFILE_COVGA_DIRECTMODEMPAK_GAME) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_DIRECTMODEMPAK_GAME)>$@
 
 bootfile_covdg_arduino: $(BOOTFILE_COVDG_ARDUINO) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_ARDUINO)>$@
 
+bootfile_covga_arduino: $(BOOTFILE_COVGA_ARDUINO) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_ARDUINO)>$@
+
 bootfile_covdg_arduino_game: $(BOOTFILE_COVDG_ARDUINO_GAME) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_ARDUINO_GAME)>$@
 
+bootfile_covga_arduino_game: $(BOOTFILE_COVGA_ARDUINO_GAME) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_ARDUINO_GAME)>$@
+
 bootfile_covdg_cocosdc: $(BOOTFILE_COVDG_COCOSDC) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_COCOSDC)>$@
+
+bootfile_covga_cocosdc: $(BOOTFILE_COVGA_COCOSDC) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_COCOSDC)>$@
 
 bootfile_co42_cocosdc: $(BOOTFILE_CO42_COCOSDC) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_CO42_COCOSDC)>$@
 
 bootfile_covdg_cocosdc_game: $(BOOTFILE_COVDG_COCOSDC_GAME) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_COCOSDC_GAME)>$@
+
+bootfile_covga_cocosdc_game: $(BOOTFILE_COVGA_COCOSDC_GAME) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVGA_COCOSDC_GAME)>$@
 
 bootfile_cohr_ds80: $(BOOTFILE_COHR_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COHR_DS80)>$@

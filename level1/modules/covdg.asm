@@ -16,10 +16,12 @@
 * Added support for CoCoVGA 64x32 mode
 *
 *   2      2018/03/02  David Ladd
-*                      L. Curtis Boyle
+*        - 2018/03/24  L. Curtis Boyle
 * General optimizations, and support for new V.ClrBlk and V.CpyBlk
 *   vector calls (from VTIO) for either 6309 TFM for mini-stack blasting
 *   (4 bytes/chunk) for screen scroll and screen clears (full & partial)
+* Also, CoVGA support integrated/completed for 64x32 text mode, and SS.Cursr
+*   GetStat call bugs fixed (for both CoVGA and CoVDG)
 
          nam   CoVDG
          ttl   VDG Console Output Subroutine for VTIO
@@ -53,7 +55,7 @@ size     equ   .
          fcb   $07 
 
 name     equ   *
-		IFNE	COVGA
+		IFNE	COCOVGA
          fcs   /CoVGA/
 		ELSE
          fcs   /CoVDG/
@@ -81,9 +83,9 @@ L0056    ldd   #256           and return last 256 bytes
          stx   <V.ScrnA,u     save VDG screen memory
          pshs  y
          leay  -$0E,y
-         clra  
-         clrb  
-         jsr   [<V.DspVct,u]  display screen (routine in VTIO)
+         clra
+         clrb
+         jsr   [<V.DspVct,u]  display screen (SetDsply routine in VTIO) (Preserves X)
          puls  y
          stx   <V.CrsrA,u     save start cursor position
          leax  >COLSIZE*ROWSIZE,x   point to end of screen
@@ -96,10 +98,22 @@ LDClrCh  lda   #$60           get default character
 ***** START OF COCOVGA 64x32 MODE
          clr   <V.Caps,u      lowercase mode
          pshs  cc,u
-         orcc  #IntMasks
-         leax  VGASetup,pcr
-         ldu   <V.CrsrA,u
-         ldb   #VGASetupLen
+         orcc  #IntMasks      Shut off IRQ/FIRQ
+         ldx   #$FF03         Point to PIA
+         lda   ,x             Get current state of PIA
+         pshs  a              Save copy
+         lda   ,x             Now, force things necessary for CocoVGA to work
+         ora   #$04           ensure PIA 0B is NOT dir setting
+         sta   ,x
+         lda   ,x
+         anda  #$fd           vsync irq - trigger falling edge
+         sta   ,x
+         lda   ,x
+         ora   #$01           enable vsync IRQ
+         sta   ,x
+         leax  VGASetup,pcr   Point to set up values (9 of them)
+         ldu   <V.ScrnA,u     CoVGA requires are setup sequence to be at start of 512 byte boundary 
+         ldb   #VGASetupLen   This routine copies our 9 bytes to the start of the screen (Based on
 x@       lda   ,x+
          sta   ,u+
          decb
@@ -111,24 +125,29 @@ tlp@     lda   $FF03          wait for flag to indicate
          lda   $FF02          clear vsync interrupt flag
 
 * PROGRAM THE COCOVGA COMBO LOCK
-BT13     lda   $FF22          GET CURRENT PIA VALUE
+BT13     ldx   #$FF22         Point to PIA
+         lda   ,x             GET CURRENT PIA VALUE
          tfr   A,B            COPY TO B REG TOO
          anda  #$07           MASK OFF BITS WE'LL CHANGE
          ora   #$90           SET COMBO LOCK 1 BITS
-         sta   $FF22          WRITE TO PIA FOR COCOVGA
+         sta   ,x             WRITE TO PIA FOR COCOVGA
          anda  #$07           CLEAR UPPER BITS
          ora   #$48           SET COMBO LOCK 2 BITS
-         sta   $FF22          WRITE TO PIA
+         sta   ,x             WRITE TO PIA
          anda  #$07           CLEAR UPPER BITS
          ora   #$A0           SET COMBO LOCK 3 BITS
-         sta   $FF22          WRITE TO PIA
+         sta   ,x             WRITE TO PIA
          anda  #$07           CLEAR UPPER BITS
          ora   #$F8           SET COMBO LOCK 4 BITS
-         sta   $FF22          WRITE TO PIA
+         sta   ,x             WRITE TO PIA
+         lda   ,x             get current PIA value
          anda  #$07           CLEAR UPPER BITS
 * 6809/6309 - Isn't this next line useless? It does not change any bits, ever
          ora   #$00           SET REGISTER BANK 0 FOR COCOVGA
-         sta   $FF22          WRITE TO PIA
+         sta   ,x             WRITE TO PIA
+         sta   $FFC0          clear SAM_V0  (Force SAM to text mode)
+         sta   $FFC2          clear SAM_V1
+         sta   $FFC4          clear SAM_V2
 
 * Wait for next VSYNC so CoCoVGA can process data from the current video page
 tlp@     lda   $FF03
@@ -136,24 +155,27 @@ tlp@     lda   $FF03
 
 * Restore PIA state and return to text mode - restore original video mode, SAM page
 * VDG -> CG2:
-         lda   $FF22
+         lda   ,x
          anda  #$8F
          ora   #$A0
-         sta   $FF22
+         sta   ,x
 
 * SAM -> CG2:
          sta   $FFC0          clear GM0
          sta   $FFC3          set GM1
-         sta   $FFC4          clear GM2
+         sta   $FFC4          clear GM2 FFC4
+         puls  a
+         sta   $FF03          Restore PIA to original state
          puls  u,cc
 ***** END OF COCOVGA 64x32 MODE
      ENDC
          lbsr  ClrScrn        clear the screen
 * Setup page to
          ldb   <V.COLoad,u
-         orb   #ModCoVDG      set to CoVDG found (?)
+         orb   #MODFLAG       set to CoVDG found (?)
 L0086    stb   <V.COLoad,u
-         clrb  
+         clrb
+*The next line is only for testing to see where VGA is breaking
          puls  pc,y,x
 
      IFNE  COCOVGA
@@ -161,18 +183,17 @@ L0086    stb   <V.COLoad,u
 VGASetup fcb   $00            Reset register
          fcb   $81            Edit mask
          fcb   $00            Reserved
-         fcb   $03            Font
-         fcb   $00            Artifact
-         fcb   $00            Extras
+         fcb   $03            Font (lowercase/t1 character set enabled)
+         fcb   $00            Artifact (off)
+         fcb   $00            Extras (off)
          fcb   $00            Reserved
          fcb   $00            Reserved
-         fcb   $02            Enhanced Modes
+         fcb   $02            Enhanced Modes (64 column enabled)
 VGASetupLen equ *-VGASetup
 ***** END OF COCOVGA 64x32 MODE         
      ENDC
 
-start    bra   Init
-         nop                  Can be used for a constant
+start    lbra  Init           Hopefully once we tighten INIT code, this can go back to BRA
          bra   Write
          nop                  Can be used for a constant
          lbra  GetStat
@@ -184,7 +205,7 @@ Term     pshs  y,x
          os9   F$SRtMem       return to system
          puls  u              restore U
          ldb   <V.COLoad,u
-         andb  #~ModCoVDG
+         andb  #~MODFLAG
          bra   L0086
 * Write
 * Entry: A = char to write
@@ -265,14 +286,15 @@ SScrl    ldd   #COLSIZE*ROWSIZE-COLSIZE  Size of screen minus one line
 
 * Ctrl char ($00-$1F) special char dispatch
 Dispatch cmpa  #$1B           escape code?
-         bhs   bad@           branch if same or greater (special control codes for screen controls)
+         bhs   bad            branch if same or greater (special control codes for screen controls)
          cmpa  #$0E           $0E?
          bhi   L0102          branch if higher than
          leax  <DCodeTbl,pcr  deal with screen codes
          lsla                 adjust for table entry size
          ldd   a,x            get address in D
          jmp   d,x            and jump to routine
-bad@     comb  
+* 
+bad      comb                 Exit with Write Error
          ldb   #E$Write
 L0102    rts   
 
@@ -296,7 +318,7 @@ DCodeTbl fdb   L014D-DCodeTbl     $00:no-op (null)
 * $0D - move cursor to start of line (carriage return)
 Retrn    bsr   HideCrsr       hide cursor
        IFNE  H6309
-         aim   #$E0,<V.CrsAL,u  Force cursor to beginning of current line (clear low 5 bits of address)
+         aim   #~(COLSIZE-1),<V.CrsAL,u  Force cursor to beginning of current line (clear low 5 OR 6 bits of address)
        ELSE
          tfr   x,d            put cursor address in D
          andb  #~(COLSIZE-1)  place at start of line
@@ -368,7 +390,6 @@ L0189
          jsr   ,y             Go clear
          puls  u              Get static mem ptr back
          bra   ShowCrsr       Turn cursor back on
-
          
 * $01 - home cursor
 CurHome  bsr   HideCrsr       hide cursor
@@ -494,27 +515,35 @@ Rt.AlfaS ldd   <V.ScrnA,u   memory address of buffer
          lda   <V.Caps,u    save caps lock status in A and exit
          bra   SaveA
 
-* SS.Cursr getstat
+* SS.Cursr getstat. NOTE: It appears that X,Y coords are returned with +$20 built in (to match
+*   the original CurXY ($02 xx+$20 yy+$20) display code).
 Rt.Cursr ldd   <V.CrsrA,u     get address of cursor
          subd  <V.ScrnA,u     subtract screen address
          pshs  d              D now holds cursor position relative to screen
          clra  
-         andb  #COLSIZE-1
-         addb  #COLSIZE       compute column position
+         andb  #COLSIZE-1     Keep X coord bits only (0-31 or 0-63)
+         addb  #$20           compute column position (+$20 for CurXY offsets)
          std   R$X,x          save column position to caller's X
-         puls  d              then divide by 32
-* NOTE: will COCOVGA need more 16 bit shifts? It's a 2K screen. 
-         lsra                 
-         rolb  
-         rolb  
-         rolb  
-         rolb  
+         puls  d              then divide by 32 for VDG, and 64 for VGA
        IFNE  COCOVGA
-         rolb                 By 64 is CocoVGA (64x32)
+         lsra                 Need three 16 bit divides (/8) - now 8 bit (2048->1024->512->256)
+         rorb
+         lsra
+         rorb
+         lsra
+         rorb
+         lsrb                 Finish divide by 64 with just 8 bit divides
+         lsrb
+         lsrb
+       ELSE
+         lsra                 16 bit divide - now our result is within 8 bit range(512->256)
+         rorb  
+         lsrb                 Finish divide by 32 with just 8 bit divides
+         lsrb  
+         lsrb
+         lsrb
        ENDC
-         clra  
-         andb  #ROWSIZE-1     lines on the screen
-         addb  #COLSIZE
+         addb  #$20           compute row (+$20 for CurXY offsets
          std   R$Y,x          and save column to caller's Y
          ldb   <V.CFlag,u     Get true lowercase flag
          lda   <V.CChar,u     get character under cursor

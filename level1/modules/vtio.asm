@@ -98,6 +98,12 @@ Init
 L002E    sta   ,x+            clear mem
          decb                 decrement counter
          bne   L002E          continue if more
+       IFEQ    PwrLnFreq-Hz60
+         lda   #CFlash60hz    initialize
+       ELSE
+         lda   #CFlash50hz    initialize
+       ENDC
+         sta   >V.FlashTime,u
          leax  <FlashCursor,pcr Point to dummy cursor flash (just an rts). 
          stx   V.Flash,u      Setup cursor flash
          coma                 A = $FF
@@ -219,7 +225,7 @@ FlashTime
          jsr   [V.Flash,u]    Call flash routine
 * 6809/6309 NOTE: Should add IFEQ of some sort here for CFlash50hz or CFlash60hz - but I am not
 *  sure what to compare it with
-         lda   #CFlash50hz    Re-init count (25 or 30 depending - every 2 clock ticks)
+         lda   >V.FlashTime,u Re-init count
          sta   V.FlashCount,u
 AltIRQEnd
          jmp   [>D.Clock]     jump into clock module
@@ -708,20 +714,31 @@ SetDsply pshs  x,a
          ora   ,s+            OR in passed A
          tstb                 display graphics?
          bne   L03DE          branch if so
-         ora   <V.CFlag,u
+       IFNE  COCOVGA
+         ora   #$A0           VGA - force VDG to CG2 (which CocoVGA takes control of)
+       ENDC
+         ora   <V.CFlag,u     Merge in true lowercase bit as well
 L03DE    sta   >PIA1Base+2
          sta   <V.PIA1,u
          ldx   #$FFC6         Point to SAM to set up where to map
          tstb                 display graphics?
          bne   DoGfx          Yes, do that
 * Set up VDG screen for text
-         stb   -6,x           $FFC0  No, set up for 32x16 text screen
+       IFNE  COCOVGA
+* VGA - Set VDG for CG2, which CocoVGA takes over for the 64x32 text mode
+         stb   -6,x           clear GM0
+         stb   -3,x           set GM1
+         stb   -2,x           clear GM2
+       ELSE
+* VDG - Set VDG to Alpha mode
+         stb   -6,x           $FFC0  Set up for 32x16 text screen
          stb   -4,x           $FFC2
          stb   -2,x           $FFC4
+       ENDC
          lda   <V.ScrnA,u     get pointer to alpha screen
-        bra   L0401
+         bra   L0401
 
-* Set up VDG screen for graphics
+* Set up VDG screen for graphics (6144 byte modes only - PMODE 3 or 4)
 DoGfx    stb   -6,x           $FFC0
          stb   -3,x           $FFC3
          stb   -1,x           $FFC5
@@ -994,6 +1011,22 @@ BadMode  comb                 Exit with Bad Mode error
          ldb   #E$BMode
          rts
 
+*SS.Comst GetStat - has some features not documented
+* Entry (From caller):
+* A=path
+* B=$28 (SS.Comst code)
+* NOTE: Since the co-modules are (currently) mutually exclusive (maybe not WP?), change
+*   this system to use lsra and use last 3 bits as driver #, or something similar
+* NOTE 2: Because of the way this is set up now, one could change the co-module on the fly
+* so it will try to load each co-module as assigned, until one runs out of RAM. Some of them
+* may interfere with each other when changing as well.
+* Y=Option flags (high byte of Y)
+*   xxxxxxx1 = True lowercase ON (for Coco 3, Coco2B, possibly CoVGA)
+*   xxxxxx1x = Use CoVDG Co-module (32x16)
+*   xxxxx1xx = Use CoWP (Wordpak) 80x25
+*   xxxx1xxx = Use CoHR (51x25 PMODE 4)
+*   xxx1xxxx = Use Co42 (42x25 PMODE 4)
+*   xx1xxxxx = Use CoVGA (64x32 CocoVGA adaptor)
 SSCOMST  ldd   R$Y,x          Get caller's Y
 SetupTerm
          bita  #ModCoVDG      32x16 VDG bit flag set?
@@ -1007,7 +1040,7 @@ GoCoVDG  stb   <V.CFlag,u     save lowercase flag
          ldx   #$2010         32x16
          pshs  u,y,x,a
          leax  <CoVDG,pcr
-         bsr   LoadCoModule
+         lbsr  LoadCoModule
          puls  u,y,x,a
          bcs   L0600
          stx   <V.Col,u
@@ -1023,9 +1056,9 @@ CoWP     fcs   /CoWP/
 CoHR     fcs   /CoHR/
 Co42     fcs   /Co42/
 CoVGA    fcs   /CoVGA/
-         
+
 GoCoWP   bita  #ModCoWP       CoWP needed ?
-         beq   GOCo42         No, try next co-module
+         beq   GOCoVGA        No, try next co-module
          stb   <V.CFlag,u     allow lowercase
          clr   <V.Caps,u      set caps off
          lda   #ModCoWP       'CoWP is loaded' bit
@@ -1041,6 +1074,15 @@ SetupCoModule
          stx   <V.Col,u       save screen size
          sta   <V.CurCo,u     current module in use? ($02=CoVDG, $04=C080, etc.)
 L0600    rts
+
+GoCoVGA  bita  #ModCoVGA      64x32 CoVGA?
+         beq   GoCo42         No, then try next co-module
+         stb   <V.CFlag,u     allow lowercase
+         lda   #ModCoVGA      CoVGA is loaded bit
+         ldx   #$4020         64x32
+         pshs  u,y,x,a
+         leax  <CoVGA,pcr
+         bra   SetupCoModule
 
 GOCo42   bita  #ModCo42       42x24 gfx term?
          beq   GOCoHR         No, try 51 column co-module
