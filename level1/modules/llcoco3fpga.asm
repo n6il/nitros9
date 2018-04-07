@@ -8,7 +8,7 @@
 * Bit 6 : Enable Interrupt
 * Bits 5-1 : not used
 * Bit 0 : SPI Device Select #1 (DE1 SD Card)
-* 
+*
 * $FF64 (Status Register Read)
 * Bit 7 : IRQ Active
 * Bits 6-2 : not used
@@ -25,8 +25,6 @@
 *     2    2015/06/06  Gary Becker
 * Removed any code to enable multiple slots (single slot only)
 
-*Level	EQU		2
-
 		NAM		llcoco3fpga
 		TTL		Low-level SDHC/SD/MMC driver
 
@@ -36,20 +34,20 @@
 tylg		SET		Sbrtn+Objct
 atrv		SET		ReEnt+rev
 rev		SET		0
-edition	SET		4
+edition		SET		4
 
 		MOD		eom,name,tylg,atrv,start,0
 
 		ORG		V.LLMem
 * Low-level driver static memory area
-SEC_CNT	RMB		1	Number of sectors to transfer
-SEC_LOC	RMB		2	Where they are or where they go
-SEC_ADD	RMB		3	LSN of sector
+SEC_CNT		RMB		1	Number of sectors to transfer
+SEC_LOC		RMB		2	Where they are or where they go
+SEC_ADD		RMB		3	LSN of sector
 SDVersion	RMB		1	0 = Byte Addressable SD
 * !0 = Sector Addressable SD
 CMDStorage	RMB		1	Command storage area for read/write CMDs
 SD_SEC_ADD	RMB		4	Four bytes because some devices are byte addressable
-CMDCRC	RMB		1
+CMDCRC		RMB		1
 
 **************************************
 * Command bytes storage area
@@ -57,7 +55,7 @@ CMDCRC	RMB		1
 CMD0		fcb		$40,$00,$00,$00,$00,$95
 *CMD1		fcb		$41,$00,$00,$00,$00,$95
 CMD8		fcb		$48,$00,$00,$01,$AA,$87
-*CMD13	fcb		$4D,$00,$00,$00,$00,$95
+*CMD13		fcb		$4D,$00,$00,$00,$00,$95
 CMD16		fcb		$50,$00,$00,$02,$00,$FF		was 95
 ACMD41V1	fcb		$69,$00,$00,$00,$00,$FF		was 95
 ACMD41V2	fcb		$69,$40,$00,$00,$00,$FF		was 95
@@ -65,22 +63,22 @@ CMD55		fcb		$77,$00,$00,$00,$00,$FF		was 95
 CMD58		fcb		$7A,$00,$00,$00,$00,$FF		was 95
 
 * Read/Write commands
-CMDRead	EQU		$5100		Command to read a single block
+CMDRead		EQU		$5100		Command to read a single block
 CMDWrite	EQU		$5800		Command to write a sector
-CMDEnd	EQU		$00FF		Every command ends with $95
+CMDEnd		EQU		$00FF		Every command ends with $95
 * SPI Address Equates
 * SPI Control Register
-SPICTRL	EQU		0
+SPICTRL		EQU		0
 SLOT_SEL_0	EQU		1
 SPI_IRQ_EN	EQU		$40
-SPI_EN	EQU		$80		Sets SPI enable and IRQ enable
+SPI_EN		EQU		$80		Sets SPI enable and IRQ enable
 * SPI Status Register
-SPISTAT	EQU		0
+SPISTAT		EQU		0
 CARD_DET_0	EQU		1
 CARD_LOCK_0	EQU		2
 IRQ_SLOT_0	EQU		$80
 * SPI Transmit / Receive Register
-SPIDAT	EQU		1
+SPIDAT		EQU		1
 * Test 8 bit LED display
 SPITRACE	EQU		$FF66
 
@@ -122,9 +120,9 @@ ll_read
 		ldx		V.Port-UOFFSET,u	Get address of hardware
 		lda		V.SectCnt,u		Get number of sectors to read
 		sta		SEC_CNT,u		Save it to our usable storage
-		ldd		V.CchPSpot,u	get the location to copy the sector into
+		ldd		V.CchPSpot,u		get the location to copy the sector into
 		std		SEC_LOC,u		Save it into our usable storage
-		ldd		V.PhysSect,u	Copy Sector Adrress into our storage
+		ldd		V.PhysSect,u		Copy Sector Adrress into our storage
 		std		SEC_ADD,u
 		lda		V.PhysSect+2,u
 		sta		SEC_ADD+2,u
@@ -133,11 +131,11 @@ ll_read
 		bcc		EREAD			No card installed, so no reads
 lphr		lda		SEC_CNT,u
 		ldd		#CMDRead
-		std		CMDStorage,u	Read command and clear MSB of address
+		std		CMDStorage,u		Read command and clear MSB of address
 		ldd		#CMDEnd
-		std		SD_SEC_ADD+3,u	Clear LSB of address and CRC
-rd_loop	lda		#(SPI_EN+SLOT_SEL_0)	but not IRQ enable
-		bsr		LSNMap0		Setup the appropriate LSN value for the card, build command,
+		std		SD_SEC_ADD+3,u		Clear LSB of address and CRC
+rd_loop		lda		#(SPI_EN+SLOT_SEL_0)	but not IRQ enable
+		bsr		LSNMap0			Setup the appropriate LSN value for the card, build command,
 * setup SPI to access the card, and sends command
 		bcs		EREAD			If we timed out, branch with error
 		bne		EREAD			If the R1 was not 0
@@ -150,7 +148,7 @@ lprd		lda		SPIDAT,x		Send FF (receive a byte) until we get FE
 		bne		lprd
 * Read the 512 Byte sector
 * we need a minumum of 4 CPU cycles to read in the 8 bits
-RDSectorLoop	lda	SPIDAT,x
+RDSectorLoop	lda		SPIDAT,x
 		sta		,y+		? cycles ?????????????
 		nop				might be too much ???????
 		lda		SPIDAT,x
@@ -163,9 +161,9 @@ RDSectorLoop	lda	SPIDAT,x
 *		nop				Might be too many cycles ?????????
 		lda		SPIDAT,x	We ignore the CRC
 		dec		SEC_CNT,u	decrement # of hw sectors to read
-		beq		finird	if zero, we are finished
+		beq		finird		if zero, we are finished
 *Increment sector number by 1 for sector addressable or $200 for byte addressable
-incsec	inc		SEC_ADD+2,u	add one to 3 byte LSN
+incsec		inc		SEC_ADD+2,u	add one to 3 byte LSN
 		bne		lphr		if we are at 0 then we need to add
 		inc		SEC_ADD+1,u	the carry to the next byte
 		bne		lphr
@@ -177,7 +175,7 @@ finird
 		ldd		#$0000	Disable SPI and exit
 		sta		SPICTRL,x
 		andcc		#^(IntMasks+Carry)	Renable Interrupts and clear carry
-		rts				return
+		rts					return
 
 **************
 * LSNMap
@@ -193,7 +191,7 @@ LSNMap0
 		nop
 		lda		SPIDAT,x	Send 1 FF
 		lda		SDVersion,u
-		bne		secadd	GoTo Sector Address type
+		bne		secadd		GoTo Sector Address type
 *Save the sector number into the command
 		ldd		SEC_ADD+1,u	bytes 1 and 2 (middle and LSB)
 		aslb				Byte address needs to be shifter one more bit
@@ -204,7 +202,7 @@ LSNMap0
 		sta		SD_SEC_ADD,u
 		bra		merge
 secadd
-		ldd		SEC_ADD+1,u		Save the sector number into our storage
+		ldd		SEC_ADD+1,u	Save the sector number into our storage
 		std		SD_SEC_ADD+2,u	Store in the last three bytes of the 4 byte address
 		lda		SEC_ADD,u
 		sta		SD_SEC_ADD+1,u
@@ -220,7 +218,7 @@ LSNMap1
 * Registers preserved: all but A/B/X
 cmdsend
 		lda		,y
-		sta		$FF66
+		sta		SPITRACE
 		ldb		#6
 cslp		lda		,y+
 		sta		SPIDAT,x
@@ -234,10 +232,10 @@ cslp		lda		,y+
 *         CC.C = 1 ERROR
 * Registers preserved: all but A/B
 GetR1
-		andcc		#^Carry	Clear Carry
+		andcc		#^Carry		Clear Carry
 		ldb		#$00		Probably too much
-lpgtr1	lda		SPIDAT,x
-		bpl		finigtr1                
+lpgtr1		lda		SPIDAT,x
+		bpl		finigtr1
 		decb
 		bne		lpgtr1
 		comb				set carry for error
@@ -261,7 +259,7 @@ finigtr1	rts
 ll_write
 		orcc		#IntMasks	disable interrupts
 		ldx		V.Port-UOFFSET,u	Get address of hardware
-		lda		V.SectCnt,u		Get number of sectors to write`
+		lda		V.SectCnt,u		Get number of sectors to write
 		sta		SEC_CNT,u	Save it to our usable storage
 		ldd		V.CchPSpot,u	get the location to of the sector send
 		std		SEC_LOC,u	Save it into our usable storage
@@ -271,16 +269,16 @@ ll_write
 		sta		SEC_ADD+2,u
 		lda		SPISTAT,x
 		lsra
-		lbcc		EWRITE	No card installed, so no writes
+		lbcc		EWRITE		No card installed, so no writes
 		lsra
-		lbcs		EWP	Write Protected, then exit with WP error
+		lbcs		EWP		Write Protected, then exit with WP error
 * The big read sector loop comes to here
 lphw		ldd		#CMDWrite
 		std		CMDStorage,u
 		ldd		#CMDEnd
 		std		SD_SEC_ADD+3,u	LSB of address and CRC
-wr_loop	lda		#(SPI_EN+SLOT_SEL_0)
-		bsr		LSNMap0	Setup the appropriate LSN value for the card, build command,
+wr_loop		lda		#(SPI_EN+SLOT_SEL_0)
+		bsr		LSNMap0		Setup the appropriate LSN value for the card, build command,
 * setup SPI to access the card, and sends command
 		bcs		EWRITE
 		bne		EWRITE
@@ -289,12 +287,12 @@ wr_loop	lda		#(SPI_EN+SLOT_SEL_0)
 		nop				Might not be enough ?????
 		nop
 		lda		SPIDAT,x
-		ldd		#$FE00	Start of sector byte and clear counter
+		ldd		#$FE00		Start of sector byte and clear counter
 		ldy		SEC_LOC,u	get the location of the sectors(s) to write
 		sta		SPIDAT,x	Mark the start of the sector
 		nop				Too much ???????
 * Write the 512 Byte sector
-WRSectorLoop	lda	,y+
+WRSectorLoop	lda		,y+
 		sta		SPIDAT,x
 		nop
 		lda		,y+
@@ -320,7 +318,7 @@ WRSectorLoop	lda	,y+
 		beq		fnd0		First byte? if not, check one more byte.
 		lda		SPIDAT,x
 		cmpa		#$E5		Response - Data accepted token if this is not it, then we have an issue
-		bne		EWRITE	Write error
+		bne		EWRITE		Write error
 * Check to see if the write is complete
 fnd0		lda		SPIDAT,x
 		beq		lpwr2
@@ -329,12 +327,12 @@ lpwr2		lda		SPIDAT,x
 		cmpa		#$FF
 		beq		wfin
 		bra		lpwr2
-wfin		ldb		#10	Lets send 16 more FF just in case
+wfin		ldb		#10		Lets send 10 more FF just in case
 finlp		lda		SPIDAT,x
 		decb
 		bne		finlp
 		dec		SEC_CNT,u	decrement # of hw sectors to read
-		beq		finiwr	if zero, we are finished
+		beq		finiwr		if zero, we are finished
 		inc		SEC_ADD+2,u	add one to 3 byte LSN
 		bne		lphw		if we are at 0 then we need to add
 		inc		SEC_ADD+1,u	the carry to the next byte
@@ -354,7 +352,7 @@ EWRITE
 * B=Write Error
 		bra		RETERR
 EWP
-		ldd		#$0000+E$WP		A=Enable SPI Interface, but not CS
+		ldd		#$0000+E$WP	A=Enable SPI Interface, but not CS
 * B=Write Protect Error
 
 RETERR
@@ -378,18 +376,18 @@ NOTRDY
 * IT IS NOT CALLED PER DEVICE!
 *
 ll_init
-		orcc		#IntMasks	disable interrupts
-		lda		$FFD9		Speed up
+		orcc		#IntMasks		disable interrupts
+		lda		$FFD9			Speed up
 		ldx		V.PORT-UOFFSET,u	load x with the hw address for the IRQ routine
 		lda		SPISTAT,x
 		lsra
-		bcc		NOTRDY	If there is no card, nothing to do
+		bcc		NOTRDY			If there is no card, nothing to do
 * Enable SPI
-		ldd		#SPI_EN*256+$10	Enable SPI Interface, but not CS
+		ldd		#SPI_EN*256+$10		Enable SPI Interface, but not CS
 * 16*8 cycles is >= 74
 		sta		SPICTRL,x
 
-*send at least 74 clock cycles with no SS, 12*8 = 96
+*send at least 74 clock cycles with no SS, 16*8 = 128
 lpff		lda		SPIDAT,x	Send FF
 		decb				2 cycles, need 4
 *		nop				2 cycles
@@ -405,35 +403,35 @@ sdinit
 		nop				????????? enough
 		leay		CMD0,pcr	Might need more cycles ???????
 		lda		SPIDAT,x	Send 1 more FF
-		lbsr		cmdsend	Also does a GETR1
+		lbsr		cmdsend		Also does a GETR1
 		bcs		NOTRDY
 		anda		#$7E		Idle is ok
-		bne		NOTRDY	but nothing else
+		bne		NOTRDY		but nothing else
 
 * Send CMD8
 		lda		SPIDAT,x	Send 1 FF
 		nop				?????? enough
 		leay		CMD8,pcr	Might need more cycles ??????
-		lda		SPIDAT,x	Sens 1 more FF
-		lbsr		cmdsend	Also does an GETR1
+		lda		SPIDAT,x	Send 1 more FF
+		lbsr		cmdsend		Also does an GETR1
 		bcs		SDV1
 		anda		#$7E
 		bne		SDV1
-		lda		SPIDAT,x	Byte 1 of R3/R7, through it away
+		lda		SPIDAT,x	Byte 1 of R3/R7, throw it away
 		nop
-		nop		might need more ????????
+		nop				might need more ????????
 		nop
-		lda		SPIDAT,x	Byte 2 of R3/R7, throught it away
+		lda		SPIDAT,x	Byte 2 of R3/R7, throw it away
 		nop
 		nop
 		nop
 		lda		SPIDAT,x	Byte 3 of R3/R7, should be 1
 		cmpa		#$01		2 cycles
-		bne		NOTRDY	2 cycles
+		bne		NOTRDY		2 cycles
 		nop
 		lda		SPIDAT,x	Byte 4 of R3/R7, should be $AA
 		cmpa		#$AA		2 cycles
-		bne		NOTRDY	2 cycles
+		bne		NOTRDY		2 cycles
 		nop
 
 * Send ACMD41 by first CMD55
@@ -441,10 +439,10 @@ loop41V2	lda		SPIDAT,x	Send 1 FF
 		nop
 		leay		CMD55,pcr	might need more ??????
 		lda		SPIDAT,x	Send 1 FF
-		lbsr		cmdsend	Also does an GETR1
+		lbsr		cmdsend		Also does an GETR1
 		bcs		NOTRDY
 		anda		#$7E		Idle is ok
-		bne		NOTRDY	but nothing else
+		bne		NOTRDY		but nothing else
 
 * Then send ACMD41
 		lda		SPIDAT,x
@@ -452,14 +450,14 @@ loop41V2	lda		SPIDAT,x	Send 1 FF
 		leay		ACMD41V2,pcr
 		lda		SPIDAT,x
 		lbsr		cmdsend
-		bcs		NOTRDY	No response
-		beq		Send58	If 0 then CMD58
+		bcs		NOTRDY		No response
+		beq		Send58		If 0 then CMD58
 		cmpa		#$01		if 1 then try again
 		beq		loop41V2
 		lbra		NOTRDY
 
 * Send CMD58 to V2 card
-Send58	lda		SPIDAT,x
+Send58		lda		SPIDAT,x
 		nop				?????? ENOUGH
 		leay		CMD58,pcr	Read OCR
 		lda		SPIDAT,x
@@ -468,13 +466,13 @@ Send58	lda		SPIDAT,x
 		lda		SPIDAT,x	Byte 1 of OCR
 		anda		#$40		CCS bit 1= sector 0= byte
 		sta		SDVersion,u
-		lda		SPIDAT,x	Byte 2 of R3/R7, through it away
+		lda		SPIDAT,x	Byte 2 of R3/R7, throw it away
 		nop
 		nop
-		lda		SPIDAT,x	Byte 3 of R3/R7, through it away
+		lda		SPIDAT,x	Byte 3 of R3/R7, throw it away
 		nop
 		nop
-		lda		SPIDAT,x	Byte 4 of R3/R7, through it away
+		lda		SPIDAT,x	Byte 4 of R3/R7, throw it away
 		lda		SDVersion,u	0 = byte addressable, !0 = block addressable
 		bne		FININIT
 		bra		Send16
@@ -486,7 +484,7 @@ loop41V1	lda		SPIDAT,x	Get extra bytes in case we got a bad R7 previously
 		nop
 		lda		SPIDAT,x
 *		nop
-		clr		SDVersion,u		Byte addressable
+		clr		SDVersion,u	Byte addressable
 		lda		SPIDAT,x
 *		nop
 		leay		CMD55,pcr
@@ -494,7 +492,7 @@ loop41V1	lda		SPIDAT,x	Get extra bytes in case we got a bad R7 previously
 		lbsr		cmdsend
 		lbcs		NOTRDY
 		anda		#$7E		Idle is ok
-		lbne		NOTRDY	but nothing else
+		lbne		NOTRDY		but nothing else
 
 * Then send ACMD41
 		lda		SPIDAT,x
@@ -503,25 +501,25 @@ loop41V1	lda		SPIDAT,x	Get extra bytes in case we got a bad R7 previously
 		lda		SPIDAT,x
 		lbsr		cmdsend
 		lbcs		NOTRDY
-		beq		Send16	If 0 then CMD16
+		beq		Send16		If 0 then CMD16
 		cmpa		#$01		if 1 then try again
 		beq		loop41V1
 		lbra		NOTRDY
 * Send CMD16
-Send16	lda		SPIDAT,x
+Send16		lda		SPIDAT,x
 *		nop
 		leay		CMD16,pcr
 		lda		SPIDAT,x
 		lbsr		cmdsend
-		lbne		NOTRDY	but nothing else
+		lbne		NOTRDY		but nothing else
 * Finish INIT
 FININIT
 		lda		SPIDAT,x	Send last FF
 *		nop
 *		lda		SDVersion,u
-*		sta		$ff66
+*		sta		SPITRACE
 *		lda		#SPI_EN+SPI_IRQ_EN	Turn on SPI and Interrupt and turn off CS
-		lda		#SPI_EN	Turn on SPI and turn off CS
+		lda		#SPI_EN			Turn on SPI and turn off CS
 		sta		SPICTRL,x
 
 *Finished with initialization
@@ -562,6 +560,6 @@ ll_term
 		andcc		#^Carry
 		rts
 
-		EMOD      
+		EMOD
 eom		EQU		*
-		END       
+		END
