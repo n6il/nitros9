@@ -1,6 +1,6 @@
 include port.mak
 
-DISTRO		= $(CPU)_L$(LEVEL)
+DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= NOS9_$(CPU)_L$(LEVEL)
 DISTROVER	= $(DISTRONAME)_$(NITROS9VER)_$(PORT)
 # Big BOOTFILE for 80D (720K) virtual drive on SD, 50Hz timer interrupt, extra modules and commands
