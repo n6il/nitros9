@@ -28,7 +28,7 @@ rev      set   $00
 
          fcb   UPDAT.         mode byte
          fcb   HW.Page        extended controller address
-         fdb   $C000          physical controller address
+         fdb   $FF78          physical controller address
          fcb   initsize-*-1   initilization table size
          fcb   DT.SCF         device type:0=scf,1=rbf,2=pipe,3=scf
          fcb   $00            case:0=up&lower,1=upper only
