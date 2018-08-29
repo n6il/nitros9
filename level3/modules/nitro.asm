@@ -64,7 +64,7 @@ set.lp   sta   ,x+        allocate the RAM
          bne   set.lp     continue until done
 
          ldx   <D.BlkMap  grab the block map again
-         sta   <$3F,x     mark the boot track block as used, too.
+         sta   <KrnBlk,x     mark the boot track block as used, too.
 
 * mark block 1 ($2000-$3FFF) in the system memory map as allocated
          ldx   <D.SysMem  ptr to low system memory
