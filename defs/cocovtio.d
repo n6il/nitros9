@@ -109,7 +109,8 @@ V.CoVDGE       RMB       2                   CoVDG entry point
 V.CoWPE        RMB       2                   CoWP entry point
 V.CoHRE        RMB       2                   CoHR entry point
 V.Co42E        RMB       2                   Co42 entry point
-V.CoVGAE       RMB       2                   CoVGAE entry point
+V.CoVGAE       RMB       2                   CoVGA entry point
+V.Co80E        RMB       2                   Co80 entry point
 V.Flash        RMB       2                   Cursor flash routine address.
 v.FlashTime    RMB       1                   Cursor flash time
 v.FlashCount   RMB       1                   Cursor flash count
@@ -168,6 +169,7 @@ ModCoWP        EQU       %00000100           CoWP, WordPak, 80x25
 ModCoHR        EQU       %00001000           CoHR, PMODE 4 51x25 text
 ModCo42        EQU       %00010000           Co42, PMODE 4 42x25 text
 ModCoVGA       EQU       %00100000           CoVGA, 64x32 text
+ModCo80        EQU       %01000000           Co80, CRT9128 WordPak, 80x25
 
 *
 * Defs for cursor flash counter
