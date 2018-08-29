@@ -36,28 +36,28 @@ size     equ   .
 name     fcs   /CoWP/
          fcb   edition
 
-* WordPak Initialization Values
-WPIV     fcb   $6F		R0
-         fcb   $50		R1
-         fcb   $57		R2
-         fcb   $3C 		R3
-         fcb   $1C 		R4
-         fcb   $0A 		R5
-         fcb   $19 		R6
-         fcb   $1A 		R7
-         fcb   $78		R8
-         fcb   $09 		R9
-L0034    fcb   $60 		R10
-         fcb   $09 		R11
-         fcb   $00 		R12
-         fcb   $00 		R13
-         fcb   $00 		R14
-         fcb   $00 		R15
-         fcb   $00 		R16
-         fcb   $00 		R17
-         fcb   $00 		R18
-         fcb   $00 		R19
-         fcb   $10 		R20
+* WordPak Initialization Values (6845 registers)
+WPIV     fcb   $6F	R0    Horizontal Total
+         fcb   $50	R1    Horizontal Displayed
+         fcb   $57	R2    Horizontal Sync Position
+         fcb   $3C 	R3    Horz/Vert Sync Widths
+         fcb   $1C 	R4    Vertical Total
+         fcb   $0A 	R5    Vertical Total Adjust
+         fcb   $19 	R6    Vertical Displayed
+         fcb   $1A 	R7    Vertical Sync Position
+         fcb   $78	R8    Mode Control
+         fcb   $09 	R9    Scan Lines/Row
+L0034    fcb   $60 	R10   Cursor Start/Blink Rate
+         fcb   $09 	R11   Cursor End Scan Line
+         fcb   $00 	R12   Display Start (MSB)
+         fcb   $00 	R13   Display End (LSB)
+         fcb   $00 	R14   Cursor Position (MSB)
+         fcb   $00 	R15   Cursor Position (LSB)
+         fcb   $00 	R16   Light Pen Position (MSB)
+         fcb   $00 	R17   Light Pen Position (LSB)
+         fcb   $00 	R18   Update Address (MSB)
+         fcb   $00 	R19   Update Address (LSB)
+         fcb   $10 	R20
 
 start    equ   *
          lbra  Init
