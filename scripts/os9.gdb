@@ -15,6 +15,9 @@ end
 define os9_mname
 	set $mname = (char*)$arg0 + *((int*)$arg0 + 2)
 	while 1
+		if (*$mname < 0x20)
+			loop_break
+		end
 		if (*$mname < 0x80)
 			printf "%c", *$mname
 		else
@@ -48,8 +51,9 @@ end
 
 define os9_mdir
 	printf "addr size ty name\n"
-	set $mt = 0x300
-	while ($mt < 0x400)
+	set $mt = *0x44
+	set $mte = *0x46
+	while ($mt < $mte)
 		if ((int*)*$mt)
 			os9_mident (int*)*$mt
 		end
@@ -63,8 +67,9 @@ end
 
 define os9_mwhich
 	set $pc_reg = $arg0
-	set $mt = 0x300
-	while ($mt < 0x400)
+	set $mt = *0x44
+	set $mte = *0x46
+	while ($mt < $mte)
 		if ((int*)*$mt)
 			set $mstart = (int*)*$mt
 			set $mend = (char*)$mstart + *($mstart + 1)
@@ -74,7 +79,7 @@ define os9_mwhich
 		end
 		set $mt += 4
 	end
-	if ($mt == 0x400)
+	if ($mt == $mte)
 		set $mstart = 0
 	end
 end
