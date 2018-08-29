@@ -18,8 +18,6 @@
          nam   CO80
          ttl   Mysterious 80 column co-driver for VTIO
 
-BASEADDR equ   $FF78
-
          ifp1
          use   defsfile
          use   cocovtio.d
@@ -47,7 +45,7 @@ start    equ   *
          lbra  Term
 
 * Init
-Init     ldx   #BASEADDR
+Init     ldx   <V.PORT,u	HW Base Address
          lda   #$06		Vertical Displayed Rows
          sta   $01,x
          sta   ,x
@@ -81,7 +79,7 @@ GetStat  cmpa  #SS.Cursr
          ldb   <V.C80Y,u
          addb  #$20
          std   R$X,y
-         ldx   #BASEADDR
+         ldx   <V.PORT,u
          lda   #$0D			Display Start Address
          sta   $01,x
          lbsr  WaitBUSY
@@ -97,7 +95,7 @@ SetStat  ldb   #E$UnkSvc
          coma  
          rts   
 * Write
-Write    ldx   #BASEADDR	get HW addr in X
+Write    ldx   <V.PORT,u	get HW addr in X
          cmpa  #$0E		$0E?
          bcs   L00B6		branch if less than
          cmpa  #$1E		$1E?
@@ -127,7 +125,7 @@ L00B6    leax  >FuncTbl,pcr
          ldd   a,x
          leax  d,x
          pshs  x
-         ldx   #BASEADDR
+         ldx   <V.PORT,u
          rts   
 
 * display functions dispatch table
@@ -269,7 +267,7 @@ L01A8    stx   <V.RTAdd,u
          stb   <V.NGChr,u
          clrb  
          rts   
-L01B0    ldx   #BASEADDR	get HW address
+L01B0    ldx   <V.PORT,u	get HW address
          lda   <V.NChr2,u	get char2 in A
          ldb   <V.NChar,u	and char1 in B
          subb  #32		subtract 32 from B
@@ -325,7 +323,7 @@ L020F    clrb
 CurOnOff leax  >L0219,pcr
          ldb   #$01
          bra   L01A8
-L0219    ldx   #BASEADDR
+L0219    ldx   <V.PORT,u
          lda   <V.NChr2,u	get next character
          cmpa  #$20		cursor code valid?
          blt   WritErr		no, error
