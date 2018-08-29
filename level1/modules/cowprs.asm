@@ -13,7 +13,7 @@
          nam   COWP
          ttl   PBJ WordPak RS Co-Driver for VTIO
 
-BASEADDR equ   $FF76
+BASEADDR equ   $FF76            Note: WordPak I/II use $FF98
 CURSPTR  equ   V.ColPtr         cursor address (wrap at $4000)
 DISPPTR  equ   V.Co80X          display start address (wrap at $800)
 
