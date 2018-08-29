@@ -14,10 +14,11 @@ BOOTFILE_40D	= $(MD)/nitro \
 		$(MD)/scf.mn \
 		$(MD)/end \
 		$(MD)/rbf.mn \
-		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
-		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
+		$(MD)/rb1773.dr \
 		$(MD)/end \
 		$(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/d0_40d.dd $(MD)/d1_40d.dd \
+		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
 		$(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/cowin.io $(MD)/covdg.io \
@@ -31,10 +32,11 @@ BOOTFILE_80D	= $(MD)/nitro \
 		$(MD)/scf.mn \
 		$(MD)/end \
 		$(MD)/rbf.mn \
-		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
-		$(MD)/d2_40d.dd $(MD)/ddd0_80d.dd \
+		$(MD)/rb1773.dr \
 		$(MD)/end \
 		$(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/d0_80d.dd $(MD)/d1_40d.dd \
+		$(MD)/d2_40d.dd $(MD)/ddd0_80d.dd \
 		$(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/cowin.io $(MD)/covdg.io \
@@ -48,10 +50,11 @@ BOOTFILE_40D_50HZ	= $(MD)/nitro \
 		$(MD)/scf.mn \
 		$(MD)/end \
 		$(MD)/rbf.mn \
-		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
-		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
+		$(MD)/rb1773.dr \
 		$(MD)/end \
 		$(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/d0_40d.dd $(MD)/d1_40d.dd \
+		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
 		$(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/cowin.io $(MD)/covdg.io \
@@ -65,10 +68,11 @@ BOOTFILE_80D_50HZ 	= $(MD)/nitro \
 		$(MD)/scf.mn \
 		$(MD)/end \
 		$(MD)/rbf.mn \
-		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
-		$(MD)/d2_40d.dd $(MD)/ddd0_80d.dd \
+		$(MD)/rb1773.dr \
 		$(MD)/end \
 		$(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/d0_80d.dd $(MD)/d1_40d.dd \
+		$(MD)/d2_40d.dd $(MD)/ddd0_80d.dd \
 		$(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/cowin.io $(MD)/covdg.io \
@@ -82,10 +86,11 @@ BOOTFILE_DW	= $(MD)/nitro \
 		$(MD)/scf.mn \
 		$(MD)/end \
 		$(MD)/rbf.mn \
-		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
-		$(MD)/d2_40d.dd $(MD)/ddd0_80d.dd \
+		$(MD)/rb1773.dr \
 		$(MD)/end \
 		$(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/d0_80d.dd $(MD)/d1_40d.dd \
+		$(MD)/d2_40d.dd $(MD)/ddd0_80d.dd \
 		$(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/cowin.io $(MD)/covdg.io \
