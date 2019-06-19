@@ -3,7 +3,7 @@
 *
 * $Id$
 *
-* Alan DeKok's version of RAMMER - Based on original Keving Darling version
+* Alan DeKok's version of RAMMER - Based on original Kevin Darling version
 *
 * NOTE: For some reason, when DEINIZing /r0, the INIT routine gets called...
 *       but it still deallocates memory!
@@ -22,10 +22,15 @@
 * so that setting vfy=0 on /R0 would not completely crash the system.
 * Fixed some error reporting bugs that would crash the system, and
 * moved entry table to between READ/WRITE to allow short branches to both.
-
+*
+*   5r3    2019/03/23  L. Curtis Boyle
+* Fixed MD so that it works properly with 2 MB RAM systems. Also optimized 6809
+* Sector read/write. Also fixed a signed math bug when >127 MMU blocks are assigned
+*   to a RAM drive.
 
 * Following CAN be set higher, but will take another page of system RAM then.
 * 200 will allow maximum of 1,638,400 byte RAM drive.
+
 MAXBLOCK set   201         Maximum # of MMU blocks allowed in RAM drive
 
          nam   Rammer
@@ -37,7 +42,7 @@ MAXBLOCK set   201         Maximum # of MMU blocks allowed in RAM drive
 
 tylg     set   Drivr+Objct
 atrv     set   ReEnt+rev
-rev      set   $02
+rev      set   $03
 edition  set   5
 
          mod   eom,name,tylg,atrv,start,size
@@ -59,21 +64,21 @@ name     fcs   /Rammer/
 L0024    lda   <numofBlk,u   Get # blocks we had allocated
          beq   L003D         If none, exit
          leay  <MMUTable,u   Point to MMU block table
-         IFNE  H6309
+       IFNE  H6309
          clre                Hi byte of block # to allocate (always 0)
 L002E    ldf   ,y            Get block #
-         ELSE
+       ELSE
 L002E    ldb   ,y
-         ENDC
+       ENDC
          clr   ,y+           Zero it out in table
-         IFNE  H6309
+       IFNE  H6309
          tfr   w,x           Block # to deallocate
-         ELSE
+       ELSE
          pshs  a
          clra
          tfr   d,x
          puls  a
-         ENDC
+       ENDC
          ldb   #$01          1 block to deallocate
          os9   F$DelRAM      Deallocate the block
          deca                Dec # of blocks to clean out
@@ -103,46 +108,48 @@ Init     lda   #1
          ldb   <IT.CYL+1,y  Get LSB of # of cylinders
          lda   <IT.SID,y    Get # of heads
          mul                Calculate # head/cyls total
+         tsta               Have we overflowed past 255?
+         bne   L0041        Yes, exit with no RAM error
          lda   <IT.SCT+1,y  Get # of sectors/track
          mul                Calculate # of sectors for RAM drive
          subd  <IT.SCT,y    Subtract 1 tracks worth
          addd  <IT.T0S,y    Add in the special track 0's # sectors/track
          std   DD.TOT+1,x   Save as # sectors on drive
          addd  #$001F       Round up to nearest 8K block
-         IFNE  H6309
+       IFNE  H6309
          rold               Shift # of 8K blocks needed into A
          rold
          rold
-         ELSE
+       ELSE
          rolb
          rola
          rolb
          rola
          rolb
          rola
-         ENDC
+       ENDC
          cmpa  #MAXBLOCK    If higher than max, exit with mem full error
          bhi   L0041
          leax  <MMUTable,u  Point to RAM block table
-         IFNE  H6309
+       IFNE  H6309
          tfr   a,e          # blocks left to allocate
-         ENDC
+       ENDC
 L0078    ldb   #$01         Try to allocate 1 8K RAM block
-         IFEQ  H6309
+       IFEQ  H6309
          pshs  a
-         ENDC
+       ENDC
          os9   F$AllRAM
-         IFEQ  H6309
+       IFEQ  H6309
          puls  a
-         ENDC
+       ENDC
          bcs   L003F        If error, deallocate RAM, and exit
          inc   <numofBlk,u  Bump up # of blocks allocated
          stb   ,x+          Save MMU block # allocated in table
-         IFNE  H6309
+       IFNE  H6309
          dece               Do until done all blocks requested
-         ELSE
+       ELSE
          deca
-         ENDC
+       ENDC
          bne   L0078
          clrb               No error & return
          rts
@@ -159,16 +166,17 @@ Read     pshs  y,x          Preserve path & device mem ptrs
          bne   GetStat      No, exit without error
          ldx   PD.BUF,y     Get buffer ptr
          leay  DRVBEG,u     Point to start of drive table
-         IFNE  H6309
+       IFNE  H6309
          ldw   #DD.SIZ      Copy the info we need into drive table
          tfm   x+,y+
-         ELSE
+       ELSE
+* 6809 - Use StkBlCpy (either system wide or local to driver)
          ldb   #DD.SIZ      Copy the info we need into drive table
 ReadLp   lda   ,x+
          sta   ,y+
          decb
          bne   ReadLp
-         ENDC
+       ENDC
 * GetStat/SetStat - no calls, just exit w/o error
 GetStat  clrb
 L00A7    rts
@@ -201,17 +209,22 @@ L00AE    orcc  #IntMasks      Shut IRQ's off
          ldb   1,x            Get original System MMU block #0
          puls  x              Get X back
          sta   >DAT.Regs      Map in RAM drive block into block #0
-         IFNE  H6309
+       IFNE  H6309
          ldw   #$0100         256 byte transfer
          tfm   x+,y+          Copy between the two buffers
-         ELSE
-         clrb
-WriteLp  lda   ,x+
-         sta   ,y+
-         decb
-         bne   WriteLp
-         ENDC
-         stb   >Dat.Regs      Remap in system block 0
+       ELSE
+* 6809 - Use StkBlCpy (either system wide or local to driver)
+         ldb   #64            64 sets of 4 bytes to copy
+         pshs  b,u            Save counter & U
+         leau  ,x             Point U to source of copy
+WriteLp  pulu  d,x            Get 4 bytes
+         std   ,y++           Save them in sector buffer
+         stx   ,y++
+         dec   ,s             Dec 4 byte block counter
+         bne   WriteLp        Do all 256 bytes
+         puls  b,u            B=0, restore U
+       ENDC
+         stb   >DAT.Regs      Remap in system block 0
          andcc #^(IntMasks+Carry) Turn IRQ's back on & no error
          rts
 
@@ -224,17 +237,17 @@ WriteLp  lda   ,x+
 *       Y=Sector buffer ptr for RBF
 *       MDFlag,u=0 if NOT MD, else MD
 L00C8    clr   MDFlag,u       Flag that we are on "real" RAM Drive
-         IFNE  H6309
+       IFNE  H6309
          ldw   PD.DEV,y       Get our Device table entry ptr
          ldw   V$DESC,w       Get device descriptor ptr
          lda   M$Opt,w        Get size of options table
-         ELSE
+       ELSE
          pshs  x
          ldx   PD.DEV,y       Get our Device table entry ptr
          ldx   V$DESC,x       Get device descriptor ptr
          lda   M$Opt,x        Get size of options table
          puls  x
-         ENDC
+       ENDC
          deca
          bne   L00DB          Not MD, skip ahead
          inc   MDFlag,u       Flag we are on MD
@@ -243,9 +256,15 @@ L00C8    clr   MDFlag,u       Flag that we are on "real" RAM Drive
          sta   <PD.SSZ,y
          ldd   <D.BlkMap+2    Get end of block memory ptr
          subd  <D.BlkMap      Calc # of blocks of RAM
-         lda   #32            * 32 for # of 'sectors'
+* Bug fix for 2MB RAM systems - LCB 03/23/2019         
+         tsta                 2 MB RAM (B=0 always if this is true)?
+         beq   Not2MB         No, do multiplication
+         lda   #$20           Force for 2 MB
+         bra   TwoMB
+
+Not2MB   lda   #32            * 32 for # of 'sectors'
          mul
-         std   <PD.SIZ+1,y    Save as middle word of file size
+TwoMB    std   <PD.SIZ+1,y    Save as middle word of file size
          std   <PD.SSZ+1,y    Save as segment size
          bra   L00DE          Skip ahead (sector # will allow all 2 MB)
 
@@ -259,22 +278,25 @@ L00DE    pshs  x              Preserve LSW of sector #
          cmpd  DD.TOT+1,x     LSW of sector compared to table's # of sectors
          bhs   L010E          Sector # too large, exit with error
 L00EE    equ   *
-         IFNE  H6309
+       IFNE  H6309
          rold                 A=MMU block offset in RAM drive image
          rold
          rold
-         ELSE
+       ELSE
          rolb
          rola
          rolb
          rola
          rolb
          rola
-         ENDC
+       ENDC
          tst   MDFlag,u       We on /MD?
          bne   L0100          Yup, skip calculating MMU stuff
          leax  <MMUTable,u    Point to MMU table
-         lda   a,x            Get MMU block # we want
+* Signed A is going to screw up on $80 and higher!
+         tfr   a,b            D=A (make 16 bit since A can't be signed)
+         clra
+         lda   d,x            Get MMU block # we want
          beq   L010E          If 0, exit with sector error
 L0100    pshs  a              Save block #
          clrb                 Calculate offset within 8k block we want
