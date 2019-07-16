@@ -6,6 +6,7 @@ vpath %.asm $(LEVEL2)/cmds:$(LEVEL1)/cmds:$(3RDPARTY)/packages/basic09
 
 DEPENDS		= ./makefile
 AFLAGS          += --includedir=$(3RDPARTY)/packages/basic09
+AFLAGS          += --includedir=../defs
 LFLAGS		+= -L$(NITROS9DIR)/lib
 LFLAGS		+= -lmc09
 LFLAGS		+= -lnet -lalib
@@ -18,7 +19,7 @@ CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		pmap proc procs prompt pwd pxd reboot rename save setime \
 		shell_21 sleep smap tee tmode touch tsmon tuneport unlink verify wcreate xmode
 
-CMDS_D2         = basic09 runb gfx2 gfx inkey syscall copy del echo format \
+CMDS_D2         = basic09 runb inkey syscall copy del echo format \
                 merge os9gen prompt tmode
 
 CMDS_DW		= inetd dw telnet httpd

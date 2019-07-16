@@ -4,7 +4,8 @@ include $(NITROS9DIR)/rules.mak
 vpath %.asm $(LEVEL3)/cmds:$(LEVEL2)/cmds:$(LEVEL1)/cmds:$(3RDPARTY)/packages/basic09
 
 DEPENDS		= ./makefile
-AFLAGS		+= -I=$(3RDPARTY)/packages/basic09
+AFLAGS		+= --includedir=$(3RDPARTY)/packages/basic09
+AFLAGS		+= --includedir=../defs
 
 CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir dirsort disasm \

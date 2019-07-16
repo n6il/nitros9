@@ -5,6 +5,7 @@ vpath %.asm $(LEVEL2)/cmds:$(LEVEL1)/cmds:$(3RDPARTY)/packages/basic09
 
 DEPENDS		= ./makefile
 AFLAGS          += --includedir=$(3RDPARTY)/packages/basic09
+AFLAGS          += --includedir=../defs
 LFLAGS		+= -L$(NITROS9DIR)/lib
 ifdef	H6309
 LFLAGS		+= -lcoco3_6309
