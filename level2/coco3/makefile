@@ -29,7 +29,7 @@ KERNELFILE_RS232PAK	= bootfiles/kernel_rs232pak
 KERNELFILE_DIRECTMODEMPAK	= bootfiles/kernel_directmodempak
 KERNELFILE_ARDUINO	= bootfiles/kernel_arduino
 KERNELFILE_COCOSDC	= bootfiles/kernel_cocosdc
-DIRS		= cmds modules defs sys bootfiles wwwroot
+DIRS		= defs cmds modules sys bootfiles wwwroot
 
 CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs)
 CMDS_D2		= $(shell $(CD) cmds; make --no-print-directory showobjs_d2)

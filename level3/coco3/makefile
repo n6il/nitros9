@@ -11,7 +11,7 @@ BOOTFILE_80D_50HZ	= bootfiles/bootfile_80d_50hz
 KERNELFILE	= bootfiles/kernel_1773
 KERNELFILE_50HZ	= bootfiles/kernel_1773_50hz
 KERNELFILE_DW	= bootfiles/kernel_dw
-DIRS		= cmds modules defs sys bootfiles
+DIRS		= defs cmds modules sys bootfiles
 
 CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs)
 CMDS_D2		= $(shell $(CD) cmds; make --no-print-directory showobjs_d2)

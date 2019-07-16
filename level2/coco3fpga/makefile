@@ -15,7 +15,7 @@ BOOTFILE_COCO3FPGA_ROM = bootfiles/bootfile_coco3fpga_rom
 BOOTFILE_COCO3FPGA_ROM_DW = bootfiles/bootfile_coco3fpga_rom_dw
 BOOTFILE_COCO3FPGA_ROM_RTC = bootfiles/bootfile_coco3fpga_rom_rtc
 KERNELFILE_BECKER	= bootfiles/kernel_becker
-DIRS		= cmds modules defs sys bootfiles wwwroot
+DIRS		= defs cmds modules sys bootfiles wwwroot
 
 CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs)
 CMDS_D2		= $(shell $(CD) cmds; make --no-print-directory showobjs_d2)
