@@ -36,6 +36,93 @@ loop@     tst    $FF51               ; check for CA1 bit (1=Arduino has byte rea
 
           ELSE
 
+          IFNE MEGAMINIMPI
+* NOTE: There is no timeout currently on here...
+ IFNE 0
+************************************************************************
+* Original Unoptimized Version
+DWRead    clra                       ; clear Carry (no framing error)
+          deca                       ; clear Z flag, A = timeout msb ($ff)
+          tfr    cc,b
+          pshs   u,x,dp,b,a          ; preserve registers, push timeout msb
+          leau   ,x                  ; buffer pointer
+          ldx    #$0000
+          IFEQ   NOINTMASK
+          orcc   #IntMasks
+          ENDC
+
+          lda       MPIREG           ; Get Current MPI Status
+          pshs      a                ; Save it
+          anda      #CTSMASK         ; Mask out SCS, save CTS
+          ora       #MMMSLT          ; SCS Slot Selection
+          sta       MPIREG           ; write the info to MPI register
+
+ opt c
+ opt ct
+loop@     ldb    MMMUARTB+LSR        ; Check status register
+          andb   #LSRDR              ; RX Fifo status
+          beq    loop@               ; loop until data
+          ldb    MMMUARTB            ; Read data
+          stb    ,u+                 ; save it
+          abx                        ; update checksum
+          leay   ,-y                 ; counter = counter - 1
+          bne    loop@
+ opt cc
+          puls      a                ; Get original MPI Register back
+          sta       MPIREG           ; Restore it
+
+          tfr    x,y
+          ldb    #0
+          lda    #3
+          leas   1,s                 ; remove timeout msb from stack
+          inca                       ; A = status to be returned in C and Z
+          ora    ,s                  ; place status information into the..
+          sta    ,s                  ; ..C and Z bits of the preserved CC
+          leay   ,x                  ; return checksum in Y
+          puls   cc,dp,x,u,pc        ; restore registers and return
+************************************************************************
+ ENDC
+ IFNE 1
+************************************************************************
+* Optimized 1 byte - v2
+DWRead    clra                       ; clear Carry (no framing error)
+          deca                       ; clear Z flag, A = timeout msb ($ff)
+          pshs   u,x,dp,cc           ; preserve registers
+          leau   ,x                  ; buffer pointer
+          ldx    #$0000              ; Initialize Checksum
+          IFEQ   NOINTMASK
+          orcc   #IntMasks           ; Disable Interrupts
+          ENDC
+
+          tfr       a,dp             ; Set up Direct Page Register
+
+          lda       <MPIREG          ; Get Current MPI Status
+          pshs      a                ; Save it
+          anda      #CTSMASK         ; Mask out SCS, save CTS
+          ora       #MMMSLT          ; SCS Slot Selection
+          sta       <MPIREG          ; write the info to MPI register
+
+rxByte@   lda    #LSRDR              ; Data Ready mask
+loop@     bita   <MMMUARTB+LSR       ; Check bit
+          beq    loop@               ; loop if empty
+          ldb    <MMMUARTB           ; Read data
+          stb    ,u+                 ; save it
+          abx                        ; update checksum
+          leay   -1,y                ; counter = counter - 1
+          bne    loop@
+
+          puls      a                ; Get original MPI Register back
+          sta       <MPIREG          ; Restore it
+
+          lda    #4                  ; Z flag
+          ora    ,s                  ; place status information into the..
+          sta    ,s                  ; ..C and Z bits of the preserved CC
+          leay   ,x                  ; return checksum in Y
+          puls   cc,dp,x,u,pc        ; restore registers and return
+************************************************************************
+ ENDC
+          ELSE
+
           IFNE SY6551N
           IFNDEF    SY6551B
 SY6551B   EQU       $FF68            ; Set base address for future use
@@ -180,8 +267,9 @@ rdy@      puls   x              ; restore X
           ENDC
           ENDC
           ENDC
+          ENDC
 
-          IFEQ BECKER+JMCPBCK+ARDUINO+BECKERTO+SY6551N
+          IFEQ BECKER+JMCPBCK+ARDUINO+BECKERTO+SY6551N+MEGAMINIMPI
           IFNE BAUD38400
 *******************************************************
 * 38400 bps using 6809 code and timimg
