@@ -21,6 +21,11 @@
 *  19r9    2004/07/12  Boisy G. Pitre
 * F$SRqMem now properly scans the DAT images of the system to update
 * the D.SysMem map.
+*
+*  19r10   2019/11/15  L. Curtis Boyle
+* Optimized register stack copies on 6809 in 3 spots (Loop5, RtiLoop & Looper)
+*   Saves over 70 cycles per system call that switches between user &
+*   system states
 
         nam     krn
         ttl     NitrOS-9 Level 2 Kernel
@@ -30,7 +35,7 @@
         ENDC
 
 * defines for customizations
-Revision        set     9       module revision
+Revision        set     10       module revision
 Edition set     19      module Edition
 Where   equ     $F000   absolute address of where Kernel starts in memory
 
@@ -644,9 +649,9 @@ L02E9   leau    a,u             point to block # of where stack is
         ldw     #R$Size         get size of register stack
         tfm     x+,y+           copy it
       ELSE
-        ldb     #R$Size
-Loop5   lda     ,x+
-        sta     ,y+
+        ldb     #R$Size/2
+Loop5   ldu     ,x++
+        stu     ,y++
         decb
         bne     Loop5
       ENDC
@@ -865,10 +870,10 @@ L0E4C   equ     *
         ldu     #Where+SWIStack point to the stack
         tfm     u+,y+           move the stack from top of memory to user memory
       ELSE
-        ldb     #R$Size
+        ldb     #R$Size/2
         ldu     #Where+SWIStack point to the stack
-RtiLoop lda     ,u+
-        sta     ,y+
+RtiLoop ldx     ,u++
+        stx     ,y++
         decb
         bne     RtiLoop
       ENDC
@@ -1018,13 +1023,13 @@ SWICall ldb     [R$PC,s]        get callcode of the system call
         ldw     #R$Size         get the size of the stack
         tfm     u+,y+           move the stack to the top of memory
         ELSE
-        pshs    b
-        ldb     #R$Size
-Looper  lda     ,u+
-        sta     ,y+
-        decb
+        pshs    x
+        lda     #R$Size/2       Move stack to top of memory (A is reset in L0EB8, no need to preserve)
+Looper  ldx     ,u++
+        stx     ,y++
+        deca
         bne     Looper
-        puls    b
+        puls    x
         ENDC
         bra     L0EB8           and go from map type 1 to map type 0
 
