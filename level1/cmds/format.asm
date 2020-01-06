@@ -154,6 +154,7 @@ u006B    rmb   4
 dskname  rmb   32         quoted delimited disk name buffer
 u008F    rmb   40        
 IsDragon rmb   1          Is this a dragon disk ?
+IsSpec20 rmb   1          Is this a special fmt data for 20 sector per track floppy disks
 SaveRootLSN rmb   3          Saved copy of DD.DIR
 AddedSysSecs rmb   2          Additional system sectors (0 for CoCo, $10 for Dragon boot area)
 LSN0     rmb   256        LSN0 build buffer
@@ -164,8 +165,8 @@ fdtbuf2  rmb   9924
 u297E    rmb   451       
 size     equ   .         
                          
-name     fcs   /Format/  
-         fcb   edition   
+name     fcs   /Format/
+         fcb   edition
                          
 *val1     fdb   $0000
 *val2     fdb   $0000
@@ -197,9 +198,17 @@ dbsize   fdb   $0152
 dctdat   fdb   $204E,$0000,$0C00,$03F5,$01FE,$0400
          fdb   $01F7,$164E,$0C00,$03F5,$01FB,$80E5
          fdb   $80E5,$01F7,$184E,$0000
-         fcb   $4E       
-dcfidp   fdb   $0030     
-dcsize   fdb   $0154     
+         fcb   $4E
+dcfidp   fdb   $0030
+dcsize   fdb   $0154
+
+* Special Double Density Color Computer Format 20 SPT
+ectdat   fdb   $084E,$0000,$0800,$03F5,$01FE,$0400
+         fdb   $01F7,$0100,$1B00,$03F5,$01FB,$80E5
+         fdb   $80E5,$01F7,$0100,$0000
+         fcb   $4E
+ecfidp   fdb   $0014
+ecsize   fdb   $0133
                          
 DragonFlag equ   'd        Flag that we are formatting dragon formatted disk.
 DragonRootSec equ   $12        Dragon root sector is always LSN 18
@@ -236,6 +245,7 @@ ClrOne   clr   ,-y        clear it down
          cmpy  ,s         at begin?
          bhi   ClrOne     not yet,
          clr   IsDragon,u Assume we are not formatting a dragon disk
+         clr   IsSpec20,u Assume we are not formatting using special 20
          clr   AddedSysSecs,u Clear aditional system sectors
          clr   AddedSysSecs+1,u
          puls  pc,y       done
@@ -296,7 +306,7 @@ ssztbl   fcb   $1,$2,$4,$8
 Geometry leax  >optbuf,u  status packet address
          clrb             SS.OPT function
          os9   I$GetStt   get status packet
-         bcs   Exit       exit if error
+         lbcs   Exit       exit if error
          ldb   PD.SID-PD.OPT,x number of surfaces
          stb   <numsides  save it
          ldb   PD.SToff-PD.OPT,x get track/sector offset values
@@ -478,6 +488,12 @@ opt.19   fcb   'F
 opt.20   fcb   'f       
          fcb   '          '
          fdb   DoFormat-opt.20
+opt.21   fcc   /E/
+         fcb   $01
+         fdb   DoEnhanced-opt.21
+opt.22   fcc   /e/
+         fcb   $01
+         fdb   DoEnhanced-opt.22
                          
                          
          fcb   $00       
@@ -631,6 +647,11 @@ L0250    stb   <clustsiz  save it
 L025C    clrb             did option
 L025D    rts              return
                          
+
+DoEnhanced
+         stb   <IsSpec20
+         rts
+
 ********************************************************************
 * print title, format (Y/N), and get response
 ********************************************************************
@@ -732,7 +753,11 @@ GetDTyp  leax  >hdsdat,pcr assume hard drive data for now
          bne   L0323      yes, branch
          tst   <cocofmt   is this a COCO formatted disk?
          beq   L031B      branch if not
-         leax  >dctdat,pcr point to COCO track data
+         tst   <IsSpec20  is this a special coco formatted disk?
+         beq   cocodct
+         leax  >ectdat,pcr point to enhanced CoCo track data
+         bra   L032D
+cocodct  leax  >dctdat,pcr point to COCO track data
          bra   L032D     
 L031B    leax  >sgtdat,pcr point to single density track data
          tst   <mfm       double-density?
@@ -1755,6 +1780,8 @@ HelpMsg  fcc   "Use: FORMAT /devname <opts>"
          fcc   "        /Cluster size/       (in decimal)"
          fcb   C$LF      
          fcc   "        FD - Dragon format disk"
+         fcb   C$CR      
+         fcc   "        E  - Enhanced CoCo 20 SPT"
          fcb   C$CR      
 HelpLen  equ   *-HelpMsg 
          endc            
