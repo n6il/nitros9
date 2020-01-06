@@ -62,10 +62,15 @@
 * due to some incorrect assumptions.  The result was that copying a file
 * to a newly formatted hard drive would, in cases where the drive was
 * large, wipe out the bitmap sector and root directory area.
-                         
-         nam   Format    
+*
+*       2020-01-05  David Ladd
+* Added enhanced sector data for the special 20 sector per track on
+* floppy disks.  Added new option E to allow using this enhanced
+* sector data.
+
+         nam   Format
          ttl   RBF Disk format program
-                         
+
 * Disassembled 02/07/17 11:00:13 by Disasm v1.6 (C) 1988 by RML
                          
          ifp1            
