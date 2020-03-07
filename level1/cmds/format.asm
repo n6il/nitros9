@@ -614,7 +614,7 @@ DoFormat
          cmpa  #'D       Do a dragon disk ?
          beq   DoFmtDragon
          cmpa  #'d      
-         bne   DoFmtDragon
+         beq   DoFmtDragon
          clr   IsDragon,u Mark it as a normal CoCo (or other) disk
          clrb            
          rts             
