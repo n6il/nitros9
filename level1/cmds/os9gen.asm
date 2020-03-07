@@ -572,11 +572,13 @@ around   ldx   #$0000
          leax  TrkErr,pcr
          lbcs  WritExit
 
-         ldd   #Bt.Track*256	boot track regD=$2200
+* if boot track is on track zero (i.e. Dragon) skip bitmap check/update
+       IFNE Bt.Track
+         ldd   #Bt.Track*256+Bt.Sec	boot track (regD=$2200 for CoCo)
          ldy   #$0004			four bits
          lbsr  ABMClear		this should test for clear not clear it
          bcc   L0520
-         ldd   #Bt.Track*256	boot track, as it was not clear
+         ldd   #Bt.Track*256+Bt.Sec	read boot track, as it was not clear
          lbsr  Seek2LSN			seek to it
          leax  <u0017,u
          ldy   #$0007
@@ -594,18 +596,22 @@ around   ldx   #$0000
          lda   $04,x
          cmpa  #$12			also check for NOP
          beq   L0512
-         ldd   #Bt.Track*256+15	boot track, sector 16
-         ldy   #$0003			sectors 16-18
+         ldd   #Bt.Track*256+Bt.Sec+15	boot track, sector 16
+* boldly assume Bt.Sec is nowhere higher than 3 !
+         ldy   #$0003-Bt.Sec			sectors 16-18
          lbsr  ABMClear
          lbcs  WarnUser
 L0512    clra  
          ldb   <lsn0+DD.TKS,u	get number of sectors in D
+        IFNE Bt.Sec
+         subb  #Bt.Sec
+        ENDC
          tfr   d,y
-         ldd   #Bt.Track*256	boot track
+         ldd   #Bt.Track*256+Bt.Sec	boot track
          lbsr  ABMSet
          bra   L0531
-L0520    ldd   #Bt.Track*256+4	boot track
-         ldy   #$000E		sectors 5-18
+L0520    ldd   #Bt.Track*256+Bt.Sec+4	boot track
+         ldy   #$000E-Bt.Sec		sectors 5-18
          lbsr  ABMClear		test rest of track
          lbcs  WarnUser
          bra   L0512
@@ -620,6 +626,7 @@ L0531
          lda   <devpath
          os9   I$Write  		write out the bitmap
          lbcs  Bye
+       ENDC
 
 * Code added to write alternate boottrack file
 * BGP - 2003/06/26
@@ -662,7 +669,7 @@ ReadBTrk leax  u0496,u		point to sector buffer
          lbcs  Bye
          os9   I$Close		close path to boot track
          lbsr  GetDest
-         ldd   #Bt.Track*256	boot track
+         ldd   #Bt.Track*256+Bt.Sec	boot track
          lbsr  Seek2LSN
          bra   WrBTrack
 
@@ -688,14 +695,14 @@ BTMem
          subd  u007B,u
          addd  #$0001
          tfr   d,y
-         ldd   #Bt.Track*256	boot track
+         ldd   #Bt.Track*256+Bt.Sec	boot track
          lbsr  Seek2LSN
          ldx   u007B,u
 
          ELSE
 
 * OS-9 Level One: Write out boot track data
-         ldd   #Bt.Track*256
+         ldd   #Bt.Track*256+Bt.Sec
          lbsr  Seek2LSN
          ldx   #Bt.Start
          ldy   #Bt.Size
