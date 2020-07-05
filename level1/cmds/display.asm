@@ -1,7 +1,7 @@
 ********************************************************************
 * Display - Character display utility
 *
-* $Id$
+* $Id: display.asm,v 1.5 2003/09/04 23:06:16 boisy Exp $
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
@@ -11,6 +11,8 @@
 *
 *   3      ????/??/??  Alan DeKok
 * Added decimal, text features.
+*   4      2020/07/04  L.Curtis Boyle
+* Fixed bug with '0' characters in decimal conversion
 
          nam   Display
          ttl   Character display utility
@@ -24,9 +26,9 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   3
+edition  set   4
 
-         mod   eom,name,tylg,atrv,start,size
+         mod   eom,name,tylg,atrv,Start,size
 
          org   0
 T.Delim  rmb   1          text delimiter
@@ -155,7 +157,7 @@ D.Read   lda   ,y+        grab a decimal digit
          beq   D.CR       yes, output the characters and then exit
 
          cmpa  #'0        smaller than zero?
-         bls   D.Done0    yes, we're done this decimal digit
+         blo   D.Done0    yes, we're done this decimal digit
          cmpa  #'9
          bhi   Error
          suba  #'0        convert ascii to number
