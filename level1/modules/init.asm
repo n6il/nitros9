@@ -147,6 +147,9 @@ InstStr  equ   *
          IFNE   dalpha
          fcc    "Dragon Alpha"
          ELSE
+         IFNE   dplus
+         fcc    "Dragon Plus"
+         ELSE
          IFNE   atari
          fcc    "Atari XL/XE"
          ELSE
@@ -167,6 +170,7 @@ InstStr  equ   *
          ENDC                             match IFNE coco3fpga
          ENDC                             match IFNE mc09
          ENDC                             match IFNE atari
+         ENDC                             match IFNE dplus
          ENDC                             match IFNE dalpha
          ENDC                             match IFNE d64
          ENDC                             match IFNE tano

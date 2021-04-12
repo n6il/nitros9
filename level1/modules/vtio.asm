@@ -305,7 +305,7 @@ L015C    clra
          sta   2,x            write column strobe
 L016F    lda   ,x             read row from PIA0Base
 
-       ifne  (tano+d64+dalpha)
+       ifne  (tano+d64+dalpha+dplus)
          lbsr  DragonToCoCo   Translate Dragon keyboard layout to CoCo
        endc
 
@@ -558,7 +558,7 @@ L0320    rts
 ; Entry a=Dragon formatted keyboard input from PIA
 ; Exit  a=CoCo formatted keyboard input from PIA
 ;
-       ifne  (tano+d64+dalpha)
+       ifne  (tano+d64+dalpha+dplus)
 DragonToCoCo
          pshs  b              Save B
          sta   ,-s            Save Dragon formatted keyboard on stack
@@ -1049,31 +1049,46 @@ GoCoVDG  stb   <V.CFlag,u     save lowercase flag
          bne   NoError
          lbra  SetDsply
 
+
+* 6809/6309 - Try embedding LoadCoModule since short and only called from here.
+* Entry: X=ptr to co-module name
+SetupCoModule
+         lbsr  LoadCoModule   Load Co-module if not already loaded
+         puls  u,y,x,a
+         bcs   L0600          Couldn't load/link co-module, return with error
+         stx   <V.Col,u       save screen size
+         sta   <V.CurCo,u     current module in use? ($02=CoVDG, $04=C080, etc.)
+L0600    rts
+
 * All co-modules except grfdrv
 
 CoVDG    fcs   /CoVDG/
 CoWP     fcs   /CoWP/
+CoDPlus  fcs   /CoDPlus/
 CoHR     fcs   /CoHR/
 Co42     fcs   /Co42/
 CoVGA    fcs   /CoVGA/
 
 GoCoWP   bita  #ModCoWP       CoWP needed ?
-         beq   GOCoVGA        No, try next co-module
+         beq   GoCoDPlus      No, try next co-module
          stb   <V.CFlag,u     allow lowercase
          clr   <V.Caps,u      set caps off
          lda   #ModCoWP       'CoWP is loaded' bit
          ldx   #$5019         80x25 WordPark RS supports 25 lines
          pshs  u,y,x,a
          leax  <CoWP,pcr
-* 6809/6309 - Try embedding LoadCoModule since short and only called from here.
-* Entry: X=ptr to co-module name
-SetupCoModule
-         bsr   LoadCoModule   Load Co-module if not already loaded
-         puls  u,y,x,a
-         bcs   L0600          Couldn't load/link co-module, return with error
-         stx   <V.Col,u       save screen size
-         sta   <V.CurCo,u     current module in use? ($02=CoVDG, $04=C080, etc.)
-L0600    rts
+         bra   SetupCoModule
+
+GoCoDPlus
+         bita  #ModCoDPlus    Dragon Plus 80 column 
+         beq   GOCoVGA
+         stb   <V.CFlag,u     allow lowercase
+         clr   <V.Caps,u      set caps off
+         lda   #ModCoDPlus    CoDPlus is loaded bit
+         ldx   #$5018         80x24
+         pshs  u,y,x,a
+         leax  <CoDPlus,pcr
+         bra   SetupCoModule
 
 GoCoVGA  bita  #ModCoVGA      64x32 CoVGA?
          beq   GoCo42         No, then try next co-module
@@ -1093,7 +1108,7 @@ GOCo42   bita  #ModCo42       42x24 gfx term?
          ldx   #$2A18         42x24
          pshs  u,y,x,a
          leax  <Co42,pcr
-         bra   SetupCoModule
+         lbra  SetupCoModule
 
 GOCoHR   ldb   #$10
          stb   <V.CFlag,u
@@ -1102,7 +1117,7 @@ GOCoHR   ldb   #$10
          ldx   #$3318         51x24
          pshs  u,y,x,a
          leax  <CoHR,pcr
-         bra   SetupCoModule
+         lbra  SetupCoModule
 
 LoadCoModule
          bita   <V.COLoad,u    Module loaded?

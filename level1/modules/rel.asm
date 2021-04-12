@@ -583,7 +583,7 @@ done
 
          clr   PIA0Base+3
 
-       IFNE  (tano+d64+dalpha)
+       IFNE  (tano+d64+dalpha+dplus)
          clr   PIA0Base+1              added for Dragon, works on CoCo
        ENDC
        IFNE  H6309
@@ -626,7 +626,7 @@ L2649    lda   ,y+
          decb
          bne   L2649
 
-       IFNE  (tano+d64+dalpha)
+       IFNE  (tano+d64+dalpha+dplus)
          tst   <$72
        ELSE
          ldd   #$1212
