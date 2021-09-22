@@ -1,5 +1,6 @@
 ********************************************************************
 * Emudsk - Virtual disk driver for CoCo emulators
+* Descriptor Template
 *
 * $Id$
 *
@@ -10,7 +11,7 @@
 *        Address not used by driver but still ....
 
  IFP1
- USE os9.d
+ USE defsfile
  ENDC
 
 type SET Devic+Objct
@@ -22,7 +23,7 @@ type SET Devic+Objct
 
 optns EQU *
  FCB DT.RBF RBF device
- FCB $00 drive number
+ FCB DNum drive number
  FCB $00 step rate
  FCB $80 type=nonstd,coco
  FCB $01 double density
@@ -35,7 +36,11 @@ optns EQU *
  FCB $20 min allocation
 optl EQU *-optns
 
-rnam FCS /DD/
+         IFNE  DD
+rnam     fcs   /DD/
+         ELSE
+rnam     fcb   'H,'0+DNum+$80
+         ENDC
 fmnam FCS /RBF/
 drvnam FCS /EmuDsk/
 
