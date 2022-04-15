@@ -101,7 +101,7 @@ Entry    stu   <umem
 
          leax  <Hdrcr,pcr print line
          lbsr  PrintL1    print it
-         leax  <Head1,pcr
+         leax  Head1,pcr
          lbsr  PrintL1    print it
          leax  <Head2,pcr
 
