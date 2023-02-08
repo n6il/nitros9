@@ -173,8 +173,16 @@ L00D2    lda   ,x+
          ENDC
          puls  x
 
-* Atari has bootfile already in memory
+         IFNE  f256jr
+* flag that we've booted and that Boot Low starts appropriately
+         ldy   #$C000           I/O is at $C000-$DFFF
+         inc   <D.Boot
+         stx   <D.BTLO
+         ldx   #$FFFF
+         stx   <D.BTHI
+         ELSE
          IFNE  atari
+* Atari has bootfile already in memory
 * flag that we've booted and that Boot Low starts appropriately
          ldy   #$D000           Atari: I/O is at $D000-$D7FF
          inc   <D.Boot
@@ -190,8 +198,16 @@ L00D2    lda   ,x+
          ldy	#Bt.Start+Bt.Size
          ENDC
          ENDC
+         ENDC
 
          lbsr	ValMods
+
+* F256 Jr.: look for more modules at $E000-$FFF0
+         IFNE  f256jr
+         ldx   #$E000				
+         ldy   #$FFF0
+         lbsr  ValMods
+         ENDC
 
 * Atari: look for more modules at $D800-$F3FF
          IFNE  atari
@@ -256,6 +272,13 @@ L0158    ldx   <D.FMBM
 * Free-memory bitmap. Bit7 of 0,x corresponds to page 0, bit6 to page 1 etc.
 * Bit7 of 1,x corresponds to page 8, bit6 to page 9 etc, etc.
 
+         IFNE  f256jr
+* F256 Jr. needs $C000-$DFFF reserved since it's I/O space
+         ldb   #%11111111
+         stb   $18,x                    mark $C000-$C7FF I/O area as allocated
+         stb   $19,x                    mark $C800-$CFFF I/O area as allocated
+         stb   $1A,x                    mark $D000-$D7FF I/O area as allocated
+         stb   $1B,x                    mark $D800-$DFFF I/O area as allocated
          IFNE  atari
 * Atari needs $0000-$08FF and $D000-$D7FF reserved
          ldb   #%11111111
@@ -275,6 +298,7 @@ L0158    ldx   <D.FMBM
 * CoCo needs $0000-$04FF reserved
          ldb   #%11111000
          stb   ,x                       mark $0000-$04FF as allocated
+         ENDC
          ENDC
          ENDC
 
