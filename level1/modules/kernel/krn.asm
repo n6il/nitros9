@@ -279,6 +279,7 @@ L0158    ldx   <D.FMBM
          stb   $19,x                    mark $C800-$CFFF I/O area as allocated
          stb   $1A,x                    mark $D000-$D7FF I/O area as allocated
          stb   $1B,x                    mark $D800-$DFFF I/O area as allocated
+         ELSE
          IFNE  atari
 * Atari needs $0000-$08FF and $D000-$D7FF reserved
          ldb   #%11111111
