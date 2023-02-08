@@ -174,4 +174,68 @@ T1_VAL         EQU       $D659          Timer 1 Value (Read/Write)
 T1_CMP_CTR     EQU       $D65C          Timer 1 Compare Counter (Read/Write)
 T1_CMP         EQU       $D65D          Timer 1 Compare Value (Read/Write)
 
+********************************************************************
+* F256 JR. VIA Definitions
+*
+* VIA Addresses
+IORB           EQU       $DC00          Port B Data
+IORA           EQU       $DC01          Port A Data
+DDRB           EQU       $DC02          Port B Data Direction Register
+DDRA           EQU       $DC03          Port A Data Direction Register
+T1C_L          EQU       $DC04          Timer 1 Counter Low
+T1C_H          EQU       $DC05          Timer 1 Counter High
+T1L_L          EQU       $DC06          Timer 1 Latch Low
+T1L_H          EQU       $DC07          Timer 1 Latch High
+T2C_L          EQU       $DC08          Timer 2 Counter Low
+T2C_H          EQU       $DC09          Timer 2 Counter High
+SDR            EQU       $DC0A          Serial Data Register
+ACR            EQU       $DC0B          Auxiliary Control Register
+PCR            EQU       $DC0C          Peripheral Control Register
+IFR            EQU       $DC0D          Interrupt Flag Register
+IER            EQU       $DC0E          Interrupt Enable Register
+IORA2          EQU       $DC0F          Port A Data (no handshake)
+
+* ACR Control Register Values
+T1_CTRL        EQU       %11000000
+T2_CTRL        EQU       %00100000
+SR_CTRL        EQU       %00011100
+PBL_EN         EQU       %00000010
+PAL_EN         EQU       %00000001
+
+* PCR Control Register Values
+CB2_CTRL       EQU       %11100000
+CB1_CTRL       EQU       %00010000
+CA2_CTRL       EQU       %00001110
+CA1_CTRL       EQU       %00000001
+
+* IFR Control Register Values
+IRQF           EQU       %10000000
+T1F            EQU       %01000000
+T2F            EQU       %00100000
+CB1F           EQU       %00010000
+CB2F           EQU       %00001000
+SRF            EQU       %00000100
+CA1F           EQU       %00000010
+CA2F           EQU       %00000001
+
+* IER Control Register Values
+IERSET         EQU       %10000000
+T1E            EQU       %01000000
+T2E            EQU       %00100000
+CB1E           EQU       %00010000
+CB2E           EQU       %00001000
+SRE            EQU       %00000100
+CA1E           EQU       %00000010
+CA2E           EQU       %00000001
+
+********************************************************************
+* F256 JR. SD Card Interface Definitions
+*
+SDC_STAT       EQU       $DD00
+SDC_DATA       EQU       $DD01
+
+SPI_BUSY       EQU       %10000000
+SPI_CLK        EQU       %00000010
+CS_EN          EQU       %00000001
+
                ENDC      
