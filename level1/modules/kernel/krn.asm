@@ -33,6 +33,11 @@
 *  $0400-$04FF  |           System Stack           |
 *               |                                  |
 *     $0500---->|==================================|
+*
+* Some platforms place additional constraints on the memory map.
+* For example, the Atari A8s have screen memory here:
+*
+*     $0500---->|==================================|
 *               |                                  |
 *               |                                  |
 *               |                                  |
@@ -41,6 +46,7 @@
 *               |                                  |
 *               |                                  |
 *     $0900---->|==================================|
+*
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
@@ -86,9 +92,12 @@ name           fcs       /Krn/
 
 *
 * OS-9 Genesis!
-
+*
+* This is the place where OS-9 comes to life.
+*
 OS9Cold        equ       *
-* clear RAM up to and including $03FF
+* Clear RAM up to and including $03FF.
+* The F256 Jr. uses $0000-$0010 for its MMU registers so we avoid clearing that area.
                ifne      f256jr
                ldx       #D.FMBM
                else      
@@ -116,7 +125,7 @@ L007F          std       ,x++
                bne       L007F
                endc      
 
-* set up system globals
+* Set up the OS-9 system globals area.
                ifne      H6309
                ldd       #$200
                else      
@@ -140,9 +149,9 @@ L007F          std       ,x++
 * then reading it back for validation.  On the CoCo, we pretty much know
 * that we are in all-RAM mode at this point, and the same goes for the
 * other supported platforms.  So I am taking this code out for the time being
-* using an undefined macro.
+* by gating it with an undefined macro.
                ifne      CHECK_FOR_VALID_RAM
-* Check for valid RAM starting at $400
+* Check for valid RAM starting at $400.
 ChkRAM         leay      ,x
                ldd       ,y                  store org contents in D
                ldx       #$00FF
@@ -165,7 +174,7 @@ L00C2          leax      ,y                  X = end of RAM
                endc      
                stx       <D.MLIM             save off memory limit
 
-* Copy vector code over to address $100
+* Copy vector code over to address $100.
                pshs      x
                ifne      H6309
                leax      >VectCode,pcr
@@ -184,7 +193,7 @@ L00D2          lda       ,x+
                puls      x
 
                ifne      f256jr
-* flag that we've booted and that Boot Low starts appropriately
+* Flag that we've booted and that Boot Low starts at X.
                ldy       #$C000              I/O starts at $C000-$DFFF
                inc       <D.Boot
                stx       <D.BTLO
@@ -192,8 +201,8 @@ L00D2          lda       ,x+
                stx       <D.BTHI
                else      
                ifne      atari
-* Atari has bootfile already in memory
-* flag that we've booted and that Boot Low starts appropriately
+* Atari has bootfile already in memory.
+* Flag that we've booted and that Boot Low starts at X.
                ldy       #$D000              Atari: I/O is at $D000-$D7FF
                inc       <D.Boot
                stx       <D.BTLO
@@ -210,8 +219,14 @@ L00D2          lda       ,x+
                endc      
                endc      
 
+* Here, X points to the address to start looking for OS-9 modules, and Y
+* points to the address to stop looking.
                lbsr      ValMods
 
+* Some platforms don't have contiguous RAM in the 64K address space due to "holes"
+* for areas such as I/O. For these platforms, we have to perform a separate OS-9
+* module scan to look for modules after those holes.
+*
 * F256 Jr.: look for more modules at $E000-$FFF0
                ifne      f256jr
                ldx       #$E000
@@ -226,7 +241,7 @@ L00D2          lda       ,x+
                lbsr      ValMods
                endc      
 
-* Copy vectors to system globals
+* Copy vectors to system globals.
 L00EE          leay      >Vectors,pcr
                leax      >ModTop,pcr
                pshs      x
@@ -238,7 +253,7 @@ L00FB          ldd       ,y++
                bls       L00FB
                leas      2,s                 restore stack
 
-* fill in more system globals
+* Fill in more system globals.
                leax      >URtoSs,pcr
                stx       <D.URtoSs
                leax      >UsrIRQ,pcr
@@ -257,11 +272,11 @@ L00FB          ldd       ,y++
                stx       <D.Clock            and save it to the vector
                stx       <D.AltIRQ           and in the alternate IRQ vector
 
-* install system calls
+* Install OS-9 system calls from the system call table.
                leay      >SysTbl,pcr
                lbsr      InstSSvc
 
-* link to init module
+* Link to init module.
                lda       #Systm+0
                leax      >InitNam,pcr
                os9       F$Link
@@ -279,11 +294,13 @@ L00FB          ldd       ,y++
 GetMem         equ       *                   Initially I tried GetMem clra
 *                                       that is redundant. See last line. RG
 L0158          ldx       <D.FMBM
-* Free-memory bitmap. Bit7 of 0,x corresponds to page 0, bit6 to page 1 etc.
-* Bit7 of 1,x corresponds to page 8, bit6 to page 9 etc, etc.
+* The allocation bitmap starts at D.FMBM. Each bit represents a 256 byte "page", with 
+* 1 indicating the page is allocated, and 0 indicating the page is free. So, bit 7 of
+* 0,x corresponds to page 0, bit 6 corresponds to page 1, and so on.
+* Likewise, bit 7 of 1,x corresponds to page 8, bit 6 corresponds to page 9, and so on.
 
                ifne      f256jr
-* F256 Jr. needs $C000-$DFFF reserved since it's I/O space
+* F256 Jr. needs $C000-$DFFF reserved since this is I/O space.
                ldb       #%11111111
                stb       $18,x               mark $C000-$C7FF I/O area as allocated
                stb       $19,x               mark $C800-$CFFF I/O area as allocated
@@ -291,7 +308,7 @@ L0158          ldx       <D.FMBM
                stb       $1B,x               mark $D800-$DFFF I/O area as allocated
                else      
                ifne      atari
-* Atari needs $0000-$08FF and $D000-$D7FF reserved
+* Atari needs $0000-$08FF and $D000-$D7FF reserved.
                ldb       #%11111111
                stb       ,x                  mark $0000-$07FF as allocated
                stb       $1A,x               mark $D000-$D7FF I/O area as allocated
@@ -299,21 +316,21 @@ L0158          ldx       <D.FMBM
                stb       1,x                 mark $0800-$08FF as allocated
                else      
                ifne      corsham
-* Corsham needs $0000-$04FF and $E000-$EFFF reserved
+* Corsham needs $0000-$04FF and $E000-$EFFF reserved.
                ldb       #%11111000
                stb       ,x                  mark $0000-$04FF as allocated
                ldb       #%11111111
                stb       $1C,x               mark $E000-$E7FF I/O area as allocated
                stb       $1D,x               mark $E800-$EFFF I/O area as allocated
                else      
-* CoCo needs $0000-$04FF reserved
+* CoCo needs $0000-$04FF reserved.
                ldb       #%11111000
                stb       ,x                  mark $0000-$04FF as allocated
                endc      
                endc      
                endc      
 
-* For all platforms exclude high memory as defined (earlier) by D.MLIM
+* For all platforms exclude high memory as defined (earlier) by D.MLIM.
                clra      
                ldb       <D.MLIM
                negb      
@@ -321,7 +338,7 @@ L0158          ldx       <D.FMBM
                negb      
                lbsr      L065A               in included fallbit.asm
 
-* jump into krnp2 here
+* Now that OS-9 has initialized RAM, jump into krnp2 here.
                leax      >P2Nam,pcr
                lda       #Systm+Objct
                os9       F$Link
@@ -345,7 +362,7 @@ L018C          ldx       >D.Proc
                puls      pc,x,b
 
 UsrIRQ         leay      <DoIRQPoll,pcr
-* transition from user to system state
+* Here is the transition from user to system state.
 URtoSs         clra      
                tfr       a,dp                clear direct page
                ldx       <D.Proc             get current process desc
@@ -386,7 +403,7 @@ L01CF          rti
 Poll           comb      
                rts       
 
-* Default clock routine - executed 60 times/sec
+* Here is the default clock routine, executed at a nominal rate (usually 60 times/second).
 Clock          ldx       <D.SProcQ           get pointer to sleeping proc queue
                beq       L01FD               branch if no process sleeping
                lda       P$State,x           get state of that process
@@ -423,37 +440,13 @@ ClockRTI       rti
 L0212          leay      >ActivateProc,pcr
                bra       URtoSs
 
-
-*FAProc   ldx   R$X,u        Get ptr to process to activate
-*L0D11    clrb  
-*         pshs  cc,b,x,y,u
-*         lda   P$Prior,x    Get process priority
-*         sta   P$Age,x      Save it as age (How long it's been around)
-*         orcc  #IntMasks    Shut down IRQ's
-*         ldu   #(D.AProcQ-P$Queue)  Get ptr to active process queue
-*         bra   L0D29        Go through the chain
-** Update active process queue
-**  X=Process to activate
-**  U=Current process in queue links
-*L0D1F    inc   P$Age,u      update current process age
-*         bne   L0D25        wrap?
-*         dec   P$Age,u      yes, reset it to max.
-*L0D25    cmpa  P$Age,u      match process ages??
-*         bhi   L0D2B        no, skip update
-*L0D29    leay  ,u           point Y to current process
-*L0D2B    ldu   P$Queue,u    get pointer to next process in chain
-*         bne   L0D1F        Still more in chain, keep going
-*         ldd   P$Queue,y    
-*         stx   P$Queue,y    save new process to chain
-*         std   P$Queue,x
-*         puls  cc,b,x,y,u,pc
-
-
+* We pull in F$AProc code here.
                use       faproc.asm
 
-* User-State system call entry point
+* User-State system call entry point.
 *
 * All system calls made from user-state will go through this code.
+*
 UsrSvc         leay      <MakeSysCall,pcr
                orcc      #IntMasks
                lbra      URtoSs
@@ -476,7 +469,8 @@ ActivateProc
                bsr       L021A
                bra       FNProc
 
-* System-State system call entry point
+* System-State system call entry point.
+*
 SysSvc         clra      
                tfr       a,dp                set direct page to 0
                leau      ,s                  point U to SP
@@ -484,7 +478,8 @@ SysSvc         clra
                bsr       DoSysCall
                rti       
 
-* Entry: Y = Dispatch table (user or system)
+* Entry: Y = Dispatch table (user or system).
+*
 DoSysCall                
                pshs      u
                ldx       R$PC,u              point X to PC
@@ -516,7 +511,7 @@ L02A7          comb
                ldb       #E$UnkSvc
                bra       L0292
 
-* no signal handler, exit with signal value as exit code
+* There is no signal handler; exit with signal value as exit code.
 L02AC          ldb       P$State,x
                orb       #SysState
                stb       P$State,x
@@ -528,7 +523,7 @@ FNProc         clra
                clrb      
                std       <D.Proc
                bra       L02C2
-* execution goes here when there are no active processes
+* Execution arrives here when there are no active processes.
 L02C0          cwai      #^(IntMasks)
 L02C2          orcc      #IntMasks
                ldx       <D.AProcQ           get next active process
@@ -549,7 +544,7 @@ L02D1          ldb       P$State,x           get state
                beq       L02AC               branch if none
                ldy       <P$SigDat,x         get data addr
                ldd       R$Y,s
-* set up new return stack for RTI
+* Set up new return stack for RTI.
                pshs      u,y,d               new PC (sigvec), new U (sigdat), same Y
                ldu       6+R$X,s             old X via U
                lda       <P$Signal,x         signal ...
@@ -580,7 +575,7 @@ FLink          pshs      u                   save caller regs
                bcc       FLinkOK
                ldb       #E$MNF
                bra       L033D
-* U = module dir entry
+* U = module directory entry
 FLinkOK        ldy       ,u                  get module ptr
                ldb       M$Revs,y
                bitb      #ReEnt              reentrant?
@@ -660,8 +655,8 @@ ValLea         leay      ,u
 errex@         coma      
                rts       
 
-* check module header and CRC
-* X = address of potential module
+* Check module header and CRC.
+* Entry: X = address of potential module.
 ChkMHCRC       ldd       ,x
                cmpd      #M$ID12             sync bytes?
                bne       ChkMHEx             nope, not a module here
@@ -673,7 +668,7 @@ ChkMHEx        comb
                rts       
 
 Chk4CRC                  
-* Following 4 lines added to support no CRC checks - 2002/07/21
+* The following 4 lines added to support no CRC checks - 2002/07/21.
                lda       <D.CRC              is CRC checking on?
                bne       DoCRCCk             branch if so
                clrb      
@@ -684,8 +679,8 @@ DoCRCCk        pshs      x
                bsr       ChkMCRC             checkm module CRC
                puls      pc,x
 
-* check module header parity
-* Y = pointer to parity byte
+* Check module header parity.
+*      Y = pointer to parity byte
 ChkMHPar       pshs      y,x
                clra      
 ChkM010        eora      ,x+
@@ -773,7 +768,7 @@ FFork          ldx       <D.PrcDBT
                os9       F$All64
                bcs       L0517
                ldx       <D.Proc
-               pshs      x                   save calling proc desc on stack
+               pshs      x                   save calling process descriptor on stack
                ldd       P$User,x
                std       P$User,y
                lda       P$Prior,x
@@ -789,13 +784,13 @@ FFork          ldx       <D.PrcDBT
                leax      <P$DIO,x
                leay      <P$DIO,y
                ldb       #DefIOSiz
-* copy I/O stuff from parent to child
+* Copy I/O stuff from parent to child.
 L04D7          lda       ,x+
                sta       ,y+
                decb      
                bne       L04D7
-* X/Y = address of path table in respective proc desc
-* Dup stdin/stdout/stderr
+* X/Y = address of path table in respective process descriptor.
+* Duplicate stdin/stdout/stderr paths.
                ldb       #$03
 L04E0          lda       ,x+
                os9       I$Dup
@@ -938,9 +933,10 @@ L05E7          puls      pc,u,x
 
                use       fssvc.asm
 
-* Validate modules subroutine
+* Validate modules subroutine.
+*
 * Entry: X = address to start searching
-*	    Y = address to stop (actually stops at Y-1)
+*	     Y = address to stop (actually stops at Y-1)
 ValMods        pshs      y
 valloop@       lbsr      ValMod
                bcs       valerr
@@ -1017,7 +1013,6 @@ Zoro           fcb       $00
 InitNam        fcs       /Init/
 
 P2Nam          fcs       /krnp2/
-
 
 
 EOMTop         equ       *
