@@ -1,5 +1,5 @@
 ********************************************************************
-* VTIO - NitrOS-9 Video Terminal I/O driver for F256 JR.
+* VTIO - NitrOS-9 Video Terminal I/O driver for F256 Jr.
 *
 * $Id$
 *
@@ -10,7 +10,7 @@
 * Started from VTIO for the Atari XE/XL
                          
          nam   VTIO      
-         ttl   NitrOS-9 Video Terminal I/O driver for F256 JR.
+         ttl   NitrOS-9 Video Terminal I/O driver for F256 Jr.
                          
          ifp1            
          use   defsfile  

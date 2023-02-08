@@ -64,6 +64,6 @@ $(DSK):
 	$(OS9ATTR_TEXT) $@,startup
 
 info:
-	@$(ECHO) "*** NitrOS-9/6809 Level 1 for the F256 JR ***" 
+	@$(ECHO) "*** NitrOS-9/6809 Level 1 for the F256 Jr. ***" 
 	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
 	

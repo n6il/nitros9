@@ -2,13 +2,13 @@
 F256JR.D       SET       1
 
 ********************************************************************
-* F256JRDefs - NitrOS-9 System Definitions for the Foenix F256 JR.
+* F256JRDefs - NitrOS-9 System Definitions for the Foenix F256 Jr.
 *
-* This is a high level view of the F256 JR. memory map as setup by
+* This is a high level view of the F256 Jr. memory map as setup by
 * NitrOS-9.
 *
 *     $0000----> ================================== 
-*               |     F256 JR. MMU Registers       |
+*               |     F256 Jr. MMU Registers       |
 *     $0010----> ================================== 
 *               |                                  |
 *               |      NitrOS-9 Globals/Stack      |
@@ -33,7 +33,7 @@ F256JR.D       SET       1
 *               |                                  |
 *                ================================== 
 *
-* F256 JR. hardware is documented here:
+* F256 Jr. hardware is documented here:
 *   https://github.com/pweingar/C256jrManual/blob/main/tex/f256jr_ref.pdf
 *
 * $Id$
@@ -44,8 +44,8 @@ F256JR.D       SET       1
 *          2023/02/07  Boisy G. Pitre
 * Started
 
-               NAM       F256JRDefs
-               TTL       NitrOS-9 System Definitions for the Foenix F256 JR.
+               NAM       F256JrDefs
+               TTL       NitrOS-9 System Definitions for the Foenix F256 Jr.
 
 
 
@@ -91,7 +91,7 @@ HW.Page        SET       $FF                 Device descriptor hardware page
 
 
 ********************************************************************
-* NitrOS-9 Screen Definitions for the F256 JR.
+* NitrOS-9 Screen Definitions for the F256 Jr.
 *
 G.Cols         EQU       80
 G.Rows         EQU       PwrLnFrq
@@ -101,7 +101,7 @@ G.ScrStart     EQU       $0000
 G.ScrEnd       EQU       G.ScrStart+(G.Cols*G.Rows)
 
 ********************************************************************
-* F256 JR. MMU Definitions
+* F256 Jr. MMU Definitions
 *
 MMU_MEM_CTRL   EQU       $0000
 MMU_IO_CTRL    EQU       $0001
@@ -116,7 +116,7 @@ IO_DISABLE     EQU       %00000010
 IO_PAGE        EQU       %00000001
 
 ********************************************************************
-* F256 JR. Interrupt Definitions
+* F256 Jr. Interrupt Definitions
 *
 * Interrupt Addresses
 INT_PENDING_0  EQU       0xD660
@@ -157,7 +157,7 @@ IEC_ATN_i      EQU       %00000100		IEC ATN In
 IEC_SREQ_i     EQU       %00001000		IEC SREQ In
 
 ********************************************************************
-* F256 JR. Timer Definitions
+* F256 Jr. Timer Definitions
 *
 * Timer Addresses
 T0_CTR         EQU       $D650          Timer 0 Counter (Write)
@@ -172,7 +172,7 @@ T1_CMP_CTR     EQU       $D65C          Timer 1 Compare Counter (Read/Write)
 T1_CMP         EQU       $D65D          Timer 1 Compare Value (Read/Write)
 
 ********************************************************************
-* F256 JR. VIA Definitions
+* F256 Jr. VIA Definitions
 *
 * VIA Addresses
 IORB           EQU       $DC00          Port B Data
@@ -226,7 +226,7 @@ CA1E           EQU       %00000010
 CA2E           EQU       %00000001
 
 ********************************************************************
-* F256 JR. SD Card Interface Definitions
+* F256 Jr. SD Card Interface Definitions
 *
 SDC_STAT       EQU       $DD00
 SDC_DATA       EQU       $DD01
