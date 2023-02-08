@@ -62,7 +62,7 @@
 *  15r1    2004/05/23  Boisy G. Pitre
 * Renamed to 'krn'
 *
-*  16      2004/05/23  Boisy G. Pitre
+*  16      ????/??/??  Boisy G. Pitre
 * Added changes for Atari port
 
          nam   krn
@@ -88,17 +88,27 @@ name     fcs   /Krn/
 * OS-9 Genesis!
 
 OS9Cold  equ   *
-* clear out system globals from $0000-$0400
-*         ldx   #D.FMBM
+* clear RAM up to and including $03FF
+         IFNE  f256jr
+         ldx   #D.FMBM
+         ELSE
          ldx   #$0000
+         ENDC
          IFNE  H6309
-*         ldw   #$400-D.FMBM
+         IFNE  f256jr
+         ldw   #$400-D.FMBM
+         ELSE
+         ldx   #$0000
+         ENDC
          ldw   #$400
          leay  Zoro,pc
          tfm   y,x+
          ELSE
-*         ldy   #$400-D.FMBM
+         IFNE  f256jr
+         ELSE
+         ldy   #$400-D.FMBM
          ldy   #$400
+         ENDC
          clra
          clrb
 L007F    std   ,x++
@@ -175,7 +185,7 @@ L00D2    lda   ,x+
 
          IFNE  f256jr
 * flag that we've booted and that Boot Low starts appropriately
-         ldy   #$C000           I/O is at $C000-$DFFF
+         ldy   #$C000           I/O starts at $C000-$DFFF
          inc   <D.Boot
          stx   <D.BTLO
          ldx   #$FFFF
