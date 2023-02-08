@@ -155,6 +155,10 @@ InitCont
 
 * Initialize clock hardware
          IFNE  f256jr
+* Use the SOF to get a 1/60th or 1/70th interrupt
+         lda   INT_MASK_1
+         anda  #~INT_VKY_SOF
+         sta   INT_MASK_0
          ELSE
          IFNE  corsham
 * Corsham SS-50 6809 board -- uses the Arduino as a clock source
@@ -278,8 +282,13 @@ ClkEx
 * For CoCo 1/2, called once every 16.667 milliseconds
 SvcIRQ                   
          clra            
-         tfr   a,dp       set direct page to zero
+         tfr   a,dp            set direct page to zero
          IFNE   f256jr
+         lda    INT_PENDING_0
+         bita   #INT_VKY_SOF
+         bne    ClearInt       it's a clock interrupt -- clear it
+         jmp    [>D.SvcIRQ]    else service other possible IRQ
+ClearInt sta    INT_PENDING_0  clear clock interrupt by writing bit back
          ELSE
          IFNE   corsham
          tst    PIA0Base+3
