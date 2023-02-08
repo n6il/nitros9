@@ -106,16 +106,16 @@ G.ScrEnd       equ       G.ScrStart+(G.Cols*G.Rows)
 ********************************************************************
 * F256 JR. MMU Definitions
 *
-MMU_MEM_CTRL   equ       $0000
-MMU_IO_CTRL    equ       $0001
+MMU_MEM_CTRL   EQU       $0000
+MMU_IO_CTRL    EQU       $0001
 
 * MMU_MEM_CTRL bits
-EDIT_EN		   equ       1<<7
-EDIT_LUT	   equ       3<<4
-ACT_LUT        equ       3<<0
+EDIT_EN        EQU       %10000000
+EDIT_LUT       EQU       %00110000
+ACT_LUT        EQU       %00000011
 
 * MMU_IO_CTRL bits
-IO_DISABLE     equ       1<<1
-IO_PAGE        equ       1<<0
+IO_DISABLE     EQU       %00000010
+IO_PAGE        EQU       %00000001
 
                endc      

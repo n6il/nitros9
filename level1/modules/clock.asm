@@ -154,6 +154,8 @@ InitCont
          jsr   ,y         call init entry point of Clock2
 
 * Initialize clock hardware
+         IFNE  f256jr
+         ELSE
          IFNE  corsham
 * Corsham SS-50 6809 board -- uses the Arduino as a clock source
 * Timer values:
@@ -268,6 +270,7 @@ ClkEx
           puls  cc,pc      recover IRQ enable status and return
           ENDC       
           ENDC
+          ENDC
                          
 *
 * Clock IRQ Entry Point
@@ -276,7 +279,9 @@ ClkEx
 SvcIRQ                   
          clra            
          tfr   a,dp       set direct page to zero
-         IFNE  corsham
+         IFNE   f256jr
+         ELSE
+         IFNE   corsham
          tst    PIA0Base+3
          bmi    ClearInt    it's a clock interrupt -- clear it
          jmp    [>D.SvcIRQ] else service other possible IRQ
@@ -307,6 +312,7 @@ L0032
          bmi   L0032      branch if sync flag on
          jmp   [>D.SvcIRQ] else service other possible IRQ
 L0032    tst   PIA0Base+2 clear interrupt
+          ENDC
           ENDC
           ENDC
          dec   <D.Tick    decrement tick counter
