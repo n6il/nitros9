@@ -39,10 +39,10 @@ OS9.D        SET       1
 * Created Color Computer 3 Version of OS9Defs.
 *
 *          1998/10/03  Boisy G. Pitre
-* Consoldated Level 1/Level 2 os9defs.
+* Consolidated Level 1/Level 2 os9defs.
 *
 *          2002/04/04  Boisy G. Pitre
-* Consoldated Level 2/Level 2 V3 os9defs.
+* Consolidated Level 2/Level 2 V3 os9defs.
 *
 *          2002/04/30  Boisy G. Pitre
 * Added NitrOS-9 definitions.
