@@ -91,7 +91,7 @@ HW.Page        SET       $FF                 Device descriptor hardware page
 
 
 ********************************************************************
-* NitrOS-9 Memory Definitions for the F256 JR.
+* NitrOS-9 Screen Definitions for the F256 JR.
 *
 G.Cols         EQU       80
                IF        Hz60-1
