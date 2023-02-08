@@ -1,5 +1,5 @@
-               ifne      F256JR.D-1
-F256JR.D       set       1
+               IFNE      F256JR.D-1
+F256JR.D       SET       1
 
 ********************************************************************
 * F256JRDefs - NitrOS-9 System Definitions for the Foenix F256 JR.
@@ -44,18 +44,18 @@ F256JR.D       set       1
 *          2012/02/23  Boisy G. Pitre
 * Started
 
-               nam       F256JRDefs
-               ttl       NitrOS-9 System Definitions for the Foenix F256 JR.
+               NAM       F256JRDefs
+               TTL       NitrOS-9 System Definitions for the Foenix F256 JR.
 
 
 
 ********************************************************************
 * Power Line Frequency Definitions
 *
-Hz50           equ       1                   Assemble clock for 50 hz power
-Hz60           equ       2                   Assemble clock for 60 hz power
+Hz50           EQU       1                   Assemble clock for 50 hz power
+Hz60           EQU       2                   Assemble clock for 60 hz power
                IFNDEF    PwrLnFrq
-PwrLnFrq       set       Hz60                Set to Appropriate freq
+PwrLnFrq       SET       Hz60                Set to Appropriate freq
                ENDC
 
 
@@ -63,11 +63,11 @@ PwrLnFrq       set       Hz60                Set to Appropriate freq
 * Ticks per second
 *
                IFNDEF    TkPerSec
-               ifeq      PwrLnFrq-Hz50
-TkPerSec       set       50
-               else      
-TkPerSec       set       60
-               endc      
+               IFEQ      PwrLnFrq-Hz50
+TkPerSec       SET       50
+               ELSE      
+TkPerSec       SET       60
+               ENDC      
                ENDC
 
 
@@ -83,25 +83,25 @@ TkPerSec       set       60
 * These definitions are not strictly for 'Boot', but are for booting the
 * system.
 *
-Bt.Start       set       $8000
+Bt.Start       SET       $8000
 Bt.Size        EQU       $1080               Maximum size of bootfile
 Bt.Track       EQU       $0000
 Bt.Sec         EQU       0
-HW.Page        set       $FF                 Device descriptor hardware page
+HW.Page        SET       $FF                 Device descriptor hardware page
 
 
 ********************************************************************
 * NitrOS-9 Memory Definitions for the F256 JR.
 *
-G.Cols         equ       80
+G.Cols         EQU       80
                IF        Hz60-1
-G.Rows         equ       60
+G.Rows         EQU       60
                ELSE
-G.Rows         equ       50
+G.Rows         EQU       50
                ENDC
 * The screen start address is relative to the I/O area starting at $C000
-G.ScrStart     equ       $0000
-G.ScrEnd       equ       G.ScrStart+(G.Cols*G.Rows)
+G.ScrStart     EQU       $0000
+G.ScrEnd       EQU       G.ScrStart+(G.Cols*G.Rows)
 
 ********************************************************************
 * F256 JR. MMU Definitions
@@ -118,4 +118,60 @@ ACT_LUT        EQU       %00000011
 IO_DISABLE     EQU       %00000010
 IO_PAGE        EQU       %00000001
 
-               endc      
+********************************************************************
+* F256 JR. Interrupt Definitions
+*
+* Interrupt Addresses
+INT_PENDING_0  EQU       0xD660
+INT_POLARITY_0 EQU       0xD664
+INT_EDGE_0     EQU       0xD668
+INT_MASK_0     EQU       0xD66C
+
+INT_PENDING_1  EQU       0xD661
+INT_POLARITY_1 EQU       0xD665
+INT_EDGE_1     EQU       0xD669
+INT_MASK_1     EQU       0xD66D
+
+INT_PENDING_2  EQU       0xD662
+INT_POLARITY_2 EQU       0xD666
+INT_EDGE_2     EQU       0xD66A
+INT_MASK_2     EQU       0xD66E
+
+* Interrupt Group 0 Flags
+INT_VKY_SOF    EQU       %00000001		TinyVicky Start Of Frame Interrupt
+INT_VKY_SOL    EQU       %00000010      TinyVicky Start Of Line Interrupt
+INT_PS2_KBD    EQU       %00000100      PS/2 keyboard event
+INT_PS2_MOUSE  EQU       %00001000      PS/2 mouse event
+INT_TIMER_0    EQU       %00010000      TIMER0 has reached its target value
+INT_TIMER_1    EQU       %00010000      TIMER1 has reached its target value
+INT_CARTRIDGE  EQU       %10000000      Interrupt asserted by the cartridge
+
+* Interrupt Group 1 Flags
+INT_UART       EQU       %00000001		The UART is ready to receive or send data
+INT_RTC        EQU       %00010000      Event from the real time clock chip
+INT_VIA0       EQU       %00100000      Event from the 65C22 VIA chip
+INT_VIA1       EQU       %01000000      F256K Only: Local keyboard
+INT_SDC_INS    EQU       %01000000      User has inserted an SD card
+
+* Interrupt Group 2 Flags
+IEC_DATA_i     EQU       %00000001		IEC Data In
+IEC_CLK_i      EQU       %00000010		IEC Clock In
+IEC_ATN_i      EQU       %00000100		IEC ATN In
+IEC_SREQ_i     EQU       %00001000		IEC SREQ In
+
+********************************************************************
+* F256 JR. Timer Definitions
+*
+* Timer Addresses
+T0_CTR         EQU       $D650          Timer 0 Counter (Write)
+T0_STAT        EQU       $D650          Timer 0 Status (Read)
+T0_VAL         EQU       $D651          Timer 0 Value (Read/Write)
+T0_CMP_CTR     EQU       $D654          Timer 0 Compare Counter (Read/Write)
+T0_CMP         EQU       $D655          Timer 0 Compare Value (Read/Write)
+T1_CTR         EQU       $D658          Timer 1 Counter (Write)
+T1_STAT        EQU       $D658          Timer 1 Status (Read)
+T1_VAL         EQU       $D659          Timer 1 Value (Read/Write)
+T1_CMP_CTR     EQU       $D65C          Timer 1 Compare Counter (Read/Write)
+T1_CMP         EQU       $D65D          Timer 1 Compare Value (Read/Write)
+
+               ENDC      
