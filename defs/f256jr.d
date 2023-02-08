@@ -63,10 +63,10 @@ PwrLnFrq       SET       Hz60                Set to Appropriate freq
 * Ticks per second
 *
                IFNDEF    TkPerSec
-               IFEQ      PwrLnFrq-Hz50
-TkPerSec       SET       50
-               ELSE      
+               IFEQ      PwrLnFrq-Hz60
 TkPerSec       SET       60
+               ELSE      
+TkPerSec       SET       70
                ENDC      
                ENDC
 
@@ -94,7 +94,11 @@ HW.Page        SET       $FF                 Device descriptor hardware page
 * NitrOS-9 Screen Definitions for the F256 Jr.
 *
 G.Cols         EQU       80
-G.Rows         EQU       PwrLnFrq
+               IFEQ      PwrLnFrq-Hz60
+G.Rows         EQU       60
+               ELSE
+G.Rows         EQU       70
+               ENDC
 
 * The screen start address is relative to the I/O area starting at $C000
 G.ScrStart     EQU       $0000
