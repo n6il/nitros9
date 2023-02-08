@@ -94,11 +94,8 @@ HW.Page        SET       $FF                 Device descriptor hardware page
 * NitrOS-9 Screen Definitions for the F256 JR.
 *
 G.Cols         EQU       80
-               IF        Hz60-1
-G.Rows         EQU       60
-               ELSE
-G.Rows         EQU       50
-               ENDC
+G.Rows         EQU       PwrLnFrq
+
 * The screen start address is relative to the I/O area starting at $C000
 G.ScrStart     EQU       $0000
 G.ScrEnd       EQU       G.ScrStart+(G.Cols*G.Rows)
