@@ -100,8 +100,8 @@ G.Rows         EQU       60
 G.Rows         EQU       70
                ENDC
 
-* The screen start address is relative to the I/O area starting at $C000
-G.ScrStart     EQU       $0000
+* The screen start address is in the I/O area starting at $C000
+G.ScrStart     EQU       $C000
 G.ScrEnd       EQU       G.ScrStart+(G.Cols*G.Rows)
 
 ********************************************************************
