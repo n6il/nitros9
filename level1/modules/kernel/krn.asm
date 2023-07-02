@@ -794,62 +794,66 @@ L0517    comb
          ldb   #E$PrcFul
          rts
 
-FChain   bsr   L0543
-         bcs   L0531
-         orcc  #IntMasks
-         ldb   $0D,x
-         andb  #$7F
-         stb   $0D,x
-L0527    os9   F$AProc
+* F$Chain user state
+FChain   bsr   DoChain                 do the F$Chain
+         bcs   L0531                   branch if error
+         orcc  #IntMasks               mask interrupts
+         ldb   P$State,x               get process state
+         andb  #^SysState              turn off system state
+         stb   P$State,x               save new state
+L0527    os9   F$AProc                 activate process
          os9   F$NProc
 
-SFChain  bsr   L0543
-         bcc   L0527
+* F$Chain system state
+SFChain  bsr   DoChain                 do the F$Chain
+         bcc   L0527                   branch if OK
 L0531    pshs  b
-         stb   <P$Signal,x
-         ldb   P$State,x
-         orb   #Condem
-         stb   P$State,x
-         ldb   #$FF
-         stb   P$Prior,x
-         comb
-         puls  pc,b
-L0543    pshs  u
-         ldx   <D.Proc
-         ldu   <P$PModul,x
-         os9   F$UnLink
-         ldu   ,s
+         stb   <P$Signal,x             save off error code
+         ldb   P$State,x               get process state
+         orb   #Condem                 set the condemn bit
+         stb   P$State,x               save new state
+         ldb   #$FF                    get highest priority
+         stb   P$Prior,x               set priority
+         comb                          set carry
+         puls  pc,b                    return error
+         
+DoChain  pshs  u                       save off caller's SP
+         ldx   <D.Proc                 get current process descriptor
+         ldu   <P$PModul,x             get pointer to module for current process
+         os9   F$UnLink                unlink the module
+         ldu   ,s                      get saved caller's SP
          bsr   L0553
-         puls  pc,u
-L0553    ldx   <D.Proc
-         pshs  u,x
-         ldd   <D.UsrSvc
-         std   <P$SWI,x
-         std   <P$SWI2,x
-         std   <P$SWI3,x
+         puls  pc,u                    recover U and return
+         
+L0553    ldx   <D.Proc                 get current process descriptor
+         pshs  u,x                     save off
+         ldd   <D.UsrSvc               get user service table
+         std   <P$SWI,x                save off as process' SWI vector
+         std   <P$SWI2,x               ... and SWI2 vector
+         std   <P$SWI3,x               ... and SWI3 vector
          clra
          clrb
-         sta   <P$Signal,x
-         std   <P$SigVec,x
-         lda   R$A,u
-         ldx   R$X,u
-         os9   F$Link
-         bcc   L0578
-         os9   F$Load
-         bcs   L05E7
-L0578    ldy   <D.Proc
-         stu   <P$PModul,y
-         cmpa  #Prgrm+Objct
-         beq   L058B
-         cmpa  #Systm+Objct
-         beq   L058B
-         comb
-         ldb   #E$NEMod
-         bra   L05E7
+         sta   <P$Signal,x             clear signal
+         std   <P$SigVec,x             clear signal vector
+         lda   R$A,u                   get caller's A
+         ldx   R$X,u                   ... and X
+         os9   F$Link                  link the module to chain to
+         bcc   L0578                   branch if OK
+         os9   F$Load                  ... else load the module to chain to
+         bcs   L05E7                   ... and branch if error
+L0578    ldy   <D.Proc                 get current process
+         stu   <P$PModul,y             save off module pointer
+         cmpa  #Prgrm+Objct            is this a program module?
+         beq   L058B                   branch if so
+         cmpa  #Systm+Objct            is it a system module?
+         beq   L058B                   branch if so
+         comb                          else set carry
+         ldb   #E$NEMod                set error in B
+         bra   L05E7                   and return
 L058B    leay  ,u                      Y = addr of module
          ldu   2,s                     get U off stack (caller regs)
-         stx   R$X,u
-         lda   R$B,u
+         stx   R$X,u                   update X to point past name
+         lda   R$B,u                   get caller's requested memory size in 256 byte pages
          clrb
          cmpd  M$Mem,y                 compare passed mem to module's
          bcc   L059B                   branch if less than
