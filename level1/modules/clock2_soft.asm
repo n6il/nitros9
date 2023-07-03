@@ -8,36 +8,14 @@
 * ------------------------------------------------------------------
 *   1      2003/08/18  Boisy G. Pitre
 * Separated clock2 modules for source clarity.
-
-         nam   Clock2
-         ttl   Software Clock Driver
-
-         ifp1
-         use   defsfile
-         endc
-
-tylg     set   Sbrtn+Objct
-atrv     set   ReEnt+rev
-rev      set   $00
-edition  set   1
-
+*
+*          2023/07/02  Boisy G. Pitre
+* Reintroduced a single clock module and this file is now included in clock.asm.
 
 RTC.Base equ   0          Have to have one defined.
 
-         mod   len,name,Sbrtn+Objct,ReEnt+0,JmpTable,RTC.Base
-
-name     fcs   "Clock2"
-         fcb   edition
-
-JmpTable
-         rts              Init
-         nop
-         nop
-         bra   GetTime    Read
-         nop
-         rts              Write
-
-GetTime  lda   <D.Min     grab current minute
+Clock2_GetTime
+         lda   <D.Min     grab current minute
          inca             minute+1
          cmpa  #60        End of hour?
          blo   UpdMin     no, Set start of minute
@@ -69,6 +47,8 @@ UpdHour  std   <D.Day     save day,hour
          clra             minute=00
 UpdMin   clrb             seconds=00
          std   <D.Min     save min,secs
+Clock2_SetTime
+Clock2_Init
 UpdTExit rts
 
 months   fcb   31,28,31,30,31,30,31,31,30,31,30,31 Days in each month

@@ -54,18 +54,9 @@
 *
 *   1      2004/08/18  Boisy G. Pitre
 * Separated clock2 modules for source clarity.
-
-         nam   Clock2    
-         ttl   Dallas Semiconductor 1216 RTC Driver
-
-         ifp1            
-         use   defsfile  
-         endc            
-
-tylg     set   Sbrtn+Objct
-atrv     set   ReEnt+rev
-rev      set   $00
-edition  set   1
+*
+*          2023/07/02  Boisy G. Pitre
+* Reintroduced a single clock module and this file is now included in clock.asm.
 
 RTC.Base equ   $C000      clock mapped to $C000-$DFFF; $FFA6 MMU slot
 RTC.Zero equ   0          Send zero bit
@@ -79,22 +70,12 @@ D.Temp   equ   3          on SW page, holds "clock" data
 D.Start  equ   4          on SW page, code starts here
 
 
-         mod   eom,name,tylg,atrv,JmpTable,RTC.Base
-
-name     fcs   "Clock2"
-         fcb   edition
-
          IFNE  MPIFlag   
 SlotSlct fcb   MPI.Slot-1 Slot constant for MPI select code
          ENDC            
 
-JmpTable                 
-         lbra  Init      
-         bra   GetTime   
-         nop             
-         lbra  SetTime   
-
-GetTime  pshs  cc,d,x,y,u
+Clock2_GetTime
+         pshs  cc,d,x,y,u
          orcc  #$50
          lda   D.SWPage
          clrb
@@ -111,7 +92,8 @@ GetTime  pshs  cc,d,x,y,u
 
 * This set time routine forces military time. It can't turn off clock but can
 * be used as a timer if time set to 0:0:0  hr:min:sec
-SetTime  pshs  cc,d,x,y,u
+Clock2_SetTime
+         pshs  cc,d,x,y,u
          orcc  #$50
          lda   D.SWPage
          clrb
@@ -223,7 +205,7 @@ pm       cmpa  #$12        12PM=12hr military
          adda  #$12        1-11PM add 12 for military
 am       sta   ,x
 wd       leax  -1,x        update time slot
-         bsr   L0087       convert from BCD to binary
+         bsr   bcdToBin       convert from BCD to binary
 L006F    dec   ,s
          bne   L0050       get the next byte from clock
          lda   1,x         get year
@@ -253,7 +235,7 @@ found    clra              system DP is always 0
          rts               go back to normal code location
          
 * Convert BCD to binary
-L0087    lda   1,x
+bcdToBin lda   1,x
          clrb  
 L008A    cmpa  #$10        BCD 10
          bcs   L0094
@@ -299,11 +281,11 @@ exit     equ   *
          puls  a
          sta   $FF7F       restore MPI
          tst   D.RTCFlg,u  was clock found?
-         beq   noclock
+         beq   no_clock
          puls  cc,d,x,y,u,pc
 
 
-Init     equ   *   
+Clock2_Init
          clr   <D.SWPage        safe location for Read
          pshs  d,x,y,u
          IFGT  Level-1
@@ -398,7 +380,7 @@ B3       lda   ,u+
          ENDC
          puls  d,x,y,u,pc
 
-noclock  equ   *
+no_clock equ   *
          ldd   #7          seven time bytes to clear
          ldx   #D.Time
          IFGT  Level-1
@@ -415,8 +397,4 @@ mem_mes  fcc   /There is no system memory for/
          fcb   $0a
          fcc   /os9boot size or use soft clock./
          fcb   $0d
-
-         emod            
-eom      equ   *         
-         end             
 

@@ -199,10 +199,9 @@ KbdCheck equ   *
          clr   <D.Sec     Reset second count to zero
 
 *
-* Call GetTime entry point in Clock2
+* Call GetTime entry point
 *
-         ldx   <D.Clock2  get entry point to Clock2
-         jsr   $03,x      call GetTime entry point
+         lbsr  Clock2_GetTime
 
 NoGet    ldd   >WGlobal+G.AlPID
          ble   VIRQend    Quit if no Alarm set
@@ -409,13 +408,10 @@ F.STime  equ  *
          sta   <D.Tick
 
 *
-* Call SetTime entry point in Clock2
-         ldx   <D.Clock2  get entry point to Clock2
-         jsr   $06,x      else call GetTime entry point
+* Call SetTime entry point
+         lbsr  Clock2_SetTime
 
 NoSet    rts
-
-Clock2   fcs   "Clock2"
 
 *--------------------------------------------------
 *
@@ -427,24 +423,8 @@ Clock2   fcs   "Clock2"
 * service code above to handle future F$STime calls.
 *
 *
-Init     ldx   <D.Proc    save user proc
-         pshs  x
-         ldx   <D.SysPrc  make sys for link
-         stx   <D.Proc
-
-         leax  <Clock2,pcr
-         lda   #Sbrtn+Objct
-         os9   F$Link
-
-* And here, we restore the original D.Proc value
-         puls  x
-         stx   <D.Proc    restore user proc
-
-         bcc   LinkOk
-         lda   #E$MNF
-         jmp   <D.Crash
-LinkOk   sty   <D.Clock2  save entry point
-InitCont ldx   #PIA0Base  point to PIA0
+Init
+         ldx   #PIA0Base  point to PIA0
          clra             no error for return...
          pshs  cc         save IRQ enable status (and Carry clear)
          orcc  #IntMasks  stop interrupts
@@ -488,9 +468,51 @@ InitCont ldx   #PIA0Base  point to PIA0
          sta   >IRQEnR    enable GIME VBORD IRQs
 
 * Call Clock2 init routine
-         ldy   <D.Clock2  get entry point to Clock2
-         jsr   ,y         call init entry point of Clock2
+         lbsr  Clock2_Init
 InitRts  puls  cc,pc      recover IRQ enable status and return
+
+         ifne  SOFT
+         use   clock2_soft.asm
+         else
+         if    DW
+         use   clock2_dw.asm
+         else
+         if    SMARTWATCH
+         use   clock2_smart.asm
+         else
+         if    BNB
+         use   clock2_ds1315.asm
+         else
+         if    MESSEMU
+         use   clock2_messemu.asm
+         else
+         if    ELIM
+         use   clock2_elim.asm
+         else
+         if    DISTO4N1
+         use   clock2_disto4.asm
+         else
+         if    DISTO2N1
+         use   clock2_disto2.asm
+         else
+         if    JVEMU
+         use   clock2_jvemu.asm
+         else
+         if    HARRIS
+         use   clock2_harris.asm
+         else
+         if    COCO3FPGA
+         use   clock2_coco3fpga.asm
+         endc                         
+         endc                         
+         endc                         
+         endc                         
+         endc                         
+         endc                         
+         endc                         
+         endc                         
+         endc                         
+         endc  
 
          emod
 len      equ   *

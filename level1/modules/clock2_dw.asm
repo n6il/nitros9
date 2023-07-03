@@ -10,42 +10,16 @@
 * Separated clock2 modules for source clarity.
 *
 *   2      2010/01/02  Boisy G. Pitre
-* Saved some bytes by optimizing
+* Saved some bytes by optimizing.
+*
+*          2023/07/02  Boisy G. Pitre
+* Reintroduced a single clock module and this file is now included in clock.asm.
 
-          nam       Clock2
-          ttl       DriveWire 3 RTC Driver
-
-          ifp1            
-          use       defsfile  
-          use       drivewire.d  
-          endc            
-
-tylg      set       Sbrtn+Objct
-atrv      set       ReEnt+rev
-rev       set       $00
-edition   set       2
-
-
-RTC.Base  equ       $0000     
-
-          mod       eom,name,tylg,atrv,JmpTable,RTC.Base
-
-name      fcs       "Clock2"  
-          fcb       edition
-
+          use       drivewire.d
+          
 subname   fcs       "dwio"
 
-* Three Entry Points:
-*   - Init
-*   - GetTime
-*   - SetTIme
-JmpTable                 
-          bra       Init
-          nop
-          bra       GetTime   	RTC Get Time
-          nop
-
-SetTime   
+Clock2_SetTime   
           IFGT      Level-1
           lda       <D.DWSrvID
           ELSE
@@ -71,7 +45,7 @@ SetTime
           jsr       DW$Write,u
           bra       UpdLeave
 
-GetTime 
+Clock2_GetTime 
           lda       #OP_TIME        Time packet
           pshs      u,y,x,d
           IFGT      Level-1
@@ -89,7 +63,7 @@ GetTime
 UpdLeave  puls      d,x,y,u,pc
 
 
-Init     
+Clock2_Init     
 * Check if subroutine already linked
           IFGT      Level-1
           ldx       <D.DWSubAddr
@@ -117,7 +91,3 @@ Init
           ENDC
           jmp       ,y			call initialization routine
 leave     rts
-
-          emod          
-eom       equ   *         
-          end             

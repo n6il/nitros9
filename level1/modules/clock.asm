@@ -94,9 +94,7 @@ FSTime   equ   *
          std   <D.Min    
          lda   #TkPerSec  reset to start of second
          sta   <D.Tick   
-         ldx   <D.Clock2  get entry point to Clock2
-         clra             clear carry
-         jmp   $06,x      and call SetTime entry point
+         lbra  Clock2_SetTime
                          
 *--------------------------------------------------
 *
@@ -109,22 +107,12 @@ FSTime   equ   *
 *
 *
                          
-Clock2   fcs   "Clock2"  
-                         
 init
          pshs  dp,cc      save DP and CC
          clra            
          tfr   a,dp       set DP to zero
-         leax  <Clock2,pcr
-         lda   #Sbrtn+Objct
-         os9   F$Link    
-         bcc   LinkOk    
-
-         jmp   >$FFFE     level 1: jump to reset vector
-                         
 LinkOk                   
          puls  cc,dp      ; Restore saved dp and cc
-         sty   <D.Clock2  save entry point
 InitCont                 
 * Do not need to explicitly read RTC during initialization
          ldd   #59*256+$01 last second and last tick
@@ -150,8 +138,7 @@ InitCont
          os9   F$SSvc    
                          
 * Call Clock2 init routine
-         ldy   <D.Clock2  get entry point to Clock2
-         jsr   ,y         call init entry point of Clock2
+         lbsr  Clock2_Init
 
 * Initialize clock hardware
          IFNE  corsham
@@ -319,8 +306,7 @@ L0032    tst   PIA0Base+2 clear interrupt
 *
 * Call GetTime entry point in Clock2
 *
-         ldx   <D.Clock2  get entry point to Clock2
-         jsr   $03,x      call GetTime entry point
+         lbsr  Clock2_GetTime
          fcb   $8C        skip next 2 bytes
 L0079    stb   <D.Sec     update sec
 L007B    lda   <D.TSec    get ticks per second value
@@ -415,8 +401,6 @@ PTblFul  puls  cc
          ldb   #E$Poll   
          rts             
                          
-                         
-                         
 * F$Time system call code
 FTime    ldx   R$X,u     
          ldd   <D.Year   
@@ -427,7 +411,50 @@ FTime    ldx   R$X,u
          std   4,x       
          clrb            
          rts             
-                         
+
+         ifne  SOFT
+         use   clock2_soft.asm
+         else
+         if    DW
+         use   clock2_dw.asm
+         else
+         if    SMARTWATCH
+         use   clock2_smart.asm
+         else
+         if    BNB
+         use   clock2_ds1315.asm
+         else
+         if    MESSEMU
+         use   clock2_messemu.asm
+         else
+         if    ELIM
+         use   clock2_elim.asm
+         else
+         if    DISTO4N1
+         use   clock2_disto4.asm
+         else
+         if    DISTO2N1
+         use   clock2_disto2.asm
+         else
+         if    JVEMU
+         use   clock2_jvemu.asm
+         else
+         if    HARRIS
+         use   clock2_harris.asm
+         else
+         if    COCO3FPGA
+         use   clock2_coco3fpga.asm
+         endc                         
+         endc                         
+         endc                         
+         endc                         
+         endc                         
+         endc                         
+         endc                         
+         endc                         
+         endc                         
+         endc  
+                                
          emod            
 len      equ   *         
          end             

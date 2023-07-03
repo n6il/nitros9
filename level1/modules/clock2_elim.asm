@@ -8,37 +8,17 @@
 * ------------------------------------------------------------------
 *   1      2004/08/18  Boisy G. Pitre
 * Separated clock2 modules for source clarity.
-
-         nam   Clock2    
-         ttl   Eliminator RTC Driver
-
-         ifp1            
-         use   defsfile  
-         endc            
-
-tylg     set   Sbrtn+Objct
-atrv     set   ReEnt+rev
-rev      set   $00
-edition  set   1
+*
+*          2023/07/02  Boisy G. Pitre
+* Reintroduced a single clock module and this file is now included in clock.asm.
 
 RTC.Sped equ   $20        32.768 KHz, rate=0
 RTC.Strt equ   $06        binary, 24 Hour, DST disabled
 RTC.Stop equ   $86        bit 7 set stops clock to allow setting time
 RTC.Base equ   $FF72      I don't know base for this chip.
 
-         mod   eom,name,tylg,atrv,JmpTable,RTC.Base
-
-name     fcs   "Clock2"
-         fcb   edition
-
-JmpTable                 
-         lbra  Init      
-         bra   GetTime   
-         nop             
-         lbra  SetTime   
-
-
-GetTime  ldx   M$Mem,pcr  get RTC base address from fake memory requirement
+Clock2_GetTime
+         ldx   M$Mem,pcr  get RTC base address from fake memory requirement
          ldb   #$0A       UIP status register address
          stb   ,x         generate address strobe
          lda   1,x        get UIP status
@@ -75,7 +55,8 @@ UpdTExit rts
 
 
 
-SetTime  pshs  cc         save interrupt status
+Clock2_SetTime
+         pshs  cc         save interrupt status
          orcc  #IntMasks  disable IRQs
          ldx   M$Mem,pcr  get RTC base address from fake memory requirement
          ldy   #D.Time    point [Y] to time variables in DP
@@ -106,7 +87,7 @@ UpdatCk0 std   ,x         generate address strobe, save data
 
          IFGT  Level-1
 * OS-9 Level Two code only (for now)
-NewSvc   fcb   F$NVRAM    Eliminator adds one new service call
+ENewSvc  fcb   F$NVRAM    Eliminator adds one new service call
          fdb   F.NVRAM-*-2
          fcb   $80        end of service call installation table
 
@@ -203,15 +184,11 @@ NVR.Err  puls  y,u        recover caller's stack and data pointers
          ENDC
 
 
-Init     equ   *   
+Clock2_Init
          IFGT  Level-1
 * Eliminator will install specific system calls
-         leay  NewSvc,pcr insert syscalls
+         leay  ENewSvc,pcr insert syscalls
          os9   F$SSvc    
          ENDC
          rts
-
-         emod            
-eom      equ   *         
-         end             
 

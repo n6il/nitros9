@@ -8,40 +8,21 @@
 * ------------------------------------------------------------------
 *   1      2004/08/18  Boisy G. Pitre
 * Separated clock2 modules for source clarity.
-
-         nam   Clock2    
-         ttl   Harris RTC Driver
-
-         ifp1            
-         use   defsfile  
-         endc            
-
-tylg     set   Sbrtn+Objct
-atrv     set   ReEnt+rev
-rev      set   $00
-edition  set   1
+*
+*          2023/07/02  Boisy G. Pitre
+* Reintroduced a single clock module and this file is now included in clock.asm.
 
 RTC.Base equ   $FF60      Base address for clock
-
-         mod   eom,name,tylg,atrv,JmpTable,RTC.Base
-
-name     fcs   "Clock2"
-         fcb   edition
 
          IFNE  MPIFlag   
 SlotSlct fcb   MPI.Slot-1 Slot constant for MPI select code
          ENDC            
 
-JmpTable                 
+Clock2_Init
          rts
-         nop             
-         nop             
-         bra   GetTime   
-         nop             
-         lbra  SetTime   
-
-
-GetTime  pshs  cc        
+         
+Clock2_GetTime
+         pshs  cc        
          orcc  #IntMasks  Disable interrupts
 
          ldu   M$Mem,pcr  Get base address
@@ -67,7 +48,8 @@ GetTime  pshs  cc
          puls  cc,pc      Re-enable interrupts
 
 
-SetTime  pshs  cc        
+Clock2_SetTime
+         pshs  cc        
          orcc  #IntMasks  Disable interrupts
 
          ldu   M$Mem,pcr  Get base address
@@ -93,9 +75,3 @@ SetTime  pshs  cc
          sta   $11,u      START clock,24-hour mode, 32kHz)
 
          puls  cc,pc      Re-enable interrupts
-
-
-         emod            
-eom      equ   *         
-         end             
-

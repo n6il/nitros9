@@ -15,39 +15,17 @@
 *
 *   2      2009/01/11  Robert Gault
 * Corrected code for day of week. Was bitb #4 but should be bita #4.
-
-         nam   Clock2
-         ttl   MESS Emulator RTC Driver
-
-         ifp1            
-         use   defsfile  
-         endc            
-
-tylg     set   Sbrtn+Objct
-atrv     set   ReEnt+rev
-rev      set   $00
-edition  set   1
+*
+*          2023/07/02  Boisy G. Pitre
+* Reintroduced a single clock module and this file is now included in clock.asm.
 
 RTC.Base equ   $FF50
 
 
-         mod   eom,name,tylg,atrv,JmpTable,RTC.Base
-
-name     fcs   "Clock2"
-         fcb   edition
-
-JmpTable                 
-         rts
-         nop             
-         nop             
-         bra   GetTime   
-         nop             
-         rts
-
-
 * MESS time update in Disto mode (ignores MPI)
 *   Assumes that PC clock is in AM/PM mode!!!
-GetTime  ldx   #RTC.Base
+Clock2_GetTime
+         ldx   #RTC.Base
          ldy   #D.Time
          ldb   #12           counter for data
          stb   1,x
@@ -94,9 +72,6 @@ getval1  decb
          anda  #$0f
          adda  ,y
          sta   ,y+
+Clock2_SetTime
+Clock2_Init
          rts
-
-         emod            
-eom      equ   *         
-         end             
-

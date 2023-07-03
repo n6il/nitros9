@@ -30,10 +30,17 @@ BOOTERS		= boot_1773_6ms boot_1773_30ms \
 BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump ccbkrn
 SYSMODS		= ioman init sysgo_h0 sysgo_dd sysgo_rom sysgo_bd rominfo vectors
-CLOCKS		= clock_60hz clock_50hz \
-		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
-		clock2_smart clock2_harris clock2_cloud9 clock2_soft \
-		clock2_jvemu clock2_messemu clock2_dw clock2_coco3fpga
+CLOCKS          = clock_soft_60hz clock_soft_50hz \
+		clock_elim_60hz clock_elim_50hz \
+		clock_disto2_60hz clock_disto2_50hz \
+		clock_disto4_60hz clock_disto4_50hz \
+		clock_bnb_60hz clock_bnb_50hz \
+        clock_smart_60hz clock_smart_50hz \
+        clock_harris_60hz clock_harris_50hz \
+        clock_cloud9_60hz clock_cloud9_50hz \
+		clock_messemu_60hz clock_messemu_50hz \
+		clock_jvemu_60hz clock_jvemu_50hz \
+		clock_dw_60hz clock_dw_50hz
 
 RBF		= rbf.mn \
 		rbdw.dr dwio.sb dwio_becker.sb dwio_arduino.sb \
@@ -470,17 +477,77 @@ y3.dd: rfmdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=3
 
 # Clocks
-clock_60hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=60
+clock_soft_60hz: clock.asm clock2_soft.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DSOFT -DPwrLnFrq=60
 
-clock_50hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=50
+clock_soft_50hz: clock.asm clock2_soft.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DSOFT -DPwrLnFrq=50
 
-clock2_cloud9: clock2_ds1315.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCLOUD9=1
+clock_dw_60hz: clock.asm clock2_dw.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DDW=1 -DPwrLnFrq=60
 
-clock2_bnb: clock2_ds1315.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DBNB=1
+clock_dw_50hz: clock.asm clock2_dw.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DDW=1 -DPwrLnFrq=50
+
+clock_smart_60hz: clock.asm clock2_smart.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DSMARTWATCH=1 -DPwrLnFrq=60
+
+clock_smart_50hz: clock.asm clock2_smart.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DSMARTWATCH=1 -DPwrLnFrq=50
+
+clock_bnb_60hz: clock.asm clock2_ds1315.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DBNB=1 -DPwrLnFrq=60
+
+clock_bnb_50hz: clock.asm clock2_ds1315.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DBNB=1 -DPwrLnFrq=50
+
+clock_messemu_60hz: clock.asm clock2_messemu.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DMESSEMU=1 -DPwrLnFrq=60
+
+clock_messemu_50hz: clock.asm clock2_messemu.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DMESSEMU=1 -DPwrLnFrq=50
+
+clock_elim_60hz: clock.asm clock2_elim.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DELIM=1 -DPwrLnFrq=60
+
+clock_elim_50hz: clock.asm clock2_elim.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DELIM=1 -DPwrLnFrq=50
+
+clock_disto4_60hz: clock.asm clock2_disto4.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DDISTO4N1=1 -DPwrLnFrq=60
+
+clock_disto4_50hz: clock.asm clock2_disto4.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DDISTO4N1=1 -DPwrLnFrq=50
+
+clock_disto2_60hz: clock.asm clock2_disto2.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DDISTO2N1=1 -DPwrLnFrq=60
+
+clock_disto2_50hz: clock.asm clock2_disto2.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DDISTO2N1=1 -DPwrLnFrq=50
+
+clock_jvemu_60hz: clock.asm clock2_jvemu.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DJVEMU=1 -DPwrLnFrq=60
+
+clock_jvemu_50hz: clock.asm clock2_jvemu.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DJVEMU=1 -DPwrLnFrq=50
+
+clock_harris_60hz: clock.asm clock2_harris.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DHARRIS=1 -DPwrLnFrq=60
+
+clock_harris_50hz: clock.asm clock2_harris.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DHARRIS=1 -DPwrLnFrq=50
+
+clock_coco3fpga_60hz: clock.asm clock2_coco3fpga.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCOCO3FPGA=1 -DPwrLnFrq=60
+
+clock_coco3fpga_50hz: clock.asm clock2_coco3fpga.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCOCO3FPGA=1 -DPwrLnFrq=50
+
+clock2_cloud9_60hz: clock.asm clock2_ds1315.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCLOUD9=1 -DPwrLnFrq=60
+
+clock2_cloud9_50hz: clock.asm clock2_ds1315.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCLOUD9=1 -DPwrLnFrq=50
 
 clean:
 	$(CD) kernel; make $@

@@ -8,39 +8,18 @@
 * ------------------------------------------------------------------
 *   1      2004/08/18  Boisy G. Pitre
 * Separated clock2 modules for source clarity.
-
-         nam   Clock2    
-         ttl   Disto 2-N-1 RTC Driver
-
-         ifp1            
-         use   defsfile  
-         endc            
-
-tylg     set   Sbrtn+Objct
-atrv     set   ReEnt+rev
-rev      set   $00
-edition  set   1
+*
+*          2023/07/02  Boisy G. Pitre
+* Reintroduced a single clock module and this file is now included in clock.asm.
 
 RTC.Base equ   $FF50      Base address of clock
-
-         mod   eom,name,tylg,atrv,JmpTable,RTC.Base
-
-name     fcs   "Clock2"
-         fcb   edition
 
          IFNE  MPIFlag   
 SlotSlct fcb   MPI.Slot-1 Slot constant for MPI select code
          ENDC            
 
-JmpTable                 
-         rts			RTC Init
-         nop
-         nop
-         bra   GetTime		RTC Get Time
-         nop             
-         bra   SetTime   	RTC Set Time
-
-GetTime  pshs  a,cc       Save old interrupt status and mask IRQs
+Clock2_GetTime
+         pshs  a,cc       Save old interrupt status and mask IRQs
          bsr   RTCPre    
 
          bsr   GetVal     Get Year
@@ -100,7 +79,8 @@ GetVal1  pshs  b          save b
          rts             
 
 
-SetTime  pshs  a,cc      
+Clock2_SetTime
+         pshs  a,cc      
          lbsr  RTCPre     Initialize
 
          bsr   SetVal     Set Year
@@ -129,9 +109,5 @@ DvDone   addb  #10
          stb   2,x       
          decb            
          sta   ,x         Store ones digit
+Clock2_Init
          rts             
-
-         emod            
-eom      equ   *         
-         end             
-

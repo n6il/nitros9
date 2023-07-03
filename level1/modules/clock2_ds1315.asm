@@ -11,18 +11,9 @@
 * ------------------------------------------------------------------
 *   1      2004/08/18  Boisy G. Pitre
 * Separated clock2 modules for source clarity.
-
-         nam   Clock2
-         ttl   Dallas Semiconductor DS1315 RTC Driver
-
-         ifp1            
-         use   defsfile  
-         endc            
-
-tylg     set   Sbrtn+Objct
-atrv     set   ReEnt+rev
-rev      set   $00
-edition  set   1
+*
+*          2023/07/02  Boisy G. Pitre
+* Reintroduced a single clock module and this file is now included in clock.asm.
 
          IFNE  BNB
 RTC.Base equ   $FF5C      In SCS* Decode
@@ -44,27 +35,17 @@ RTC.Read equ   0          Read data from this offset
          ENDC            
 
 
-         mod   eom,name,tylg,atrv,JmpTable,RTC.Base
-
-name     fcs   "Clock2"
-         fcb   edition
-
          IFNE  MPIFlag   
 SlotSlct fcb   MPI.Slot-1 Slot constant for MPI select code
          ENDC            
 
-JmpTable                 
-         rts
-         nop             
-         nop             
-         bra   GetTime   
-         nop             
-
-SetTime  pshs  u,y,cc    
+Clock2_SetTime
+         pshs  u,y,cc    
          leay  SendBCD,pcr Send bytes of clock
          bra   TfrTime   
 
-GetTime  pshs  u,y,cc    
+Clock2_GetTime
+         pshs  u,y,cc    
          leay  ReadBCD,pcr Read bytes of clock
 
 TfrTime  orcc  #IntMasks  turn off interrupts
@@ -106,6 +87,7 @@ msgloop  lda   ,x+
          bsr   SendByte  
          decb            
          bne   msgloop   
+Clock2_Init
          rts             
 
 SendBCD  pshs  b          Send byte to clock, first converting to BCD
@@ -147,10 +129,3 @@ BCDEnter suba  #$10
          bhs   BCDLoop   
          stb   ,x        
          puls  b,pc      
-
-
-
-         emod            
-eom      equ   *         
-         end             
-

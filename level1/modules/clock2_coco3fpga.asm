@@ -22,18 +22,9 @@
 *
 *   5      2017/01/24  Bill Pierce
 * Removed erronius "stpreg" routine, cleaned up code, re-assembled, IT WORKS!
-
-         nam   Clock2    
-         ttl   Coco3FPGA Analog Board RTC Driver
-
-         ifp1            
-         use   defsfile
-         endc            
-
-tylg     set   Sbrtn+Objct
-atrv     set   ReEnt+rev
-rev      set   $00
-edition  set   4
+*
+*          2023/07/02  Boisy G. Pitre
+* Reintroduced a single clock module and this file is now included in clock.asm.
 
 * All bits not specified must be set to 0!
 RTC.sec  equ   $00        0-59
@@ -50,21 +41,8 @@ RTC.adr  equ   $FF83      indicates 00h-06h see above
 RTC.tog  equ   RTC.base   set 1 then 0
 RTC.stat equ   RTC.base   wait for $80 to show ready
 
-         mod   eom,name,tylg,atrv,JmpTable,RTC.base
-
-name     fcs   "Clock2"
-         fcb   edition
-
-JmpTable                 
-         lbra  INIT
-         bra   GetTime
-         nop
-         lbra  SetTime
-		 lbra  GetSta
-		 lbra  SetSta
-		 lbra  TERM
-
-GetTime  ldx   M$Mem,pcr  get RTC base address from fake memory requirement
+Clock2_GetTime
+         ldx   M$Mem,pcr  get RTC base address from fake memory requirement
          ldd   #$D106     read and year
          sta   2,x
          bsr   rdreg
@@ -128,7 +106,8 @@ bcd2hex  pshs  b
          adda  ,s+      add partials
          puls  b,pc
 
-SetTime  pshs  cc         save interrupt status
+Clock2_SetTime
+         pshs  cc         save interrupt status
          orcc  #IntMasks  disable IRQs
          ldx   M$Mem,pcr  get RTC base address from fake memory requirement
          ldd   #$D006     write and year
@@ -163,6 +142,7 @@ SetTime  pshs  cc         save interrupt status
          clrb             sec = 0
          bsr  rdreg
          puls  cc         Recover IRQ status
+Clock2_Init
          rts
 
 * Convert Hex to Bitcode
@@ -179,14 +159,4 @@ lp10     incb
          pshs  b
          adda  ,s+
          puls  b,pc
-
-INIT     equ   *
-GetSta   equ   *
-SetSta   equ   *
-TERM     equ   *
-         rts
-
-         emod            
-eom      equ   *         
-         end             
 

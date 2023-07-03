@@ -15,35 +15,14 @@
 *
 *   1      2004/08/18  Boisy G. Pitre
 * Separated clock2 modules for source clarity.
-
-         nam   Clock2
-         ttl   Jeff Vavasour CoCo 3 Emulator RTC Driver
-
-         ifp1            
-         use   defsfile  
-         endc            
-
-tylg     set   Sbrtn+Objct
-atrv     set   ReEnt+rev
-rev      set   $00
-edition  set   1
+*
+*          2023/07/02  Boisy G. Pitre
+* Reintroduced a single clock module and this file is now included in clock.asm.
 
 RTC.Base equ   $FFC0
 
-         mod   eom,name,tylg,atrv,JmpTable,RTC.Base
-
-name     fcs   "Clock2"
-         fcb   edition
-
-JmpTable                 
-         rts
-         nop             
-         nop             
-         bra   GetTime   
-         nop             
-         rts
-
-GetTime  ldx   #RTC.Base
+Clock2_GetTime
+         ldx   #RTC.Base
          ldd   ,x	get year (CCYY)
          suba  #20
          bmi   yr1	19xx, OK as is
@@ -62,9 +41,6 @@ yr1      stb   <D.Year	set year (~YY)
          stb   <D.Hour	set hour (hh)
          ldd   6,x	get time (mmss)
          std   <D.Min	set time (mmss)
+Clock2_SetTime
+Clock2_Init
          rts
-
-         emod            
-eom      equ   *         
-         end             
-
