@@ -9,38 +9,11 @@
 *   1      2017/05/11  Boisy G. Pitre
 * Created.
 
-          nam       Clock2
-          ttl       Corsham RTC Driver
-
-          ifp1
-          use       defsfile
-          endc
-
-tylg      set       Sbrtn+Objct
-atrv      set       ReEnt+rev
-rev       set       $00
-edition   set       1
-
-
 RTC.Base  equ       $0000
-
-          mod       eom,name,tylg,atrv,JmpTable,RTC.Base
-
-name      fcs       "Clock2"
-          fcb       edition
 
 subname   fcs       "pio"
 
-* Three Entry Points:
-*   - Init
-*   - GetTime
-*   - SetTIme
-JmpTable
-          lbra       Init
-          bra       GetTime	RTC Get Time
-          nop
-
-SetTime
+Clock2_SetTime
           pshs      u,y,x,d
           IFGT      Level-1
           ldu       <D.DWSubAddr
@@ -80,7 +53,7 @@ SetTime
           leas	8,s
           bra       UpdLeave
 
-GetTime
+Clock2_GetTime
           lda       #PC_GET_CLOCK        Time packet
           pshs      u,y,x,d
           IFGT      Level-1
@@ -114,7 +87,7 @@ GetTime
 UpdLeave  puls      d,x,y,u,pc
 
 
-Init
+Clock2_Init
 * Check if subroutine already linked
           IFGT      Level-1
           ldx       <D.DWSubAddr
@@ -143,6 +116,3 @@ Init
           jmp       ,y			call initialization routine
 leave     rts
 
-          emod
-eom       equ   *
-          end

@@ -12,7 +12,7 @@ TPB		= $(3RDPARTY)/booters
 BOOTERS		= rel boot_cshsd
 KERNEL		= krn krnp2
 SYSMODS		= ioman init sysgo sysgo_rom pio.sb
-CLOCKS	        = clock clock2_cshsd
+CLOCKS	        = clock_cshsd_60hz clock_cshsd_50hz
 
 RBF		= rbf.mn rbcshsd.dr ddh0.dd h0.dd h1.dd h2.dd h3.dd
 
@@ -60,8 +60,11 @@ term_sc6850.dt: term_sc6850.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DHwBASE=0xE010
 
 # Clocks
-clock: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $<
+clock_cshsd_60hz: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCORSHAM -DPwrLnFreq=60
+
+clock_cshsd_50hz: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCORSHAM -DPwrLnFreq=50
 
 clean:
 	$(CD) kernel; make $@

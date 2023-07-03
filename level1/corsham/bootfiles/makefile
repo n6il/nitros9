@@ -8,7 +8,7 @@ CMDSDIR		= ../cmds
 DEPENDS		= ./makefile
 
 BOOTFILE = $(MD)/ioman $(MD)/sysgo \
-		$(MD)/clock $(MD)/clock2_cshsd \
+		$(MD)/clock_cshsd_60hz \
 		$(MD)/scf.mn \
 		$(MD)/sc6850.dr $(MD)/term_sc6850.dt \
 		$(MD)/rbf.mn \

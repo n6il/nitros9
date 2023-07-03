@@ -447,6 +447,10 @@ FTime    ldx   R$X,u
          else
          if    COCO3FPGA
          use   clock2_coco3fpga.asm
+         else
+         if    CORSHAM
+         use   clock2_cshsd.asm
+         endc                         
          endc                         
          endc                         
          endc                         
