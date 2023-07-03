@@ -12,7 +12,7 @@ TPB		= $(3RDPARTY)/booters
 BOOTERS		= 
 KERNEL		= krn krnp2
 SYSMODS		= ioman init sysgo sysgo_rom
-CLOCKS      = clock_60hz clock_50hz clock2_soft clock2_dw
+CLOCKS      = clock_soft_60hz clock_soft_50hz clock_dw_60hz clock_dw_50hz
 
 RBF		= rbf.mn rbdw.dr dwio.sb ddx0.dd x0.dd x1.dd x2.dd x3.dd
 
@@ -136,11 +136,17 @@ z7_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=23
 
 # Clocks
-clock_60hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=60
+clock_soft_60hz: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DSOFT -DPwrLnFrq=60
 
-clock_50hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=50
+clock_soft_50hz: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DSOFT -DPwrLnFrq=50
+
+clock_dw_60hz: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DDW -DPwrLnFrq=60
+
+clock_dw_50hz: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DDW -DPwrLnFrq=50
 
 clean:
 	$(CD) kernel; make $@

@@ -22,8 +22,8 @@ SCDWP     = $(MD)/scdwp.dr $(MD)/p_scdwp.dd
 # IMPORTANT! KRN MUST BE THE LAST MODULE IN BOOTFILE_P1!!
 BOOTFILE_P1 = $(MD)/krnp2 $(MD)/init $(MD)/ioman $(MD)/sysgo \
 		$(MD)/dwio.sb \
-		$(MD)/clock_60hz $(MD)/clock2_dw \
-          $(MD)/krn
+		$(MD)/clock_dw_60hz \
+		$(MD)/krn
 
 BOOTFILE_P2 = $(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/term.dt \
