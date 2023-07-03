@@ -71,10 +71,10 @@ SCDWV_NET  = $(MD)/n_scdwv.dd $(MD)/n1_scdwv.dd $(MD)/n2_scdwv.dd \
 SCDWV_WIN  = $(MD)/z1_scdwv.dd $(MD)/z2_scdwv.dd
 SCDWP     = $(MD)/scdwp.dr $(MD)/p_scdwp.dd
 PIPE       = $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd
-CLOCK50HZ  = $(MD)/clock_50hz $(MD)/clock2_soft
-CLOCK60HZ  = $(MD)/clock_60hz $(MD)/clock2_soft
-CLOCK60HZDW = $(MD)/clock_60hz $(MD)/clock2_dw
-CLOCK60HZCC3FPGA = $(MD)/clock_60hz $(MD)/clock2_coco3fpga
+CLOCK50HZ  = $(MD)/clock_soft_50hz
+CLOCK60HZ  = $(MD)/clock_soft_60hz
+CLOCK60HZDW = $(MD)/clock_dw_60hz
+CLOCK60HZCC3FPGA = $(MD)/clock_coco3fpga_60hz
 EMUDSK = $(MD)/emudsk.dr $(MD)/h0_emudsk.dd \
 		$(MD)/h1_emudsk.dd
 

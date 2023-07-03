@@ -543,10 +543,10 @@ clock_coco3fpga_60hz: clock.asm clock2_coco3fpga.asm
 clock_coco3fpga_50hz: clock.asm clock2_coco3fpga.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCOCO3FPGA=1 -DPwrLnFrq=50
 
-clock2_cloud9_60hz: clock.asm clock2_ds1315.asm
+clock_cloud9_60hz: clock.asm clock2_ds1315.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCLOUD9=1 -DPwrLnFrq=60
 
-clock2_cloud9_50hz: clock.asm clock2_ds1315.asm
+clock_cloud9_50hz: clock.asm clock2_ds1315.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCLOUD9=1 -DPwrLnFrq=50
 
 clean:

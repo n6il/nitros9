@@ -21,6 +21,9 @@
 *
 *   9r5    2003/08/18  Boisy G. Pitre
 * Separated clock into Clock and Clock2 for modularity.
+*
+*  10      2023/07/02  Boisy G. Pitre
+* Recombined Clock and Clock2 into a single module.
 
          nam   Clock
          ttl   Clock for OS-9 Level Two/NitrOS-9
@@ -36,8 +39,8 @@ GI.Toggl equ   %00000001  GIME CART* IRQ enable bit, for CC3
          use   cocovtio.d
          ENDC
 
-Edtn     equ   9
-Vrsn     equ   5
+Edtn     equ   10
+Vrsn     equ   0
 
 *------------------------------------------------------------
 *
@@ -480,7 +483,7 @@ InitRts  puls  cc,pc      recover IRQ enable status and return
          if    SMARTWATCH
          use   clock2_smart.asm
          else
-         if    BNB
+         if    BNB+CLOUD9
          use   clock2_ds1315.asm
          else
          if    MESSEMU

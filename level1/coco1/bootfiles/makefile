@@ -51,8 +51,8 @@ VTIO_CO42	= $(MD)/vtio.dr $(MD)/co42.io $(MD)/term_42.dt
 VTIO_COWPRS = $(MD)/vtio.dr $(MD)/cowprs.io $(MD)/term_wprs.dt
 
 PIPE		= $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd
-CLOCK60HZ	= $(MD)/clock_60hz $(MD)/clock2_soft
-CLOCK60HZDW	= $(MD)/clock_60hz $(MD)/clock2_dw
+CLOCK60HZ	= $(MD)/clock_soft_60hz
+CLOCK60HZDW	= $(MD)/clock_dw_60hz
 ifdef DW_BAUD38400
 RBDW		= $(MD)/rbdw.dr $(MD)/dwio_38400.sb \
 		$(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd

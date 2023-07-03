@@ -36,6 +36,9 @@
 *   9r8    2005/12/04  Boisy G. Pitre
 * Minor code optimizations, fixed issue in Level 1 where clock ran slow
 * due to improper initialization of certain system globals.
+*
+*  10      2023/07/02  Boisy G. Pitre
+* Recombined Clock and Clock2 into a single module.
  
          nam   Clock     
          ttl   NitrOS-9 System Clock
@@ -46,8 +49,8 @@
                          
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev 
-rev      set   8
-edition  set   9         
+rev      set   0
+edition  set   10         
                          
          IFNE  atari
 USENMI   EQU   0
@@ -421,7 +424,7 @@ FTime    ldx   R$X,u
          if    SMARTWATCH
          use   clock2_smart.asm
          else
-         if    BNB
+         if    BNB+CLOUD9
          use   clock2_ds1315.asm
          else
          if    MESSEMU
