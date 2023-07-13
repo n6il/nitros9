@@ -796,18 +796,21 @@ L0517    comb
 
 * F$Chain user state
 FChain   bsr   DoChain                 do the F$Chain
-         bcs   L0531                   branch if error
+         bcs   chainErr                branch if error
          orcc  #IntMasks               mask interrupts
          ldb   P$State,x               get process state
          andb  #^SysState              turn off system state
          stb   P$State,x               save new state
-L0527    os9   F$AProc                 activate process
+reSched
+         ldu   <P$PModul,x             get pointer to module for current process
+         os9   F$UnLink                unlink the module
+         os9   F$AProc                 activate process
          os9   F$NProc
 
 * F$Chain system state
 SFChain  bsr   DoChain                 do the F$Chain
-         bcc   L0527                   branch if OK
-L0531    pshs  b
+         bcc   reSched
+chainErr pshs  b
          stb   <P$Signal,x             save off error code
          ldb   P$State,x               get process state
          orb   #Condem                 set the condemn bit
@@ -819,8 +822,6 @@ L0531    pshs  b
          
 DoChain  pshs  u                       save off caller's SP
          ldx   <D.Proc                 get current process descriptor
-         ldu   <P$PModul,x             get pointer to module for current process
-         os9   F$UnLink                unlink the module
          ldu   ,s                      get saved caller's SP
          bsr   L0553
          puls  pc,u                    recover U and return
