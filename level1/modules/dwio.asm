@@ -93,7 +93,6 @@ Write
                endc
                endc
 
-DWInit
                ifne      atari
                rts
                else
@@ -139,7 +138,7 @@ loop@          clr       ,x+
                bne       loop@
 
 * send OP_DWINIT
-         ; setup DWsub command
+; setup DWsub command
                pshs      u
                ldb       #1                  ; DRIVER VERSION
                lda       #OP_DWINIT          ; load command

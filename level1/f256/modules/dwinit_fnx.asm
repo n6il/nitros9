@@ -1,3 +1,4 @@
+DWInit
           lda       #FCR_TXR|FCR_RXR
           sta       UART_FCR
           lda       #LCR_DLB
