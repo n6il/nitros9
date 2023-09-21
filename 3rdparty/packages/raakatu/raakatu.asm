@@ -129,90 +129,90 @@
 ; $01E4     inputTokens           input token buffer
 ; $03FF     stack                 top of stack (just below screen memory)
 
-         nam   Raaka-Tu
-         ttl   program module       
+               nam       Raaka-Tu
+               ttl       program module       
 
 * Disassembled 2004/07/13 07:31:17 by Disasm v1.5 (C) 1988 by RML
 
-         ifp1
-         use   os9.d
-         endc
+               ifp1      
+               use       os9.d
+               endc      
 
-tylg     set   Prgrm+Objct   
-atrv     set   ReEnt+rev
-rev      set   $00
+tylg           set       Prgrm+Objct
+atrv           set       ReEnt+rev
+rev            set       $00
 
-topmod   equ   $C000
+topmod         equ       $C000
 
-         mod   eom,name,tylg,atrv,start,size
+               mod       eom,name,tylg,atrv,start,size
 
-	  rmb   $01A7
-u01A7 rmb 1 ..  tmp1A7                used in decoding the input                   
-u01A8 rmb 1 ..  tmp1A7                used in decoding the input                   
-u01A9 rmb 1    tmp1A9                used in comparing X to Y                     
-u01AA rmb 1    not1AA                never used
-u01AB rmb 1    tmp1AB                used in lots of places                       
-u01AC rmb 1    not1AC                never used
-u01AD rmb 1    tmp1AD                used in the phrase decoding                  
-u01AE rmb 1    not1AE                never used
-u01AF rmb 1    not1AF                never used
-u01B0 rmb 1    not1B0                never used
-u01B1 rmb 1    not1B1                never used
-u01B2 rmb 1    tmp1B2                used in word decoding                        
-u01B3 rmb 1    verbWord              input verb word number                       
-u01B4 rmb 1    perpWord              preposition word number                      
-u01B5 rmb 1    prepGiven             preposition given flag                       
-u01B6 rmb 1    phrasePrep            used in phrase decoding                      
-u01B7 rmb 1    adjWord               adjective word number                        
-u01B8 rmb 1    commandTarg           target object of input command               
-u01B9 rmb 1    not1B9                cleared before decode but never used        
-u01BA rmb 1    lsbAdj1               screen LSB of 1st adjective                  
-u01BB rmb 1    lsbVerb               screen LSB of verb                           
-u01BC rmb 1    lsbCursor             screen lsb used in decoding the input line   
-u01BD rmb 1    lsbError              screen lsb used for flashing error messages  
-u01BE rmb 1    lastChar              last character printed to screen             
-u01BF rmb 1      VAR_OBJ_NUMBER      variable object number                       
-u01C0 rmb 2 ..    VAR_OBJ_DATA        variable object data                         
-u01C2 rmb 1    not1C2                never used
-u01C3 rmb 1      FIRST_NOUN_NUM      first input noun number                      
-u01C4 rmb 1    firstNounAdj          first input noun adjective word number
-u01C5 rmb 1    firstNounLSB          first input noun screen LSB                  
-u01C6 rmb 2 ..    FIRST_NOUN_DATA     first input noun object data                
-u01C8 rmb 1    firstNounParams       first input noun parameter bits             
-u01C9 rmb 1      SECOND_NOUN_NUM     second input noun number                     
-u01CA rmb 1    secondNounAdj         second input noun adjective word number
-u01CB rmb 1    secondNounLSB         second input noun noun screen LSB           
-u01CC rmb 2 ..    SECOND_NOUN_DATA    second input noun object data                
-u01CE rmb 1    secondNounParams      second input noun parameter bits             
-u01CF rmb 1    tmp1CF                another screen pointer used in decode       
-u01D0 rmb 1    tmp1DO                used in making index of data fields         
-u01D1 rmb 1      PHRASE_FORM         decoded phrase form                          
-u01D2 rmb 1      ACTIVE_OBJ_NUM      active object                                
-u01D3 rmb 2 ..    ACTIVE_OBJ_DATA     active object data                          
-u01D5 rmb 1      CUR_ROOM            current room number                         
-u01D6 rmb 2 ..    CUR_ROOM_DATA       current room data                          
-u01D8 rmb 2 ..  nextToken             used in decoding input                      
-u01DA rmb 1    tmp1DA                used in unpacking bytes                      
-u01DB rmb 1    tmp1DB                used in unpacking bytes                    
-u01DC rmb 1    tmp1DC                used in unpacking bytes                     
-u01DD rmb 1    tmp1DD                used in unpacking bytes                     
-u01DE rmb 1    tmp1DE                used in unpacking bytes                      
-u01DF rmb 1    tmp1DF                used in unpacking bytes                     
-u01E0 rmb 1    tmp1EO                used in unpacking bytes                      
-u01E1 rmb 1    tmp1E1                used in making index of data fields         
-u01E2 rmb 1    tmp1E2                used in input processing                    
-u01E3 rmb 1    tillMORE              rows left until MORE prompt (not used here)               
+               rmb       $01A7
+u01A7          rmb       1                   ..  tmp1A7                used in decoding the input                   
+u01A8          rmb       1                   ..  tmp1A7                used in decoding the input                   
+u01A9          rmb       1                   tmp1A9                used in comparing X to Y                     
+u01AA          rmb       1                   not1AA                never used
+u01AB          rmb       1                   tmp1AB                used in lots of places                       
+u01AC          rmb       1                   not1AC                never used
+u01AD          rmb       1                   tmp1AD                used in the phrase decoding                  
+u01AE          rmb       1                   not1AE                never used
+u01AF          rmb       1                   not1AF                never used
+u01B0          rmb       1                   not1B0                never used
+u01B1          rmb       1                   not1B1                never used
+u01B2          rmb       1                   tmp1B2                used in word decoding                        
+u01B3          rmb       1                   verbWord              input verb word number                       
+u01B4          rmb       1                   perpWord              preposition word number                      
+u01B5          rmb       1                   prepGiven             preposition given flag                       
+u01B6          rmb       1                   phrasePrep            used in phrase decoding                      
+u01B7          rmb       1                   adjWord               adjective word number                        
+u01B8          rmb       1                   commandTarg           target object of input command               
+u01B9          rmb       1                   not1B9                cleared before decode but never used        
+u01BA          rmb       1                   lsbAdj1               screen LSB of 1st adjective                  
+u01BB          rmb       1                   lsbVerb               screen LSB of verb                           
+u01BC          rmb       1                   lsbCursor             screen lsb used in decoding the input line   
+u01BD          rmb       1                   lsbError              screen lsb used for flashing error messages  
+u01BE          rmb       1                   lastChar              last character printed to screen             
+u01BF          rmb       1                   VAR_OBJ_NUMBER      variable object number                       
+u01C0          rmb       2                   ..    VAR_OBJ_DATA        variable object data                         
+u01C2          rmb       1                   not1C2                never used
+u01C3          rmb       1                   FIRST_NOUN_NUM      first input noun number                      
+u01C4          rmb       1                   firstNounAdj          first input noun adjective word number
+u01C5          rmb       1                   firstNounLSB          first input noun screen LSB                  
+u01C6          rmb       2                   ..    FIRST_NOUN_DATA     first input noun object data                
+u01C8          rmb       1                   firstNounParams       first input noun parameter bits             
+u01C9          rmb       1                   SECOND_NOUN_NUM     second input noun number                     
+u01CA          rmb       1                   secondNounAdj         second input noun adjective word number
+u01CB          rmb       1                   secondNounLSB         second input noun noun screen LSB           
+u01CC          rmb       2                   ..    SECOND_NOUN_DATA    second input noun object data                
+u01CE          rmb       1                   secondNounParams      second input noun parameter bits             
+u01CF          rmb       1                   tmp1CF                another screen pointer used in decode       
+u01D0          rmb       1                   tmp1DO                used in making index of data fields         
+u01D1          rmb       1                   PHRASE_FORM         decoded phrase form                          
+u01D2          rmb       1                   ACTIVE_OBJ_NUM      active object                                
+u01D3          rmb       2                   ..    ACTIVE_OBJ_DATA     active object data                          
+u01D5          rmb       1                   CUR_ROOM            current room number                         
+u01D6          rmb       2                   ..    CUR_ROOM_DATA       current room data                          
+u01D8          rmb       2                   ..  nextToken             used in decoding input                      
+u01DA          rmb       1                   tmp1DA                used in unpacking bytes                      
+u01DB          rmb       1                   tmp1DB                used in unpacking bytes                    
+u01DC          rmb       1                   tmp1DC                used in unpacking bytes                     
+u01DD          rmb       1                   tmp1DD                used in unpacking bytes                     
+u01DE          rmb       1                   tmp1DE                used in unpacking bytes                      
+u01DF          rmb       1                   tmp1DF                used in unpacking bytes                     
+u01E0          rmb       1                   tmp1EO                used in unpacking bytes                      
+u01E1          rmb       1                   tmp1E1                used in making index of data fields         
+u01E2          rmb       1                   tmp1E2                used in input processing                    
+u01E3          rmb       1                   tillMORE              rows left until MORE prompt (not used here)               
 ;
-u01E4 rmb $21b     inputTokens           input token buffer
-u03FF equ .    stack                 top of stack (just below screen memory)
-size  equ      .
+u01E4          rmb       $21b                inputTokens           input token buffer
+u03FF          equ       .                   stack                 top of stack (just below screen memory)
+size           equ       .
 
-name     equ   *
-         fcs   /Raaka-Tu/
-         fcb   $00 
+name           equ       *
+               fcs       /Raaka-Tu/
+               fcb       $00
 
 ;##Start
-start    equ   *
+start          equ       *
                clra                          ; 256 word (512 bytes on screen)
                ldx       #$0400              ; Start of screen
                ldu       #$6060              ; Space-space
@@ -946,7 +946,7 @@ L0B23          lbsr      L0B06               ; Slide row over from cursor
 ;##-GetKey
 L0B2B          lbsr      L12A8               ; Get random number every key
 *L0B2E          jsr       [$A000]             ; Get key from user
-			   lbsr      os9read
+               lbsr      os9read
                tsta                          ; Anything pressed?
 
                beq       L0B2B               ; No ... keep waiting
@@ -1254,7 +1254,7 @@ L0D0D          ldb       u01AB               ; Temporary 2nd noun ...
                beq       L0D1B               ; There isn't one ... skip
                lbsr      L1133               ; Lookup object in B
                stx       u01CC               ; Temporary 2nd noun
-L0D1B          leax      L323C,pc           ; General commands
+L0D1B          leax      L323C,pc            ; General commands
                lbsr      L0A42               ; Skip ID and length
                lbsr      L0C03               ; Execute general script
                tfr       CC,A                ; Hold the result ...
@@ -1331,7 +1331,7 @@ L0DA0          lda       u01D2               ; Active object
 ;##Com02_CheckObjectIsOwnedByActive
 L0DA6          ldb       ,X+
                lbra      L0F5F
-     
+
 ;##Com03_IsObjectYAtX
 ; Check to see if an object is at a target location.
 L0DAB          ldd       ,X++                ; Room and object
@@ -1658,11 +1658,11 @@ L0FC9          puls      X                   ; Restore
                bra       L0F6F               ; Next object
 
 ;##Com05_IsRandomLessOrEqual
-L0FCF          pshs       x
-               leax       L1338,pc            ; Random value
-			   lda        ,x
-			   puls       x
-			   
+L0FCF          pshs      x
+               leax      L1338,pc            ; Random value
+               lda       ,x
+               puls      x
+
                cmpa      ,X+                 ; Compare random value to script
 
                bcs       L0FDB               ; If less than ... OK
@@ -1989,20 +1989,20 @@ L11EA          rts                           ; Done
 ;
 L11EC          leay      L12A4,pc            ;
                ldb       #$03                ;
-			   pshs      x
+               pshs      x
                leax      L12A1,pc
-			   stb       ,x
-			   puls      x
+               stb       ,x
+               puls      x
                lda       ,X+                 ;
                sta       u01DE               ;
                lda       ,X+                 ;
                sta       u01DD               ;
                leay      3,Y                 ;
 L1201          ldu       #$0028              ;
-			   pshs      x
-		       leax      L12A2,pc
-			   stu       ,x
-			   puls      x
+               pshs      x
+               leax      L12A2,pc
+               stu       ,x
+               puls      x
                lda       #$11                ;
                sta       u01DA               ;
                clr       u01DB               ;
@@ -2018,24 +2018,24 @@ L1212          rol       u01DE               ;
                rol       u01DB               ; more detail.
                adda      u01DC               ;
                pshs      x
-			   leax      L12A3,pc
-			   suba      ,x
-			   puls      x
+               leax      L12A3,pc
+               suba      ,x
+               puls      x
                sta       u01E0               ;
 L1230          lda       u01DB               ;
-			   pshs      x
-			   leax      L12A2,pc
-			   sbca      ,x
-			   puls      x
+               pshs      x
+               leax      L12A2,pc
+               sbca      ,x
+               puls      x
                sta       u01DF               ;
                bcc       L1246               ;
-			   ldd       u01DF
-			   
-			   pshs      x
-			   leax      L12A2,pc
-			   addd      u01DF
-			   puls      x
-			   
+               ldd       u01DF
+
+               pshs      x
+               leax      L12A2,pc
+               addd      u01DF
+               puls      x
+
                std       u01DB               ;
                bra       L124C               ;
 L1246          ldd       u01DF               ;
@@ -2048,17 +2048,17 @@ L1252          andcc     #$FE                ;
                bra       L1212               ;
 ; Process the result of the division
 L1256          ldd       u01DB
-			   pshs      x
-			   leax      L1279,pc
-			   addd      ,x
-			   puls      x
+               pshs      x
+               leax      L1279,pc
+               addd      ,x
+               puls      x
                tfr       D,U                 ;
                lda       ,U                  ;
                sta       ,-Y                 ;
-			   pshs      x
-			   leax      L12A1,pc
-			   dec       ,x
-			   puls      x
+               pshs      x
+               leax      L12A1,pc
+               dec       ,x
+               puls      x
                lbne      L1201               ;
                leay      L12A4,pc            ;
                ldb       #$03                ;
@@ -2115,10 +2115,10 @@ L12D8          anda      #$FE                ;
                sta       ,X                  ;
                decb                          ;
                bne       L12B1
-			   pshs      x
-			   leax      L1339,pc            ;
+               pshs      x
+               leax      L1339,pc            ;
                lda       ,x                  ;
-			   puls      x
+               puls      x
                puls      B,X                 ;
                rts                           ;
 
@@ -2131,45 +2131,45 @@ L12D8          anda      #$FE                ;
 ; -----------------------------------------------------------------------------------------------------------------
 
 ;##CommandJumpTable 
-L12E5    fdb   L0C81+topmod
-         fdb   L0D93+topmod
-         fdb   L0DA6+topmod
-		 fdb   L0DAB+topmod
-		 fdb   L0DC3+topmod
-		 fdb   L0FCF+topmod
-         fdb   L0DE9+topmod
-		 fdb   L0DE4+topmod
-		 fdb   L0E23+topmod
-		 fdb   L0E41+topmod
-         fdb   L0E49+topmod
-		 fdb   L0C58+topmod
-		 fdb   L0DC0+topmod
-		 fdb   L0C27+topmod
-         fdb   L0C3F+topmod
-		 fdb   L0E4F+topmod
-		 fdb   L0E60+topmod
-		 fdb   L0ED2+topmod
-         fdb   L0EFF+topmod
-		 fdb   L0E71+topmod
-		 fdb   L0F28+topmod
-		 fdb   L0F09+topmod
-         fdb   L0EC8+topmod
-		 fdb   L0F32+topmod
-		 fdb   L0F46+topmod
-		 fdb   L0C8D+topmod
-         fdb   L0CAE+topmod
-		 fdb   L0CBC+topmod
-		 fdb   L0CCA+topmod
-		 fdb   L0FDD+topmod
-         fdb   L1026+topmod
-		 fdb   L0DCA+topmod
-		 fdb   L0DA0+topmod
-		 fdb   L0CDD+topmod
-         fdb   L104C+topmod
-		 fdb   L1079+topmod
-		 fdb   L10B5+topmod
-		 fdb   L10A8+topmod
-         fdb   L10C5+topmod
+L12E5          fdb       L0C81+topmod
+               fdb       L0D93+topmod
+               fdb       L0DA6+topmod
+               fdb       L0DAB+topmod
+               fdb       L0DC3+topmod
+               fdb       L0FCF+topmod
+               fdb       L0DE9+topmod
+               fdb       L0DE4+topmod
+               fdb       L0E23+topmod
+               fdb       L0E41+topmod
+               fdb       L0E49+topmod
+               fdb       L0C58+topmod
+               fdb       L0DC0+topmod
+               fdb       L0C27+topmod
+               fdb       L0C3F+topmod
+               fdb       L0E4F+topmod
+               fdb       L0E60+topmod
+               fdb       L0ED2+topmod
+               fdb       L0EFF+topmod
+               fdb       L0E71+topmod
+               fdb       L0F28+topmod
+               fdb       L0F09+topmod
+               fdb       L0EC8+topmod
+               fdb       L0F32+topmod
+               fdb       L0F46+topmod
+               fdb       L0C8D+topmod
+               fdb       L0CAE+topmod
+               fdb       L0CBC+topmod
+               fdb       L0CCA+topmod
+               fdb       L0FDD+topmod
+               fdb       L1026+topmod
+               fdb       L0DCA+topmod
+               fdb       L0DA0+topmod
+               fdb       L0CDD+topmod
+               fdb       L104C+topmod
+               fdb       L1079+topmod
+               fdb       L10B5+topmod
+               fdb       L10A8+topmod
+               fdb       L10C5+topmod
 
 ; Multi-verb replacement list (code doesn't work that uses this anyway)              
 L1333          fcb       $00                 ; List is the length. List is pointed to by 1331 which is ignored
@@ -5087,77 +5087,77 @@ L3F13          fcb       $02,$4F,$4E,$0C     ; ON       12
 L3F17          fcb       $00
 
 
-os9read  pshs  y,x,d
-         clra
-         leax  ,s
-         ldy   #$0001
-         os9   I$Read
-ok       puls  d,x,y,pc
-         
-os9write pshs  y,x,d
-         cmpa  #$0D
-         beq   WriteCR
-         lda   #$01
-         leax  ,s
-         ldy   #$0001
-         os9   I$Write
-         bra   DoCHROUT
-WriteCR
-         lda   #$01
-         leax  ,s
-         ldy   #$0001
-         os9   I$WritLn
-DoCHROUT
-         puls  d,x,y
- rts
-         pshs  x,b,a
-         ldx   $88			get cursor position
-         cmpa  #$08			backspace character?
-         bne   LA31D		branch if not...
-         cmpx  #$400		else is current screen pointer at top?
-         beq   LA35D		branch if so...
-         lda   #$60			else put SPACE to erase character and move X back
-         sta   ,-x
-         bra   LA344
-LA31D    cmpa  #$0D
-         bne   LA32F
-         ldx   $88
-LA323    lda   #$60
-         sta   ,x+
-         tfr   x,d
-         bitb  #$1F
-         bne   LA323
-         bra   LA344
-LA32F    cmpa  #$20
-         bcs   LA35D
-         tsta
-         bmi   LA342
-         cmpa  #$40
-         bcs   LA340
-         CMPA  #$60
-         bcs   LA342
-         anda  #$DF
-LA340    eora  #$40
-LA342    sta   ,x+
-LA344    stx   $88
-         cmpx  #$400+511
-         bls   LA35D
-         ldx   #$400
+os9read        pshs      y,x,d
+               clra      
+               leax      ,s
+               ldy       #$0001
+               os9       I$Read
+ok             puls      d,x,y,pc
+
+os9write       pshs      y,x,d
+               cmpa      #$0D
+               beq       WriteCR
+               lda       #$01
+               leax      ,s
+               ldy       #$0001
+               os9       I$Write
+               bra       DoCHROUT
+WriteCR                  
+               lda       #$01
+               leax      ,s
+               ldy       #$0001
+               os9       I$WritLn
+DoCHROUT                 
+               puls      d,x,y
+               rts       
+               pshs      x,b,a
+               ldx       $88                 get cursor position
+               cmpa      #$08                backspace character?
+               bne       LA31D               branch if not...
+               cmpx      #$400               else is current screen pointer at top?
+               beq       LA35D               branch if so...
+               lda       #$60                else put SPACE to erase character and move X back
+               sta       ,-x
+               bra       LA344
+LA31D          cmpa      #$0D
+               bne       LA32F
+               ldx       $88
+LA323          lda       #$60
+               sta       ,x+
+               tfr       x,d
+               bitb      #$1F
+               bne       LA323
+               bra       LA344
+LA32F          cmpa      #$20
+               bcs       LA35D
+               tsta      
+               bmi       LA342
+               cmpa      #$40
+               bcs       LA340
+               cmpa      #$60
+               bcs       LA342
+               anda      #$DF
+LA340          eora      #$40
+LA342          sta       ,x+
+LA344          stx       $88
+               cmpx      #$400+511
+               bls       LA35D
+               ldx       #$400
 
 * SCROLL SCREEN
-LA34E    ldd   32,x
-         std   ,x++
-         cmpx  #$400+$1E0
-         bcs   LA34E
-         ldb   #$60
-LA92D    stx   $88
-LA92F    stb   ,x+
-         cmpx  #$400+511
-         bls   LA92F
-LA35D    puls  d,x,pc
+LA34E          ldd       32,x
+               std       ,x++
+               cmpx      #$400+$1E0
+               bcs       LA34E
+               ldb       #$60
+LA92D          stx       $88
+LA92F          stb       ,x+
+               cmpx      #$400+511
+               bls       LA92F
+LA35D          puls      d,x,pc
 
-os9exit  os9   F$Exit
+os9exit        os9       F$Exit
 
-               emod
+               emod      
 eom            equ       *
-			   end
+               end       

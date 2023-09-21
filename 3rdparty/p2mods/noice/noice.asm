@@ -42,99 +42,99 @@
 * User and system call entry points for F$Debug now part of both
 * NitrOS-9 Level 1 and Level 2.
 
-               NAM       KrnP3     
-               TTL       NoICE Serial Debugger for 6809/6309
+               nam       KrnP3     
+               ttl       NoICE Serial Debugger for 6809/6309
 
-               IFP1      
-               USE       defsfile
-               ENDC      
+               ifp1      
+               use       defsfile
+               endc      
 
-               IFGT      Level-1
-tylg           SET       Systm+Objct
-               ELSE      
-tylg           SET       Prgrm+Objct
-               ENDC      
-atrv           SET       ReEnt+rev
-rev            SET       $00
-edition        SET       5
+               ifgt      Level-1
+tylg           set       Systm+Objct
+               else      
+tylg           set       Prgrm+Objct
+               endc      
+atrv           set       ReEnt+rev
+rev            set       $00
+edition        set       5
 
 * If an MPI is being used, set DEVICESLOT to slot value - 1 and set MPI to 1
-DEVICESLOT     EQU       1            slot 2
+DEVICESLOT     equ       1                   slot 2
 
 *MPI            EQU       1
 
-FN_ERROR       EQU       $F0
-FN_SET_BYTES   EQU       $F9
-FN_RUN_TARGET  EQU       $FA
-FN_WRITE_REGS  EQU       $FB
-FN_READ_REGS   EQU       $FC
-FN_WRITE_MEM   EQU       $FD
-FN_READ_MEM    EQU       $FE
-FN_GET_STATUS  EQU       $FF
+FN_ERROR       equ       $F0
+FN_SET_BYTES   equ       $F9
+FN_RUN_TARGET  equ       $FA
+FN_WRITE_REGS  equ       $FB
+FN_READ_REGS   equ       $FC
+FN_WRITE_MEM   equ       $FD
+FN_READ_MEM    equ       $FE
+FN_GET_STATUS  equ       $FF
 
 
-cbsize         EQU       200
+cbsize         equ       200
 
 * this location is in lo-System RAM.  We clear the low bit upon
 * initialization from the kernel, then on subsequent breakpoints,
 * we set the low bit
 
 * offsets into our on stack storage
-               ORG       0
-callregs       RMB       2
-firsttime      RMB       1
-syssp          RMB       2
-ssflag         RMB       1
-               IFNE      MPI
-slot           RMB       1
-               ENDC
-combuff        RMB       cbsize
-size           EQU       .
+               org       0
+callregs       rmb       2
+firsttime      rmb       1
+syssp          rmb       2
+ssflag         rmb       1
+               ifne      MPI
+slot           rmb       1
+               endc      
+combuff        rmb       cbsize
+size           equ       .
 
 
-L0000          MOD       eom,name,tylg,atrv,start,size
+L0000          mod       eom,name,tylg,atrv,start,size
 
-name           EQU       *
-               IFGT      Level-1
-               FCS       /KrnP3/
-               ELSE      
-               FCS       /noice/
-               ENDC      
-               FCB       edition
+name           equ       *
+               ifgt      Level-1
+               fcs       /KrnP3/
+               else      
+               fcs       /noice/
+               endc      
+               fcb       edition
 
-               IFGT      Level-1
-nextname       FCC       /KrnP4/             next module name to link to
-               FCB       C$CR
-               ENDC
+               ifgt      Level-1
+nextname       fcc       /KrnP4/             next module name to link to
+               fcb       C$CR
+               endc      
 
-svctabl        FCB       F$Debug
-               FDB       dbgent-*-2
-               FCB       F$Debug+$80
-               FDB       dbgentss-*-2
-               FCB       $80
+svctabl        fcb       F$Debug
+               fdb       dbgent-*-2
+               fcb       F$Debug+$80
+               fdb       dbgentss-*-2
+               fcb       $80
 
 start                    
-               IFEQ      Level-1
+               ifeq      Level-1
                leax      name,pcr
-               clra
+               clra      
                os9       F$Link              link module into memory (Level 1)
-               ENDC
+               endc      
                leay      svctabl,pcr
                os9       F$SSvc              install F$Debug service
                bcs       ex@
-               clra
-               clrb
+               clra      
+               clrb      
                std       >D.DbgMem           set pointer to $0000 so it will be allocated later
-               IFEQ      Level-1
+               ifeq      Level-1
 ex@            os9       F$Exit
-               ELSE
+               else      
                lda       #tylg               get next module type (same as this one!)
-               leax      nextname,pcr       get address of next module name
+               leax      nextname,pcr        get address of next module name
                os9       F$Link              attempt to link to it
                bcs       ex@                 no good...skip this
                jsr       ,y                  else go execute it
 ex@            rts                           return
-               ENDC
+               endc      
 
 
 
@@ -148,10 +148,10 @@ getmem         tfr       u,x                 put regs ptr in X
                stu       <D.DbgMem           save our allocated memory
 * Set the firsttime flag so that the first time we get
 * called at dbgent, we DON'T subtract the SWI from the PC.
-               sta       firsttime,u        A > $00
-retok          stx       callregs,u         save pointer to caller's regs
-               clrb
-ret            rts
+               sta       firsttime,u         A > $00
+retok          stx       callregs,u          save pointer to caller's regs
+               clrb      
+ret            rts       
 
 
 * User State Debugger Entry Point
@@ -160,7 +160,7 @@ ret            rts
 * user state.
 dbgent         bsr       getmem
                bcs       ret
-               clra
+               clra      
                bra       usernext
 
 * System State Debugger Entry Point
@@ -175,15 +175,15 @@ dbgentss       bsr       getmem
 * the actual value of S was some constant from where S is when entering the
 * system call.  We'll see how this holds up during system state debugging,
 * and whether changes to the kernel will affect this offset.
-               IFEQ      Level-1
+               ifeq      Level-1
 stackoff       equ       $12
-               ELSE
+               else      
 stackoff       equ       $15
-               ENDC
+               endc      
                leas      stackoff,s
                sts       syssp,u
                leas      -stackoff,s
-               
+
 usernext       sta       ssflag,u
 * If this is a breakpoint (state = 1) then back up PC to point at SWI2
                tst       firsttime,u
@@ -207,7 +207,7 @@ mainloop
 *               lbsr      ioread              get command byte
 *               cmpa      #OP_XBUG            X-Bug Op-Code?
 *               bne       mainloop            if not, continue waiting
-               
+
                clrb                          clear B (for checksum)
                leax      combuff,u           point to comm buffer
                lbsr      ioread              get command byte
@@ -287,7 +287,7 @@ sb1            pshs      b                   save loop counter
 *       U = next place in com buffer to write "previous" byte
 * Read current data at byte location in process' space
                pshs      u,a                 save byte spot for later and "next" ptr
-               IFGT      Level-1
+               ifgt      Level-1
                ldu       4,s                 get original U
                tst       ssflag,u
                bne       ss@
@@ -300,7 +300,7 @@ sb1            pshs      b                   save loop counter
 * Re-read current data at byte location in process' space
                os9       F$LDABX
                bra       p@
-               ENDC
+               endc      
 ss@            lda       ,x
                sta       ,s                  save original ,X value on stack for now
 * A now holds the data byte -- insert new data at byte location
@@ -338,7 +338,7 @@ _readmem
                tfr       d,y                 put count in Y
                pshs      u,x                 save source pointer
                leau      combuff+2,u         point U to destination
-               IFGT      Level-1
+               ifgt      Level-1
                tst       ssflag-combuff-2,u
                bne       ss@
 * User state
@@ -348,7 +348,7 @@ _readmem
                puls      x                   restore source pointer
                os9       F$Move              move 'em out!
                bra       p@
-               ENDC
+               endc      
 * System state
 ss@            puls      x
 l@             lda       ,x+                 get byte at source and inc
@@ -370,7 +370,7 @@ _writemem
                ldd       combuff+3,u         get destination pointer
                exg       a,b                 byte swap!
                pshs      u,x                 save on stack
-               IFGT      Level-1
+               ifgt      Level-1
                tst       ssflag,u
                bne       ss@
 * User state
@@ -381,9 +381,9 @@ _writemem
                puls      x                   restore source pointer
                os9       F$Move              move 'em out!
                bra       p@
-               ENDC
+               endc      
 * System state
-ss@            
+ss@                      
                tfr       d,u                 and put source in U
                puls      x
 l@             lda       ,x+                 get byte at source and inc
@@ -399,32 +399,32 @@ p@             puls      u                   restore our static pointer
 
 * This data is provided to the NoICE server upon receipt of FN_GET_STATUS.
 statdata                 
-               FCB       33					number of bytes to send
-               IFNE      H6309
-               FCB       17					processor type: 6309
-               ELSE
-               FCB       5					processor type: 6809
-               ENDC
-               FCB       cbsize				size of communications buffer
-               FCB       %00000000			options flags
-               FDB       $0000				target mapped memory low bound
-               FDB       $FFFF				target mapped memory high bound
-               FCB       3					length of breakpoint instruction
-               FCB       $10,$3F,F$Debug	breakpoint instruction
+               fcb       33                  number of bytes to send
+               ifne      H6309
+               fcb       17                  processor type: 6309
+               else      
+               fcb       5                   processor type: 6809
+               endc      
+               fcb       cbsize              size of communications buffer
+               fcb       %00000000           options flags
+               fdb       $0000               target mapped memory low bound
+               fdb       $FFFF               target mapped memory high bound
+               fcb       3                   length of breakpoint instruction
+               fcb       $10,$3F,F$Debug     breakpoint instruction
 * target description
-               FCC       "NitrOS-9/6"
-               IFNE      H6309
-               FCC       "3"
-               ELSE
-               FCC       "8"
-               ENDC
-               FCC       "09 Level "
-               IFEQ      Level-1
-               FCC       "1"
-               ELSE
-               FCC       "2"
-               ENDC
-               FCB       0
+               fcc       "NitrOS-9/6"
+               ifne      H6309
+               fcc       "3"
+               else      
+               fcc       "8"
+               endc      
+               fcc       "09 Level "
+               ifeq      Level-1
+               fcc       "1"
+               else      
+               fcc       "2"
+               endc      
+               fcb       0
 
 _getstatus               
 * copy status to our buffer
@@ -467,11 +467,11 @@ n@             addb      ,x                  compute checksum
 _readregs                
                ldy       callregs,u          get pointer to caller's regs
                leax      combuff+1,u
-               IFNE      H6309
+               ifne      H6309
                ldb       #21                 get number of bytes to send
-               ELSE
+               else      
                ldb       #16                 get number of bytes to send
-               ENDC
+               endc      
                stb       ,x+                 save number of bytes
                lda       firsttime,u         get first time called flag
                sta       ,x+                 write it
@@ -486,11 +486,11 @@ _readregs
                ldd       R$X,y
                exg       a,b
                std       ,x++
-               IFNE      H6309
+               ifne      H6309
                ldd       R$E,y
                exg       a,b
                std       ,x++
-               ENDC
+               endc      
                ldd       R$A,y
                exg       a,b
                std       ,x++
@@ -499,10 +499,10 @@ _readregs
                ldb       R$CC,y
                stb       ,x+                 CC
 
-               IFNE      H6309
+               ifne      H6309
 * All this code is necessary to get the value of MD
 * Note: bits 2-5 are unused
-               ldb        <D.MDREG           get shadow register from sysglobs
+               ldb       <D.MDREG            get shadow register from sysglobs
 *               bitmd     #%00000001
 *               beq       md1
 *               incb                         set bit 0
@@ -522,12 +522,12 @@ tfrmd          stb       ,x+                 MD
                tfr       v,d
                exg       a,b
                std       ,x++                V
-               ENDC
+               endc      
 
                ldd       R$PC,y
                exg       a,b
                std       ,x                  PC
-               tst       ssflag,u           system state?
+               tst       ssflag,u            system state?
                beq       us@
                ldd       syssp,u
                bra       cmn@
@@ -554,11 +554,11 @@ _writeregs
                ldd       ,x++
                exg       a,b
                std       R$X,y
-               IFNE      H6309
+               ifne      H6309
                ldd       ,x++
                exg       a,b
                std       R$E,y
-               ENDC
+               endc      
                ldd       ,x++
                exg       a,b
                std       R$A,y
@@ -567,21 +567,21 @@ _writeregs
                ldb       ,x+
                stb       R$CC,y
 
-               IFNE      H6309
+               ifne      H6309
 * Note: because the only way to write to the MD register is via immediate mode,
 * we must build a "ldmd #XX; rts" instruction on the stack then execute it in order
 * to avoid "self modifying" code.
 *               ldd       #$113D           "ldmd" instruction
 *               std       -6,s
-               lda       ,x+              MD register
+               lda       ,x+                 MD register
 *               ldb       #$39             "rts" instruction
 *               std       -4,s
 *               jsr       -6,s             call code on stack to modify MD
 
                ldd       ,x++
                exg       a,b
-               tfr       d,v              V register
-               ENDC
+               tfr       d,v                 V register
+               endc      
 
                ldd       ,x++
                exg       a,b
@@ -604,34 +604,34 @@ cmn@           ldd       #$0100
 ********** I/O ROUTINES ********** 
 
 * 6551 Parameters
-ADDR           EQU       $FF68
+ADDR           equ       $FF68
 
-A_RXD          EQU       ADDR+$00
-A_TXD          EQU       ADDR+$00
-A_STATUS       EQU       ADDR+$01
-A_RESET        EQU       ADDR+$01
-A_CMD          EQU       ADDR+$02
-A_CTRL         EQU       ADDR+$03
+A_RXD          equ       ADDR+$00
+A_TXD          equ       ADDR+$00
+A_STATUS       equ       ADDR+$01
+A_RESET        equ       ADDR+$01
+A_CMD          equ       ADDR+$02
+A_CTRL         equ       ADDR+$03
 
 * Baud rates
-_B2400         EQU       $1A                 2400 bps, 8-N-1
-_B4800         EQU       $1C                 4800 bps, 8-N-1
-_B9600         EQU       $1E                 9600 bps, 8-N-1
-_B19200        EQU       $1F                 19200 bps, 8-N-1
+_B2400         equ       $1A                 2400 bps, 8-N-1
+_B4800         equ       $1C                 4800 bps, 8-N-1
+_B9600         equ       $1E                 9600 bps, 8-N-1
+_B19200        equ       $1F                 19200 bps, 8-N-1
 
-BAUD           EQU       _B9600
+BAUD           equ       _B9600
 
 * ioinit - Initialize the low-level I/O
 * Exit: Carry = 0: Init success; Carry = 1; Init failed
 ioinit                   
-               IFNE      MPI
+               ifne      MPI
                pshs      a
                lda       MPI.Slct
                sta       slot,u
                lda       #DEVICESLOT
                sta       MPI.Slct
                puls      a
-               ENDC
+               endc      
                sta       A_RESET             soft reset (value not important)
 * Set specific modes and functions:
 * - no parity, no echo, no Tx interrupt
@@ -642,12 +642,12 @@ ioinit
                sta       A_CTRL              select proper baud rate
 * Read any junk rx byte that may be in the register
                lda       A_RXD
-               IFNE      MPI
+               ifne      MPI
                pshs      a
                lda       slot,u
                sta       MPI.Slct
                puls      a
-               ENDC
+               endc      
                rts       
 
 
@@ -658,51 +658,51 @@ ioinit
 *
 * Note, this routine currently doesn't timeout
 ioread                   
-               IFNE      MPI
+               ifne      MPI
                lda       MPI.Slct
                sta       slot,u
                lda       #DEVICESLOT
                sta       $FF7F
-               ENDC
+               endc      
 r@             lda       A_STATUS            get status byte
                anda      #$08                mask rx buffer status flag
                beq       r@                  loop if rx buffer empty
                lda       A_RXD               get byte from ACIA data port
-               IFNE      MPI
+               ifne      MPI
                pshs      b
                ldb       slot,u
                stb       MPI.Slct
                puls      b,pc
-               ELSE
+               else      
                rts       
-               ENDC
+               endc      
 
 * iowrite - Write one character to 6551
 *
 * Entry: A = character to write
 * Exit:  None
 iowrite                  
-               IFNE      MPI
+               ifne      MPI
                pshs      d
                ldb       MPI.Slct
                stb       slot,u
                ldb       #DEVICESLOT
                stb       MPI.Slct
-               ELSE
+               else      
                pshs      a                   save byte to write
-               ENDC
+               endc      
 w@             lda       A_STATUS            get status byte
                anda      #$10                mask tx buffer status flag
                beq       w@                  loop if tx buffer full
-               IFNE      MPI
+               ifne      MPI
                puls      d                   get byte
                sta       A_TXD               save to ACIA data port
                lda       slot,u
                sta       MPI.Slct
-               ELSE
+               else      
                puls      a                   get byte
                sta       A_TXD               save to ACIA data port
-               ENDC
+               endc      
                rts       
 
 * ioterm - Terminate
@@ -710,7 +710,7 @@ w@             lda       A_STATUS            get status byte
 *	rts	
 
 
-               IFNE      0
+               ifne      0
 * iowout - Write an entire string
 * iowerr - Write an entire string
 iowerr                   
@@ -763,8 +763,8 @@ bs@            cmpx      1,s                 are we at start
                leay      1,y                 count back up free char
                lda       #$08                another backspace
                bra       m@
-               ENDC      
+               endc      
 
-               EMOD      
-eom            EQU       *
-               END       
+               emod      
+eom            equ       *
+               end       

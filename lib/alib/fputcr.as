@@ -10,14 +10,14 @@
 *       B  error code if any.
 
 
- nam Output Carriage Return
- ttl Assembler Library Module
+               nam       Output Carriage Return
+               ttl       Assembler Library Module
 
 
- section .text
+               section                       .text
 
-FPUTCR:
- ldb #$0d
- lbra FPUTC
+FPUTCR                   
+               ldb       #$0d
+               lbra      FPUTC
 
- endsect
+               endsect   

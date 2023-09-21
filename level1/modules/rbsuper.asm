@@ -23,7 +23,7 @@
 *   HDBDOS - if set, adds code to handle HDB-DOS partitions
 * And somewhere this flag has been lost GH 2012/11/13
 * Only found when I trashed my systems vdisks
-HDBDOS	set 1
+HDBDOS         set       1
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
@@ -55,25 +55,25 @@ HDBDOS	set 1
 * instead of using the cache, for performance reasons.
 * Conditionalized critical section code since it may not be needed, and affects performance.
 
-               NAM       rbsuper             
-               TTL       RBF Super Caching Device Driver
+               nam       rbsuper             
+               ttl       RBF Super Caching Device Driver
 
-               IFP1      
-               USE       defsfile
-               USE       rbsuper.d
-               ENDC      
+               ifp1      
+               use       defsfile
+               use       rbsuper.d
+               endc      
 
-tylg           SET       Drivr+Objct
-atrv           SET       ReEnt+rev
-rev            SET       0
-edition        SET       2
+tylg           set       Drivr+Objct
+atrv           set       ReEnt+rev
+rev            set       0
+edition        set       2
 
-               MOD       eom,name,tylg,atrv,start,V.RBSuper
+               mod       eom,name,tylg,atrv,start,V.RBSuper
 
-               FCB       DIR.+SHARE.+PEXEC.+PREAD.+PWRIT.+EXEC.+UPDAT.
+               fcb       DIR.+SHARE.+PEXEC.+PREAD.+PWRIT.+EXEC.+UPDAT.
 
-name           FCS       /RBSuper/
-               FCB       edition
+name           fcs       /RBSuper/
+               fcb       edition
 
 start          lbra      Init
                bra       Read
@@ -108,16 +108,16 @@ nofree@        tfr       x,u                 and restore statics ptr
                ldx       V.LLTerm,u
                lbsr      LLCall
 * Unlink low-level driver
-               IFGT      Level-1
+               ifgt      Level-1
                ldx       D.Proc              get curr proc ptr
                ldd       D.SysPrc            get system process desc ptr
                std       D.Proc              and make current proc
-               ENDC      
+               endc      
                ldu       V.LLAddr,u          get the address of the low-level module
                os9       F$Unlink            unlink it
-               IFGT      Level-1
+               ifgt      Level-1
                stx       D.Proc              restore
-               ENDC      
+               endc      
 ret@           rts                           return
 
 *
@@ -150,26 +150,26 @@ lsn@           beq       CopyLSN0            branch if zero
 
 * X = drive table pointer for PD.DRV
 * Copy DD.SIZ bytes (LSN0) from buffer to drive table
-CopyLSN0       EQU       *
+CopyLSN0       equ       *
                ldu       PD.BUF,y
-               IFNE      H6309
+               ifne      H6309
                ldw       #DD.SIZ
                tfm       u+,x+
-               ELSE      
+               else      
                ldb       #DD.SIZ
 CpyLSNLp       pulu      a                   one cycle less than lda ,u+
                sta       ,x+
                decb      
                bne       CpyLSNLp
-               ENDC      
+               endc      
 rret           rts       
 
-               IFNE      HDBDOS
+               ifne      HDBDOS
 * For HDB-DOS, we must add in drive number
 * First, multiply drive number in descriptor by $276 (630 sectors),
 * then, add the product to the PSect
 ComputeHDB               
-               IFNE      H6309
+               ifne      H6309
                clra      
                ldb       V.HDBDrive,u
                muld      #$0276
@@ -177,7 +177,7 @@ ComputeHDB
                stw       V.PhysSect+1,u
                adcb      V.PhysSect,u
                stb       V.PhysSect,u
-               ELSE      
+               else      
                leas      -4,s                make a stack to store product of $276 * DriveNum
                lda       V.HDBDrive,u        get drive number
                ldb       #$76
@@ -202,19 +202,19 @@ f@             lda       ,s
                adca      V.PhysSect,u
                sta       V.PhysSect,u
                leas      4,s
-               ENDC      
-               ENDC      
+               endc      
+               endc      
 bye            rts       
 
 * 256 byte sector device: setup for low level driver to put 256 byte sector directly into PD.BUF
-Read256
+Read256                  
                lbsr      Log2Phys
 * We may not have to do this (and disturb the cache as a result)
 *               lda       PD.DRV,y            get current drive number
 *               sta       V.LastDrv,u         and make this the current drive
                lda       #1
                sta       V.SectCnt,u
-               ldx       PD.BUF,y             put address of PD.BUF directly into cache spot
+               ldx       PD.BUF,y            put address of PD.BUF directly into cache spot
                stx       V.CchPSpot,u
 * Call low-level driver read
                ldx       V.LLRead,u
@@ -239,7 +239,7 @@ Read256
 *
 ReadSect       bsr       PreXfr              to pre-transfer stuff
                bcs       bye                 branch if error
-               IFNE      HDBDOS
+               ifne      HDBDOS
                tst       V.HDBPart,u         HDB-DOS partition?
                beq       NotHDB
 * This is the HDB-DOS partition "read" code path.
@@ -267,12 +267,12 @@ ReadSect       bsr       PreXfr              to pre-transfer stuff
                bcs       bye
                ldx       V.CchAddr,u         get cache pointer which holds HDB-DOS sector
                bra       CopyXToPDBUF
-               ENDC      
-NotHDB
+               endc      
+NotHDB                   
 * New: Dec 20, 2011
 * Fast path opportunity: if sector size is 256 bytes, call LLRead right into PD.BUF
                tst       V.SectSize,u        (0=256 byte sector device)
-               beq       Read256 
+               beq       Read256
                bsr       ValidateCache
                bcs       ex@
 * Copy appropriate 256 byte sector from V.CchAddr to PD.BUF,y
@@ -284,12 +284,12 @@ NotHDB
                leax      d,x
 CopyXToPDBUF   pshs      y
                ldy       PD.BUF,y
-               IFNE      H6309
+               ifne      H6309
                ldw       #256
                tfm       x+,y+
                clrb      
                puls      y,pc
-               ELSE      
+               else      
                clr       ,-s
 next@          ldd       ,x++
                std       ,y++
@@ -297,7 +297,7 @@ next@          ldd       ,x++
                bpl       next@
                clrb      
                puls      a,y,pc
-               ENDC      
+               endc      
 ex@            rts       
 
 * ValidateCache
@@ -349,7 +349,7 @@ nofree@        puls      a,u                 restore regs
                lbsr      ExpandCache         go expand cache
                bcs       ex@                 and branch if error
                sta       V.SectSize,u        save new sector size
-no@
+no@                      
                lda       PD.DNS,y            get DNS byte
                anda      #DNS.HDB            isolate HDB-DOS flag
                sta       V.HDBPart,u         and save state
@@ -406,10 +406,10 @@ ex@            stb       V.CchDirty,u        store error code as dirty flag
                rts       
 
 
-SCTTBL         FCB       256/256
-               FCB       512/256
-               FCB       1024/256
-               FCB       2048/256
+SCTTBL         fcb       256/256
+               fcb       512/256
+               fcb       1024/256
+               fcb       2048/256
 
 * GetStat/SetStat
 *
@@ -449,7 +449,7 @@ SSVarSect      ldb       PD.DRV,y            get drive number
                cmpa      #8                  2048 byte sector?
                beq       go@
                lsra                          else shift right
-               FCB       $8C                 skip next two bytes (cmpx...)
+               fcb       $8C                 skip next two bytes (cmpx...)
 go@            lda       #3
                sta       ,x                  save newly acquired value off into cached size table
 go2@           pshs      a
@@ -482,30 +482,30 @@ gs2            ldx       V.LLGtSt,u
 * Entry: Y = path desc ptr
 *        U = statics ptr
 *        X = address of routine to call
-LLCall
-               IFEQ      USECS-1
+LLCall                   
+               ifeq      USECS-1
                pshs      a                   preserve A for duration of csacq_wait
                lda       #255                wait the maximum number of counts
                bsr       csacq_wait          acquire the critical section
                tsta                          test A for zero
                puls      a                   restore A
                beq       cserr               return if A was zero (semaphore wasn't acquired)
-               ENDC
+               endc      
                pshs      u,y                 save U and Y
                jsr       ,x                  call low level routine
                puls      y,u                 restore U and Y
 
-               IFEQ      USECS-1
+               ifeq      USECS-1
 * Critical Section Release - clear the critial section to zero, allowing others to use it
 csrel          pshs      cc                  preserve CC
                clr       V.LLSema,u          clear critical section
                puls      cc,pc               restore CC and return
 cserr          comb                          set the carry
                ldb       #111                and load B with error indicating a semaphore timeout
-               ENDC
+               endc      
                rts       
 
-               IFEQ      USECS-1
+               ifeq      USECS-1
 * Critical Section Acquire With Wait
 *
 * Entry:
@@ -523,7 +523,7 @@ e@             puls      cc,pc               restore CC and return
 w@             deca                          decrement our timeout counter
                beq       e@                  if zero, we've timed out, return
                puls      cc                  give interrupts a chance to breathe
-               IFGT      Level-1
+               ifgt      Level-1
 * Give up timeslice unless this is the system
                pshs      x
                ldx       D.Proc              get proc descriptor
@@ -534,9 +534,9 @@ w@             deca                          decrement our timeout counter
                ldx       #$0001
                os9       F$Sleep             give up timeslice
 wd@            puls      x                   return to caller
-               ENDC      
+               endc      
                bra       csacq_wait          and try again
-               ENDC
+               endc      
 
 
 * Log2Phys - Convert logical sector to physical sector
@@ -570,14 +570,14 @@ logex          rts
 
 
 * 256 byte sector device: setup for low level driver to put 256 byte sector directly into PD.BUF
-Write256
-               bsr      Log2Phys
+Write256                 
+               bsr       Log2Phys
 * We may not have to do this (and disturb the cache as a result)
 *               lda       PD.DRV,y            get current drive number
 *               sta       V.LastDrv,u         and make this the current drive
                lda       #1
                sta       V.SectCnt,u
-               ldx       PD.BUF,y             put address of PD.BUF directly into cache spot
+               ldx       PD.BUF,y            put address of PD.BUF directly into cache spot
                stx       V.CchPSpot,u
 * Call low-level driver read
                ldx       V.LLWrite,u
@@ -598,7 +598,7 @@ Write256
 Write          leau      UOFFSET,u
                lbsr      PreXfr              to pre-transfer stuff
                bcs       logex               branch if error
-               IFNE      HDBDOS
+               ifne      HDBDOS
                lda       V.HDBPart,u         HDB-DOS partition?
                beq       h@
 * HDB-DOS partition code path
@@ -616,10 +616,10 @@ Write          leau      UOFFSET,u
                ldx       PD.BUF,y            get path desc buffer
                stx       V.CchPSpot,u        we write directly from PD.BUF
                bra       writeit
-               ENDC      
+               endc      
 * New: Dec 20, 2011
 * Fast path opportunity: if sector size is 256 bytes, call LLRead right into PD.BUF
-h@
+h@                       
                tst       V.SectSize,u        (0=256 byte sector device)
                beq       Write256
                lbsr      ValidateCache
@@ -636,18 +636,18 @@ h@
                stx       V.CchLSpot,u        save for possible verify later
                pshs      y                   save path desc for now
                ldy       PD.BUF,y
-               IFNE      H6309
+               ifne      H6309
                ldw       #256
                tfm       y+,x+
                puls      y
-               ELSE      
+               else      
                clr       ,-s
 loop@          ldd       ,y++
                std       ,x++
                inc       ,s
                bpl       loop@
                puls      a,y
-               ENDC      
+               endc      
 * Now that sector is copied, determine where in cache we start
                lda       V.LogSect+2,u       get logical sector bits 7-0
                leax      MASKTBL,pcr         point to base of cache
@@ -724,18 +724,18 @@ drvx           sta       DD.TOT,x
                ldd       IT.LLDRV,y          point to name in descriptor
                leax      d,y                 point to name in descriptor
                pshs      u
-               IFGT      Level-1
+               ifgt      Level-1
                ldd       D.Proc              get curr proc ptr
                pshs      d                   save on stack
                ldd       D.SysPrc            get system process desc ptr
                std       D.Proc              and make current proc
-               ENDC      
+               endc      
                lda       #Sbrtn+Objct
                os9       F$Link              link to it
-               IFGT      Level-1
+               ifgt      Level-1
                puls      x                   get curr proc ptr
                stx       D.Proc              restore
-               ENDC      
+               endc      
                tfr       u,x                 transfer module address to X
                puls      u                   restore U
                leau      UOFFSET,u
@@ -781,13 +781,13 @@ ExpandCache
 ex@            puls      a,x,pc
 
 
-CCHTBL         FCB       256/256
-               FCB       512/256
-               FCB       1024/256
-               FCB       2048/256
+CCHTBL         fcb       256/256
+               fcb       512/256
+               fcb       1024/256
+               fcb       2048/256
 
-MASKTBL        FCB       $07,$06,$04,$00
+MASKTBL        fcb       $07,$06,$04,$00
 
-               EMOD      
-eom            EQU       *
-               END       
+               emod      
+eom            equ       *
+               end       

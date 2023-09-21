@@ -44,16 +44,16 @@ DEBUG          set       0
                nam       telnet
                ttl       program module
 
-               section   __os9
+               section                       __os9
 type           equ       Prgrm
 lang           equ       Objct
 attr           equ       ReEnt
 rev            equ       $00
 edition        equ       5
 stack          equ       200
-               endsect
+               endsect   
 
-               section   bss
+               section                       bss
 connected      rmb       1
 netdatardy     rmb       1
 keydatardy     rmb       1
@@ -75,9 +75,9 @@ outpath        rmb       1
 numbyt         rmb       1
 state          rmb       1
 telctrlbuf     rmb       3
-               endsect
+               endsect   
 
-               section   code
+               section                       code
 
 TELESCAPE      equ       'Y-$40              * CTRL-Y
 
@@ -125,8 +125,8 @@ usingl         equ       *-using
 
 defportstr     fcc       '23'
                fcb       0
-               
-peerclosed
+
+peerclosed               
                clr       connected,u
                lda       #1
                leax      peerclosm,pcr
@@ -140,11 +140,11 @@ sigint
                cmpb      #KeySig
                bne       netchk
                inc       keydatardy,u
-               rti
+               rti       
 netchk         cmpb      #NetSig
                bne       hupchk
                inc       netdatardy,u
-               rti
+               rti       
 hupchk         cmpb      #S$HUP              * disconnect from peer signal received?
                beq       peerclosed          * yep, exit nicely
                lda       #$03                * usual interrupt character
@@ -189,12 +189,12 @@ __start        pshs      x
                ldb       #PD.INT-PD.UPC
 rawloop        clr       ,x+
                decb      
-               bne       rawloop 
+               bne       rawloop
 
 * set address as nul terminated string
-addrloop
+addrloop                 
                ldx       ,s
-addrloop2
+addrloop2                
                lda       ,x+
                cmpa      #C$SPAC
                beq       nilit
@@ -202,9 +202,9 @@ addrloop2
                beq       nilit
                bra       addrloop2
 
-nilit          clr       -1,x     nil terminate previous param
-               cmpa      #C$CR    are we at end of command line?
-               beq       defaultport yep, set default port
+nilit          clr       -1,x                nil terminate previous param
+               cmpa      #C$CR               are we at end of command line?
+               beq       defaultport         yep, set default port
 
 skipspc        lda       ,x+
                cmpa      #C$CR
@@ -212,33 +212,33 @@ skipspc        lda       ,x+
                cmpa      #C$SPAC
                beq       skipspc
 * if here, we have a second parameter... probably port number
-               leay       -1,x
-               bra        parsedone
-defaultport    leay       defportstr,pcr
-parsedone      puls       x
+               leay      -1,x
+               bra       parsedone
+defaultport    leay      defportstr,pcr
+parsedone      puls      x
 
 * X holds pointer to nul terminated address
 * Y holds port number string (nil terminated)
 * do the open and connect
-               pshs       y
-               std        port,u
-               stx        hostname,u
+               pshs      y
+               std       port,u
+               stx       hostname,u
 
 * announce our attempt to try to connect
-               lda        #1
-               ldy        #tryingl
-               leax       trying,pcr
-               os9        I$WritLn
-               
-               lbsr       TCPOpen
-               puls       y
-               lbcs       errex1
-               sta        netpath,u
-               ldx        hostname,u
-               lbsr       TCPConnectToHost
-               lbcs       errex2
-               lbsr       RawPath
-               
+               lda       #1
+               ldy       #tryingl
+               leax      trying,pcr
+               os9       I$WritLn
+
+               lbsr      TCPOpen
+               puls      y
+               lbcs      errex1
+               sta       netpath,u
+               ldx       hostname,u
+               lbsr      TCPConnectToHost
+               lbcs      errex2
+               lbsr      RawPath
+
 * we're connected...
                lda       #1
                sta       connected,u
@@ -253,7 +253,7 @@ parsedone      puls       x
                lbcs      errex2
 
 * setup data ready signal on stdin
-               clra
+               clra      
                ldb       #SS.SSig
                ldx       #KeySig
                os9       I$SetStt
@@ -268,9 +268,9 @@ parsedone      puls       x
 
 * response loop
 * check for typed characters
-rloop
-               pshs      cc				save interrupt state
-               orcc      #IntMasks      mask interrupts
+rloop                    
+               pshs      cc                  save interrupt state
+               orcc      #IntMasks           mask interrupts
                tst       netdatardy,u
                bne       GetNetData
                tst       keydatardy,u
@@ -278,7 +278,7 @@ rloop
 * sleep until signal
                ldx       #$0000
                os9       F$Sleep
-               puls      cc              
+               puls      cc
                bra       rloop
 
 GetKeyData     puls      cc
@@ -357,7 +357,7 @@ outc           ldy       #$0001
                bcs       errex2
 
 * setup data ready signal on stdin
-               clra
+               clra      
                ldb       #SS.SSig
                ldx       #KeySig
                os9       I$SetStt
@@ -365,20 +365,20 @@ outc           ldy       #$0001
 
                lbra      rloop
 
-done
+done                     
 okex           clrb                          *no errors here
 * close port
-errex2
+errex2                   
                pshs      b,cc
                lda       netpath,u
                lbsr      TCPDisconnect
                clr       connected,u
-               
+
                leax      orgopts,u
                ldd       #SS.Opt
                os9       I$SetStt            *restore original path options
                puls      b,cc
-               
+
 errex1         os9       F$Exit              *goodbye
 
 * read B bytes from serial
@@ -413,7 +413,7 @@ serinc         clra
                bcs       errex2
 
 * return to loop
-serincex
+serincex                 
 * setup data ready signal on netpath
                lda       netpath,u
                ldb       #SS.SSig
@@ -446,17 +446,17 @@ conv           anda      #$0F
                adda      #$30
                fcb       $8C
 alpha          adda      #$41-$0A
-               rts
+               rts       
 
-               IFEQ      DEBUG-1
+               ifeq      DEBUG-1
 printhex       pshs      d,x,y
                bsr       conv
                pshs      a
                lda       1,s
-               lsra
-               lsra
-               lsra
-               lsra
+               lsra      
+               lsra      
+               lsra      
+               lsra      
                bsr       conv
                pshs      a
                lda       #'$
@@ -467,23 +467,23 @@ printhex       pshs      d,x,y
                os9       I$Write
                leas      3,s
                puls      d,x,y,pc
-               ENDC
-       
+               endc      
+
 telstate       sta       telctrlbuf,u
-               IFEQ      DEBUG-1
+               ifeq      DEBUG-1
                bsr       printhex
-               ENDC
+               endc      
                inc       state,u
                bra       procbuf
 
 clrngo         clr       state,u
                bra       procbuf
- 
+
 * handles telnet control sequence... A = byte
-telctrl
-               IFEQ      DEBUG-1
+telctrl                  
+               ifeq      DEBUG-1
                bsr       printhex
-               ENDC
+               endc      
                ldb       state,u
                cmpb      #1
                bne       telctrl2
@@ -517,4 +517,4 @@ dowont         lda       #WONT
                puls      x,y
                lbra      procbuf
 
-               endsect
+               endsect   

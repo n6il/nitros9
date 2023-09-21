@@ -151,7 +151,7 @@ ok@            ldd       #'@*256+C$CR
                bsr       itoa
                lda       #1
                os9       I$Write
-			   
+
                leax      cr,pcr
                ldy       #1
                os9       I$WritLn
@@ -167,7 +167,7 @@ ok@            ldd       #'@*256+C$CR
                bsr       itoa
                lda       #1
                os9       I$Write
-			   
+
                leax      cr,pcr
                ldy       #1
                os9       I$WritLn

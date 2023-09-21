@@ -1,4 +1,4 @@
-               section   _constant
+               section                       _constant
 
 Level          equ       2
 H6309          equ       0
@@ -10,4 +10,4 @@ H6309          equ       0
                use       ../defs/rbsuper.d
                use       ../defs/drivewire.d
 
-               endsect
+               endsect   

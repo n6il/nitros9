@@ -12,16 +12,16 @@
                nam       dw
                ttl       command interface to the server
 
-               section   __os9
+               section                       __os9
 type           equ       Prgrm
 lang           equ       Objct
 attr           equ       ReEnt
 rev            equ       $00
 edition        equ       1
 stack          equ       200
-               endsect
+               endsect   
 
-               section   bss
+               section                       bss
 pbuffer        rmb       256
 pbend          rmb       2
 cbuffer        rmb       256
@@ -30,9 +30,9 @@ portpath       rmb       1
 outpath        rmb       1
 numbyt         rmb       1
 die            rmb       1
-               endsect
+               endsect   
 
-               section   code
+               section                       code
 
 * signal handling
 icpt           lda       #1
@@ -49,7 +49,7 @@ __start        pshs      d
                leax      icpt,pcr            *ptr to handler
                os9       F$Icpt
 
-               clra
+               clra      
                lbsr      TCPOpen
                lbcs      errex1
 
@@ -57,7 +57,7 @@ __start        pshs      d
 gotport        sta       portpath,u
 
 * rawpath
-			   lbsr		RawPath
+               lbsr      RawPath
 
 * write command to port
                lda       portpath,u
@@ -146,8 +146,8 @@ errex2         lda       portpath,u
                os9       I$Close
 
 errex1         os9       F$Exit              *goodbye
-               endsect
+               endsect   
 
-               
-               
+
+
 

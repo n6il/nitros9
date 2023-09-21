@@ -29,73 +29,73 @@
 *     4    2005/12/13  Boisy G. Pitre
 * Moved SS.VarSect code into RBSuper for performance
 
-               NAM       llide               
-               TTL       Low-level IDE driver
+               nam       llide               
+               ttl       Low-level IDE driver
 
-               IFP1      
-               USE       defsfile
-               USE       rbsuper.d
-               USE       ide.d
-               ENDC      
+               ifp1      
+               use       defsfile
+               use       rbsuper.d
+               use       ide.d
+               endc      
 
-tylg           SET       Sbrtn+Objct
-atrv           SET       ReEnt+rev
-rev            SET       4
+tylg           set       Sbrtn+Objct
+atrv           set       ReEnt+rev
+rev            set       4
 
 
-RW12           SET       0                   Use READ12/WRITE12 ATAPI commands (1 = yes)
-WAITTIME       SET       10                  BUSY wait time (in approximate seconds)
+RW12           set       0                   Use READ12/WRITE12 ATAPI commands (1 = yes)
+WAITTIME       set       10                  BUSY wait time (in approximate seconds)
 
 *
 * Status Register Flip/Mask Values
 *
-NBUSYDRDY      EQU       (BusyBit|DrdyBit)*256+(DrdyBit)
-NBUSY          EQU       (BusyBit)*256+$00
-NBUSYDRQ       EQU       (BusyBit|DrqBit)*256+(DrqBit)
-NBUSYNDRQ      EQU       (BusyBit|DrqBit)*256+$00
+NBUSYDRDY      equ       (BusyBit|DrdyBit)*256+(DrdyBit)
+NBUSY          equ       (BusyBit)*256+$00
+NBUSYDRQ       equ       (BusyBit|DrqBit)*256+(DrqBit)
+NBUSYNDRQ      equ       (BusyBit|DrqBit)*256+$00
 
-               MOD       eom,name,tylg,atrv,start,0
+               mod       eom,name,tylg,atrv,start,0
 
-               IFNE      RW12
-READCODE       EQU       A$READ2
-WRITCODE       EQU       A$WRITE2
-               ELSE      
-READCODE       EQU       A$READ
-WRITCODE       EQU       A$WRITE
-               ENDC      
+               ifne      RW12
+READCODE       equ       A$READ2
+WRITCODE       equ       A$WRITE2
+               else      
+READCODE       equ       A$READ
+WRITCODE       equ       A$WRITE
+               endc      
 
-NumRetries     EQU       8
+NumRetries     equ       8
 
 * Low-level driver static memory area
-               ORG       V.LLMem
+               org       V.LLMem
 * Master static storage
-V.Master       RMB       1                   status byte (ATAPI or ATA (CHS or LBA))
-               RMB       2                   Cylinders (CHS) or Bits 31-16 of LBA
-               RMB       1                   Sides (CHS) or Bits 15-8 of LBA
-               RMB       2                   Sectors (CHS) or Bits 7-0 of LBA
+V.Master       rmb       1                   status byte (ATAPI or ATA (CHS or LBA))
+               rmb       2                   Cylinders (CHS) or Bits 31-16 of LBA
+               rmb       1                   Sides (CHS) or Bits 15-8 of LBA
+               rmb       2                   Sectors (CHS) or Bits 7-0 of LBA
 * Slave drive static storage
-V.Slave        RMB       1
-               RMB       2
-               RMB       1
-               RMB       2
+V.Slave        rmb       1
+               rmb       2
+               rmb       1
+               rmb       2
 * ATAPI Command Packet
-V.ATAPICmd     RMB       18
-V.SnsData      EQU       V.ATAPICmd          Sense Data is shared with ATAPI command block
+V.ATAPICmd     rmb       18
+V.SnsData      equ       V.ATAPICmd          Sense Data is shared with ATAPI command block
 * The following values are for device 0 and 1 respectively:
 * Bit 0 = device inited (0 = false, 1 = true)
 * Bit 1 = device type (0 = ATA, 1 = ATAPI)
 * Bit 2 = device mode (0 = CHS, 1 = LBA)
-V.CurStat      RMB       1
-V.Retries      RMB       1
-V.WhichDv      RMB       1                   contains devhead selection (made by IOSetup)
-V.PhySct       RMB       3                   local copy of physical sector passed (V.PhySct)
-V.SctCnt       RMB       1                   local copy of physical sector passed (V.SectCnt)
-V.Sectors      RMB       1                   number of sectors (harvested directly from drive query)
-V.CurDTbl      RMB       2
-V.ATAVct       RMB       2
+V.CurStat      rmb       1
+V.Retries      rmb       1
+V.WhichDv      rmb       1                   contains devhead selection (made by IOSetup)
+V.PhySct       rmb       3                   local copy of physical sector passed (V.PhySct)
+V.SctCnt       rmb       1                   local copy of physical sector passed (V.SectCnt)
+V.Sectors      rmb       1                   number of sectors (harvested directly from drive query)
+V.CurDTbl      rmb       2
+V.ATAVct       rmb       2
 
 
-name           FCS       /llide/
+name           fcs       /llide/
 
 start          bra       ll_init
                nop       
@@ -303,22 +303,22 @@ ll_setstat
                lda       R$B,x
                cmpa      #SS.SQD
                beq       StopUnit
-               IFNE      0
+               ifne      0
                cmpa      #SS.DCmd
                bne       n@
-               pshs      x                  save pointer to caller registers
-               bsr       DCmd               call DCmd
-               puls      x                  get pointer to caller registers
-               sta       R$A,x              save status byte in A
-               ENDC
+               pshs      x                   save pointer to caller registers
+               bsr       DCmd                call DCmd
+               puls      x                   get pointer to caller registers
+               sta       R$A,x               save status byte in A
+               endc      
 n@             clrb      
 ssex           rts       
 
 
-               IFNE    0
-BadType        comb
-               ldb     #E$BTyp
-               rts
+               ifne      0
+BadType        comb      
+               ldb       #E$BTyp
+               rts       
 
 * Entry:
 *    X   = caller regs
@@ -340,7 +340,7 @@ DCmd
                ldy       R$X,x               get caller's transfer buffer
                sty       V.UTxBuf,u          save off in mem for later
                ldx       R$Y,x               get ptr to caller's command buffer
-               IFGT      Level-1
+               ifgt      Level-1
                ldy       D.Proc              get current process ptr
                lda       P$Task,y            get task # for current process
                ldb       D.SysTsk            get system task #
@@ -350,14 +350,14 @@ DCmd
                os9       F$Move              copy from caller to temporary task
                puls      u
                bcs       ex                  error copying, exit
-               ELSE      
+               else      
                ldb       #ATAPIPkLn
                leay      V.ATAPICmd,u
 cl@            lda       ,x+
                sta       ,y+
                decb      
                bne       cl@
-               ENDC      
+               endc      
                ldy       V.PORT-UOFFSET,u    get hw address (because we overwrite Y earlier)
 *               inc       V.OS9Err,u          we want real errors returned
                inc       V.CchDirty,u        and make cache dirty
@@ -365,10 +365,10 @@ cl@            lda       ,x+
 *               stx       V.RetryVct,u
 retry@         lbsr      ATAPISend
                bcs       ex
-               IFGT      Level-1
+               ifgt      Level-1
                ldx       D.Proc              get current process ptr
                ldb       P$Task,x            get task # for current process
-               ENDC      
+               endc      
                ldx       V.UTxBuf,u
 
 msgloop@       lbsr      Wait4REQ            wait for REQ to be asserted
@@ -376,23 +376,23 @@ msgloop@       lbsr      Wait4REQ            wait for REQ to be asserted
                lbne      PostXfr             yes, return
 io@            bita      #INOUT              data coming in or going out?
                bne       in@                 branch if coming in...
-               IFGT      Level-1
+               ifgt      Level-1
                os9       F$LDABX
                leax      1,x
-               ELSE      
+               else      
                lda       ,x+
-               ENDC      
+               endc      
                sta       SCSIDATA,y
                bra       msgloop@
 in@            lda       SCSIDATA,y
-               IFGT      Level-1
+               ifgt      Level-1
                os9       F$STABX
                leax      1,x
-               ELSE      
+               else      
                sta       ,x+
-               ENDC      
+               endc      
                bra       msgloop@
-               ENDC
+               endc      
 
 * ATAPISend - Sends the command packet to the device
 *
@@ -646,11 +646,11 @@ again@         ldb       V.PhySct,u          get bits 23-16 of sector
                std       V.ATAPICmd+4,u
                ldd       #WRITCODE*256+$01   ATAPI WRITE Code and transfer length
                sta       V.ATAPICmd,u        write it
-               IFNE      RW12
+               ifne      RW12
                stb       V.ATAPICmd+9,u      write to byte 9
-               ELSE      
+               else      
                stb       V.ATAPICmd+8,u      write to byte 8
-               ENDC      
+               endc      
 * Send to data port
                lbsr      ATAPISend           send command
                bcs       ex@
@@ -696,11 +696,11 @@ again@         ldb       V.PhySct,u          get,u bits 23-16 of sector
                std       V.ATAPICmd+4,u
                ldd       #READCODE*256+$01   ATAPI Read Code and transfer length
                sta       V.ATAPICmd,u        write it and RSV to zero
-               IFNE      RW12
+               ifne      RW12
                stb       V.ATAPICmd+9,u      write to byte 9
-               ELSE      
+               else      
                stb       V.ATAPICmd+8,u      write to byte 8
-               ENDC      
+               endc      
 * Send to data port
                lbsr      ATAPISend           send command
                bcs       ex@
@@ -865,13 +865,13 @@ ex@            rts
 * Exit:  A = status
 StatusWait               
                pshs      y,b,a
-               IFEQ      Level-1
+               ifeq      Level-1
                ldb       #WAITTIME/2
                ldy       #$0000
-               ELSE      
+               else      
                ldb       #WAITTIME
                ldy       #$0000
-               ENDC      
+               endc      
 l@             lda       Status,x
                anda      ,s                  apply flip
                cmpa      1,s                 compare to mask
@@ -1073,26 +1073,26 @@ x@             ldb       b,x
 * The Sense Key Table is on page 50 of the ATAPI Removable
 * Rewritable Specification, Revision 1.3 Proposed.
 * If an error number is zero, then no error is returned.
-SenseMap       FCB       0                   sense key 0 (NO SENSE)
-               FCB       0                   sense key 1 (RECOVERED ERROR)
-               FCB       E$NotRdy            sense key 2 (NOT READY)
-               FCB       E$Sect              sense key 3 (MEDIUM ERROR)
-               FCB       E$Unit              sense key 4 (HARDWARE ERROR)
-               FCB       E$IllArg            sense key 5 (ILLEGAL REQUEST)
-               FCB       0                   sense key 6 (UNIT ATTENTION)
-               FCB       E$WP                sense key 7 (DATA PROTECT)
-               FCB       0                   sense key 8 (BLANK CHECK)
-               FCB       0                   sense key 9 (VENDOR SPECIFIC)
-               FCB       0                   sense key A (RESERVED)
-               FCB       1                   sense key B (ABORTED COMMAND)
-               FCB       0                   sense key C (RESERVED)
-               FCB       0                   sense key D (VOLUME OVERFLOW)
-               FCB       0                   sense key E (MISCOMPARE)
-               FCB       0                   sense key F (RESERVED)
+SenseMap       fcb       0                   sense key 0 (NO SENSE)
+               fcb       0                   sense key 1 (RECOVERED ERROR)
+               fcb       E$NotRdy            sense key 2 (NOT READY)
+               fcb       E$Sect              sense key 3 (MEDIUM ERROR)
+               fcb       E$Unit              sense key 4 (HARDWARE ERROR)
+               fcb       E$IllArg            sense key 5 (ILLEGAL REQUEST)
+               fcb       0                   sense key 6 (UNIT ATTENTION)
+               fcb       E$WP                sense key 7 (DATA PROTECT)
+               fcb       0                   sense key 8 (BLANK CHECK)
+               fcb       0                   sense key 9 (VENDOR SPECIFIC)
+               fcb       0                   sense key A (RESERVED)
+               fcb       1                   sense key B (ABORTED COMMAND)
+               fcb       0                   sense key C (RESERVED)
+               fcb       0                   sense key D (VOLUME OVERFLOW)
+               fcb       0                   sense key E (MISCOMPARE)
+               fcb       0                   sense key F (RESERVED)
 
 * ERROR REG Bit   0      1     2       3       4        5      6     7
-Errs           FCB       E$Unit,E$CRC,E$UnkSvc,E$Sect,E$UnkSvc,E$DIDC,E$Seek,E$Sect
+Errs           fcb       E$Unit,E$CRC,E$UnkSvc,E$Sect,E$UnkSvc,E$DIDC,E$Seek,E$Sect
 
-               EMOD      
-eom            EQU       *
-               END       
+               emod      
+eom            equ       *
+               end       

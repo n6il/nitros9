@@ -20,75 +20,75 @@
 * This routine has been converted from the BASIC09 sample in
 * the Basic09 Reference Manual (Microware) page a-3.
 
- nam Binary to Roman numberal conversion
- ttl Assembler Library Module
+               nam       Binary to Roman numberal conversion
+               ttl       Assembler Library Module
 
 
- section .text
+               section                       .text
 
 
-BIN_ROM:
- pshs d,x,y,u
- 
- leau nums,pcr number conversion table
- clr ,-s  counter on stack
- lda 1,s restore value
- anda #%00011111 ensure no value>8191 permitted
+BIN_ROM                  
+               pshs      d,x,y,u
 
-roman1
- cmpd ,u 
- blo roman2
- leay chars,pcr
- bsr addchar
- subd ,u
- bra roman1
+               leau      nums,pcr            number conversion table
+               clr       ,-s                 counter on stack
+               lda       1,s                 restore value
+               anda      #%00011111          ensure no value>8191 permitted
 
-roman2
- pshs d
- ldd ,u
- subd 2,u
- cmpd ,s
- puls d
- bhi roman3
+roman1                   
+               cmpd      ,u
+               blo       roman2
+               leay      chars,pcr
+               bsr       addchar
+               subd      ,u
+               bra       roman1
 
- leay subs,pcr
- bsr addchar
- leay chars,pcr
- bsr addchar
- subd ,u
- addd 2,u
+roman2                   
+               pshs      d
+               ldd       ,u
+               subd      2,u
+               cmpd      ,s
+               puls      d
+               bhi       roman3
 
-roman3
- leau 4,u  next pair of values
- pshs d
- inc 2,s counter
- lda 2,s
- cmpa #7 done?
- puls d
- bne roman1  no, do more
+               leay      subs,pcr
+               bsr       addchar
+               leay      chars,pcr
+               bsr       addchar
+               subd      ,u
+               addd      2,u
 
- puls a
- clr ,x null terminator
+roman3                   
+               leau      4,u                 next pair of values
+               pshs      d
+               inc       2,s                 counter
+               lda       2,s
+               cmpa      #7                  done?
+               puls      d
+               bne       roman1              no, do more
 
- puls d,x,y,u,pc
+               puls      a
+               clr       ,x                  null terminator
 
-addchar
- pshs d
- lda 4,s  get loop count
- lda a,y  get char
- sta ,x+
- puls d,pc
+               puls      d,x,y,u,pc
 
-nums fdb 1000,100
-     fdb 500,100
-     fdb 100,10
-     fdb 50,10
-     fdb 10,1
-     fdb 5,1
-     fdb 1,0
+addchar                  
+               pshs      d
+               lda       4,s                 get loop count
+               lda       a,y                 get char
+               sta       ,x+
+               puls      d,pc
 
-chars fcc /MDCLXVI/
-subs  fcc /CCXXII/
+nums           fdb       1000,100
+               fdb       500,100
+               fdb       100,10
+               fdb       50,10
+               fdb       10,1
+               fdb       5,1
+               fdb       1,0
 
- endsect
+chars          fcc       /MDCLXVI/
+subs           fcc       /CCXXII/
+
+               endsect   
 

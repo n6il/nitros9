@@ -136,7 +136,7 @@ loop@          clr       ,x+
 * send OP_DWINIT
          ; setup DWsub command
                pshs      u
-               ldb		 #1					 ; DRIVER VERSION
+               ldb       #1                  ; DRIVER VERSION
                lda       #OP_DWINIT          ; load command
                pshs      d                   ; command store on stack
                leax      ,s                  ; point X to stack 
@@ -148,20 +148,20 @@ loop@          clr       ,x+
                endc      
                jsr       6,u                 ; call DWrite
                leas      1,s                 ; leave one byte on stack for response 
-               
+
                ; read protocol version response, 1 byte
                leax      ,s                  ; point X to stack head
                ldy       #1                  ; 1 byte to retrieve
                jsr       3,u                 ; call DWRead
                beq       InstIRQ             ; branch if no error
                leas      3,s                 ; error, cleanup stack (u and 1 byte from read) 
-               lbra      InitEx            	 ; don't install IRQ handler
+               lbra      InitEx              ; don't install IRQ handler
 
 * install ISR
 InstIRQ                  
-			   puls      a,u		; a has proto version from server.. not used yet
+               puls      a,u                 ; a has proto version from server.. not used yet
 
-			   ifgt      Level-1
+               ifgt      Level-1
                ldx       <D.DWStat
                else      
                ldx       >D.DWStat

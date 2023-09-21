@@ -12,16 +12,16 @@
                nam       httpd
                ttl       HTTP daemon
 
-               section   __os9
+               section                       __os9
 type           equ       Prgrm
 lang           equ       Objct
 attr           equ       ReEnt
 rev            equ       $00
 edition        equ       1
 stack          equ       200
-               endsect
+               endsect   
 
-               section   bss
+               section                       bss
 gbufferl       equ       128
 gbuffer        rmb       gbufferl
 dentbuf        rmb       32
@@ -29,14 +29,14 @@ filepath       rmb       1
 fileptr        rmb       2
 lbufferl       equ       128
 lbuffer        rmb       lbufferl
-               endsect
+               endsect   
 
-               section   code
+               section                       code
 
 DEBUG          equ       1
 
 **** Entry Point ****
-__start
+__start                  
 * Turn off pause in standard out
                lda       #1
                lbsr      SetEchoOff
@@ -47,12 +47,12 @@ __start
                leax      wwwroot,pcr
                os9       I$ChgDir
                bcs       errexit
-                              
+
 * main loop: read line on stdin
-mainloop
+mainloop                 
                leax      gbuffer,u
                ldy       #gbufferl
-               clra
+               clra      
                os9       I$ReadLn
                bcs       checkeof
 * quickly nul terminate the line we just read
@@ -63,26 +63,26 @@ mainloop
                puls      x
                bsr       process
                bra       errexit
-               
+
 checkeof       cmpb      #E$EOF
                bcs       errexit
-               clrb
-errexit        
+               clrb      
+errexit                  
                pshs      cc,b
                lda       #1
                lbsr      SetEchoOn
                puls      cc,b
-	           os9       F$Exit
+               os9       F$Exit
 
 * input: X = line read (nul terminated)
-process
+process                  
 * check for GET
                leay      get,pcr
                ldd       #getl
                lbsr      STRNCMP
                beq       GETOK
-               clrb
-               rts
+               clrb      
+               rts       
 
 * we know it is a GET... get the text following it               
 GETOK          leax      4,x
@@ -90,7 +90,7 @@ GETOK          leax      4,x
                cmpd      #'/*256+C$SPAC
                beq       doindex
                leax      1,x
-               
+
 NulTerminate   pshs      x
 loop@          lda       ,x+
                beq       terminate@
@@ -104,8 +104,8 @@ terminate@     clr       -1,x
                bra       readfile
 
 * point to index.html
-doindex        leax      index,pcr               
-readfile
+doindex        leax      index,pcr
+readfile                 
                stx       fileptr,u
                lda       #READ.
                os9       I$Open
@@ -125,9 +125,9 @@ readloop       leax      lbuffer,u
 
 eofcheck       cmpb      #E$EOF
                bne       ret
-               clrb
+               clrb      
                os9       I$Close
-ret            rts
+ret            rts       
 
 isitdir        cmpb      #E$FNA
                lbne      notfound
@@ -174,11 +174,11 @@ nextdirent     lda       filepath,u
                bcs       endoffile
                tst       ,x
                beq       nextdirent
-               
+
 * find char with hi bit set
                tfr       x,y
 lo@            lda       ,y+
-               bpl       lo@               
+               bpl       lo@
                anda      #$7F
                sta       -1,y
                clr       ,y
@@ -203,98 +203,98 @@ lo@            lda       ,y+
                fcc       "<BR>"
                fcb       $00
                bra       nextdirent
-endoffile               
+endoffile                
                lda       filepath,u
                os9       I$Close
                lbsr      _nbodytag
                lbsr      _nhtmltag
-               rts
-               
-notfound       lbsr      print404
-               rts
+               rts       
 
-_http11
+notfound       lbsr      print404
+               rts       
+
+_http11                  
                lbsr      PRINTS
                fcc       "HTTP/1.1 "
                fcb       $00
-               rts
+               rts       
 
-_server
+_server                  
                lbsr      PRINTS
                fcc       "Server: "
                fcb       $00
                lbsr      _serverinf
                lbsr      _newline
-               rts
+               rts       
 
-_connclose
+_connclose               
                lbsr      PRINTS
                fcc       "Connection: close"
                fcb       C$CR,$00
-               rts
+               rts       
 
-_newline
+_newline                 
                lbsr      PRINTS
                fcb       C$CR,$00
-               rts
+               rts       
 
-_serverinf
+_serverinf               
                lbsr      PRINTS
                fcc       /httpd ed. /
                fcb       edition+$30
                fcc       / (NitrOS-9)/
                fcb       $00
-               rts                        
+               rts       
 
-_htmltag
+_htmltag                 
                lbsr      PRINTS
                fcc       "<HTML>"
                fcb       $00
-               rts                        
+               rts       
 
-_nhtmltag
+_nhtmltag                
                lbsr      PRINTS
                fcc       "</HTML>"
                fcb       $00
-               rts                        
+               rts       
 
-_headtag
+_headtag                 
                lbsr      PRINTS
                fcc       "<HEAD>"
                fcb       $00
-               rts                        
+               rts       
 
-_nheadtag
+_nheadtag                
                lbsr      PRINTS
                fcc       "</HEAD>"
                fcb       $00
-               rts                        
+               rts       
 
-_titletag
+_titletag                
                lbsr      PRINTS
                fcc       "<TITLE>"
                fcb       $00
-               rts                        
+               rts       
 
-_ntitletag
+_ntitletag               
                lbsr      PRINTS
                fcc       "</TITLE>"
                fcb       $00
-               rts                        
+               rts       
 
-_bodytag
+_bodytag                 
                lbsr      PRINTS
                fcc       "<BODY>"
                fcb       $00
-               rts                        
+               rts       
 
-_nbodytag
+_nbodytag                
                lbsr      PRINTS
                fcc       "</BODY>"
                fcb       $00
-               rts                        
+               rts       
 
-print200OK
+print200OK               
                lbsr      _http11
                lbsr      PRINTS
                fcc       "200 OK"
@@ -302,9 +302,9 @@ print200OK
                lbsr      _server
                lbsr      _connclose
                lbsr      _newline
-               rts
-                     
-print404
+               rts       
+
+print404                 
                lbsr      _http11
                lbsr      PRINTS
                fcc       "404 Not Found"
@@ -313,21 +313,21 @@ print404
                lbsr      _connclose
                lbsr      _newline
                lbsr      PRINTS
-			   fcc       '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">'
+               fcc       '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">'
                fcb       $00
-			   lbsr      _htmltag
-			   lbsr      _headtag
-			   lbsr      PRINTS
+               lbsr      _htmltag
+               lbsr      _headtag
+               lbsr      PRINTS
                fcc       '<title>404 Not Found</title>'
                fcb       $00
                lbsr      _nheadtag
                lbsr      _bodytag
-			   lbsr      PRINTS
+               lbsr      PRINTS
                fcc       '<h1>Not Found</h1>'
                fcc       '<p>The requested URL '
                fcb       $00
                ldx       fileptr,u
-               lbsr      PUTS               
+               lbsr      PUTS
                lbsr      PRINTS
                fcc       ' was not found on this server.</p>'
                fcc       '<hr>'
@@ -339,12 +339,12 @@ print404
                fcb       $00
                lbsr      _nbodytag
                lbsr      _nhtmltag
-               rts
-                                             
+               rts       
+
 wwwroot        fcs       "....../WWWROOT"
 get            fcc       "GET "
-getl           equ       *-get               
+getl           equ       *-get
                fcb       $00
 index          fcs       "index.html"
-            
-               endsect
+
+               endsect   

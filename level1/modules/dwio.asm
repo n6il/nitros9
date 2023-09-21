@@ -18,10 +18,10 @@
                nam       dwio
                ttl       DriveWire 3 Low Level Subroutine Module
 
-               ifp1      
+               ifp1
                use       defsfile
                use       drivewire.d
-               endc      
+               endc
 
 tylg           set       Sbrtn+Objct
 atrv           set       ReEnt+rev
@@ -39,7 +39,7 @@ DefTime        fcb       109,12,31,23,59,59
 PollSpd1       fcb       3
 * speed 2 = bulk transfer (depending on how much processing needs to be done to incoming stream, 5-8 seems good)
 PollSpd2       fcb       6
-* speed 3 = idle 
+* speed 3 = idle
 PollSpd3       fcb       40
 * X pollidle -> drop to next slower rate
 PollIdle       fcb       60
@@ -51,12 +51,12 @@ name           fcs       /dwio/
 start          lbra      Init
                bra       Read
                nop
-               IFNE      BECKER+ARDUINO
+               ifne      BECKER+ARDUINO
                bra       Write
                nop
-               ELSE
+               else
                lbra      Write
-               ENDC
+               endc
 
 * Term
 *
@@ -67,31 +67,43 @@ start          lbra      Init
 *    CC = carry set on error
 *    B  = error code
 *
-Term                     
+Term
                clrb                          clear Carry
-               rts       
+               rts
 
-Read                   
-               IFNE      atari
+Read
+               ifne      atari
                jmp       [$FFE0]
-               ELSE
+               else
+               ifne      f256
+               use       dwread_fnx.asm
+               else
                use       dwread.asm
-               ENDC
+               endc
+               endc
 
-Write                    
-               IFNE      atari
+Write
+               ifne      atari
                jmp       [$FFE2]
-               ELSE
+               else
+               ifne      f256
+               use       dwwrite_fnx.asm
+               else
                use       dwwrite.asm
-               ENDC
+               endc
+               endc
 
+DWInit
+               ifne      atari
+               rts
+               else
+               ifne      f256
+               use       dwinit_fnx.asm
+               else
+               use       dwinit.asm
+               endc
+               endc
 
-               IFNE      atari
-DWInit         rts
-               ELSE
-			use		dwinit.asm
-               ENDC
-			
 * Init
 *
 * Entry:
@@ -103,10 +115,10 @@ DWInit         rts
 *    B  = error code
 *
 * Initialize the serial device
-Init                     
+Init
                clrb                          clear Carry
                pshs      y,x,cc              then push CC on stack
-               bsr		DWInit
+               bsr       DWInit
 
 ; allocate DW statics page
                pshs      u
@@ -117,38 +129,38 @@ Init
                lbcs      InitEx
                ifgt      Level-1
                stx       <D.DWStat
-               else      
+               else
                stx       >D.DWStat
-               endc      
+               endc
 ; clear out 256 byte page at X
-               clrb      
+               clrb
 loop@          clr       ,x+
-               decb      
+               decb
                bne       loop@
 
 * send OP_DWINIT
          ; setup DWsub command
                pshs      u
-               ldb		 #1					 ; DRIVER VERSION
+               ldb       #1                  ; DRIVER VERSION
                lda       #OP_DWINIT          ; load command
                pshs      d                   ; command store on stack
-               leax      ,s                  ; point X to stack 
+               leax      ,s                  ; point X to stack
                ldy       #2                  ; 1 byte to send
                ifgt      Level-1
                ldu       <D.DWSubAddr
-               else      
+               else
                ldu       >D.DWSubAddr
-               endc      
+               endc
                jsr       DW$Write,u          ; call DWrite
-               leas      1,s                 ; leave one byte on stack for response 
-               
+               leas      1,s                 ; leave one byte on stack for response
+
                ; read protocol version response, 1 byte
                leax      ,s                  ; point X to stack head
                ldy       #1                  ; 1 byte to retrieve
                jsr       DW$Read,u           ; call DWRead
                beq       ChkVer              ; branch if no error
-               leas      3,s                 ; error, cleanup stack (u and 1 byte from read) 
-               bra       InitEx            	 ; don't install IRQ handler
+               leas      3,s                 ; error, cleanup stack (u and 1 byte from read)
+               bra       InitEx              ; don't install IRQ handler
 
 * Check Version
 ChkVer
@@ -161,14 +173,14 @@ ChkVer
                bra       InitEx              ; leave since DriveWire version is not 4.
 
 * install ISR
-InstIRQ                  
-			   puls      a,u		; a has proto version from server.. not used yet
+InstIRQ
+               puls      a,u                 ; a has proto version from server.. not used yet
 
-			   ifgt      Level-1
+               ifgt      Level-1
                ldx       <D.DWStat
-               else      
+               else
                ldx       >D.DWStat
-               endc      
+               endc
                leax      DW.VIRQPkt,x
                pshs      u
                tfr       x,u
@@ -181,17 +193,17 @@ InstIRQ
                os9       F$IRQ               ;install
                puls      u
                bcs       InitEx              ;exit with error
-               clra      
+               clra
                ldb       PollSpd3,pcr        ; start at idle
                ifgt      Level-1
                ldx       <D.DWStat
-               else      
+               else
                ldx       >D.DWStat
-               endc      
+               endc
                leax      DW.VIRQPkt,x
                std       Vi.Rst,x            ; reset count
                tfr       x,y                 ; move VIRQ software packet to Y
-tryagain                 
+tryagain
                ldx       #$0001              ; code to install new VIRQ
                os9       F$VIRQ              ; install
                bcc       IRQok               ; no error, continue
@@ -201,19 +213,19 @@ tryagain
                leax      DefTime,pcr
                os9       F$STime
                bra       tryagain            ; note: this has the slim potential of looping forever
-IRQok                    
+IRQok
                ifgt      Level-1
                ldx       <D.DWStat
-               else      
+               else
                ldx       >D.DWStat
-               endc      
+               endc
 ; cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
                leax      DW.StatTbl,x
                tfr       u,d
                ldb       <V.PORT+1,u         ; get our port #
                sta       b,x                 ; store in table
 
-InitEx                   
+InitEx
                puls      cc,x,y,pc
 
 
@@ -232,7 +244,7 @@ IRQMulti3      anda      #$0F                ; mask first 4 bits, a is now port 
 IRQM06         ldd       RxBufEnd,u          ; end addr of buffer
                subd      RxBufPut,u          ; subtract current write pointer, result is # bytes left going forward in buff.
 
-IRQM05         cmpb      RxGrab,u            ; compare b (room left) to grab bytes  
+IRQM05         cmpb      RxGrab,u            ; compare b (room left) to grab bytes
                bhs       IRQM03              ; branch if we have room for grab bytes
 
                stb       RxGrab,u            ; else set grab to room left
@@ -247,26 +259,26 @@ IRQM03         puls      a                   ; port # is on stack
                pshs      d                   ; (a port, b bytes)
                lda       #OP_SERREADM        ; load command
                pshs      a                   ; command store on stack
-               leax      ,s                  ; point X to stack 
+               leax      ,s                  ; point X to stack
                ldy       #3                  ; 3 bytes to send
 
                ifgt      Level-1
                ldu       <D.DWSubAddr
-               else      
+               else
                ldu       >D.DWSubAddr
-               endc      
-               jsr       DW$Write,u                 ; call DWrite
+               endc
+               jsr       DW$Write,u          ; call DWrite
 
-               leas      3,s                 ; clean 3 DWsub args from stack 
+               leas      3,s                 ; clean 3 DWsub args from stack
 
                ldx       ,s                  ; pointer to this port's area (from U prior), leave it on stack
                ldb       RxGrab,x            ; set B to grab bytes
-               clra                          ; 0 in high byte		
+               clra                          ; 0 in high byte
                tfr       d,y                 ; set # bytes for DW
 
                ldx       RxBufPut,x          ; point X to insert position in this port's buffer
           ; receive response
-               jsr       DW$Read,u                 ; call DWRead
+               jsr       DW$Read,u           ; call DWRead
           ; handle errors?
 
 
@@ -288,7 +300,7 @@ IRQM04         stx       RxBufPut,u          ; set new Rx data laydown pointer
 
                lbra      CkSSig              ; had to lbra
 
-IRQMulti                 
+IRQMulti
 		  ; set IRQ freq for bulk
                pshs      a
                lda       PollSpd2,pcr
@@ -303,7 +315,7 @@ IRQMulti
                subb      RxDatLen,u          ; current bytes in buffer
                bne       IRQMulti3           ; continue, we have some space in buffer
           ; no room in buffer
-               tstb      
+               tstb
                lbne      CkSSig              ;had to lbra
                lbra      IRQExit             ;had to lbra
 
@@ -326,40 +338,40 @@ IRQSvc         equ       *
           ; send request
                lda       #OP_SERREAD         ; load command
                pshs      a                   ; command store on stack
-               leax      ,s                  ; point X to stack 
+               leax      ,s                  ; point X to stack
                ldy       #1                  ; 1 byte to send
 
                ifgt      Level-1
                ldu       <D.DWSubAddr
-               else      
+               else
                ldu       >D.DWSubAddr
-               endc      
-               jsr       DW$Write,u                 ; call DWrite
+               endc
+               jsr       DW$Write,u          ; call DWrite
 
           ; receive response
                leas      -1,s                ; one more byte to fit response
                leax      ,s                  ; point X to stack head
                ldy       #2                  ; 2 bytes to retrieve
-               jsr       DW$Read,u                 ; call DWRead
+               jsr       DW$Read,u           ; call DWRead
                bcs       bad
                bne       bad
 
-          ; process response	
-IRQSvc2                  
+          ; process response
+IRQSvc2
                ldd       ,s++                ; pull returned status byte into A,data into B (set Z if zero, N if multiread)
                bne       IRQGotOp            ; branch if D != 0 (something to do)
 * this is a NOP response.. do we need to reschedule
                ifgt      Level-1
                ldx       <D.DWStat
-               else      
+               else
                ldx       >D.DWStat
-               endc      
+               endc
                lda       DW.VIRQPkt+Vi.Rst+1,x
                cmpa      PollSpd3,pcr
                lbeq      IRQExit             ;we are already at idle speed
 
                lda       DW.VIRQNOP,x
-               inca      
+               inca
                cmpa      PollIdle,pcr
                beq       FRQdown
 
@@ -370,7 +382,7 @@ FRQdown        lda       DW.VIRQPkt+Vi.Rst+1,x
                cmpa      PollSpd1,pcr
                beq       FRQd1
                lda       PollSpd3,pcr
-FRQd2                    
+FRQd2
                sta       DW.VIRQPkt+Vi.Rst+1,x
                clr       DW.VIRQNOP,x
                lbra      IRQExit
@@ -383,7 +395,7 @@ IRQGotOp
                beq       do_reboot
 
                pshs      d
-* mode switch on bits 7+6 of A: 00 = vserial, 01 = vwindow, 10 = wirebug?, 11 = ?							
+* mode switch on bits 7+6 of A: 00 = vserial, 01 = vwindow, 10 = wirebug?, 11 = ?
 
                anda      #$C0                ; mask last 6 bits
                beq       mode00              ; virtual serial mode
@@ -405,13 +417,13 @@ key
                ora       #$10
                ifgt      Level-1
                ldx       <D.DWStat
-               else      
+               else
                ldx       >D.DWStat
-               endc      
+               endc
 ; cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
 ;			leax    DW.StatTbl,x
                lda       a,x
-               clrb      
+               clrb
                tfr       d,u
                puls      d
                lbra      IRQPutch
@@ -421,25 +433,25 @@ do_reboot
                os9       F$Debug
 
 * Virtual Serial Handler
-mode00         
-               lda       ,s                  ; restore A		  
+mode00
+               lda       ,s                  ; restore A
                anda      #$0F                ; mask first 4 bits, a is now port #+1
                beq       IRQCont             ; if we're here with 0 in the port, its not really a port # (can we jump straight to status?)
                deca                          ; we pass +1 to use 0 for no data
 ; here we set U to the static storage area of the device we are working with
                ifgt      Level-1
                ldx       <D.DWStat
-               else      
+               else
                ldx       >D.DWStat
-               endc      
+               endc
 ; cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
 ;			leax    DW.StatTbl,x
                lda       a,x
                bne       IRQCont             ; if A is 0, then this device is not active, so exit
                puls      d
                lbra      IRQExit
-IRQCont                  
-               clrb      
+IRQCont
+               clrb
                tfr       d,u
 
                puls      d
@@ -455,15 +467,15 @@ IRQCont
                lbra      IRQMulti            ;its not all 0, this is a multiread
 
 
-		 * in status events, databyte is split, 4bits status, 4bits port #          
+		 * in status events, databyte is split, 4bits status, 4bits port #
 dostat         bitb      #$F0                ;mask low bits
                lbne      IRQExit             ;we only implement code 0000, term
 			* set u to port #
                ifgt      Level-1
                ldx       <D.DWStat
-               else      
+               else
                ldx       >D.DWStat
-               endc      
+               endc
                lda       b,x
                bne       statcont            ; if A is 0, then this device is not active, so exit
                lbra      IRQExit
@@ -474,9 +486,9 @@ dostat         bitb      #$F0                ;mask low bits
 IRQsetFRQ      pshs      x                   ; preserve
                ifgt      Level-1
                ldx       <D.DWStat
-               else      
+               else
                ldx       >D.DWStat
-               endc      
+               endc
                sta       DW.VIRQPkt+Vi.Rst+1,x
 * +++ BGP +++ added following line so that the counter (which was copied by
 * clock before calling us) gets reset to the same value the reset value. Without
@@ -484,7 +496,7 @@ IRQsetFRQ      pshs      x                   ; preserve
                sta       DW.VIRQPkt+Vi.Cnt+1,x
                clr       DW.VIRQNOP,x
                puls      x
-               rts       
+               rts
 
 
 * This routine roots through process descriptors in a queue and
@@ -498,11 +510,11 @@ IRQsetFRQ      pshs      x                   ; preserve
 *
 * Entry: X = process descriptor to evaluate
 *        U = static storage of device we want to check against
-RootThrough              
+RootThrough
                clrb
                leay      P$Path,x
                pshs      x
-loop           cmpb      #NumPaths      
+loop           cmpb      #NumPaths
                beq       out
                incb
                lda       ,y+
@@ -510,14 +522,14 @@ loop           cmpb      #NumPaths
                pshs      y
                ifgt      Level-1
                ldx       <D.PthDBT
-               else      
+               else
                ldx       >D.PthDBT
-               endc      
+               endc
                os9       F$Find64
                ldx       PD.DEV,y
                leax      V$STAT,x
                puls      y
-               bcs       loop   +BGP+ Jul 20, 2012: continue even if error in F$Find64
+               bcs       loop                +BGP+ Jul 20, 2012: continue even if error in F$Find64
 
                cmpu      ,x
                bne       loop
@@ -535,9 +547,9 @@ loop           cmpb      #NumPaths
 out            puls      x
                ldx       P$Queue,x
                bne       RootThrough
-               rts       
+               rts
 
-statcont       clrb      
+statcont       clrb
                tfr       d,u
 * NEW: root through all process descriptors. if any has a path open to this
 * device, condem it
@@ -551,15 +563,15 @@ dosleepq       ldx       <D.SProcQ
                beq       CkLPRC
                bsr       RootThrough
 
-CkLPRC                   
+CkLPRC
                lda       <V.LPRC,u
                beq       IRQExit             ; no last process, bail
                ldb       #S$HUP
                os9       F$Send              ; send signal, don't think we can do anything about an error result anyway.. so
                bra       CkSuspnd            ; do we need to go check suspend?
 
-; put byte B in port As buffer - optimization help from Darren Atkinson       
-IRQPutCh                 
+; put byte B in port As buffer - optimization help from Darren Atkinson
+IRQPutCh
 		  ; set IRQ freq for bulk
                lda       PollSpd1,pcr
                bsr       IRQsetFRQ
@@ -579,11 +591,11 @@ send@          lda       V.LPRC,u
                os9       F$Send
                bra       IRQExit
 
-store                    
+store
           ; store our data byte
                sta       ,x+                 ; store and increment buffer pointer
 
-          ; adjust RxBufPut	
+          ; adjust RxBufPut
                cmpx      RxBufEnd,u          ; end of Rx buffer?
                blo       IRQSkip1            ; no, go keep laydown pointer
                ldx       RxBufPtr,u          ; get Rx buffer start address
@@ -592,7 +604,7 @@ IRQSkip1       stx       RxBufPut,u          ; set new Rx data laydown pointer
           ; increment RxDatLen
                inc       RxDatLen,u
 
-CkSSig                   
+CkSSig
                lda       <SSigID,u           ; send signal on data ready?
                beq       CkSuspnd
                ldb       <SSigSg,u           ; else get signal code
@@ -600,8 +612,8 @@ CkSSig
                clr       <SSigID,u
                bra       IRQExit
 
-          ; check if we have a process waiting for data	
-CkSuspnd                 
+          ; check if we have a process waiting for data
+CkSuspnd
                lda       <V.WAKE,u           ; V.WAKE?
                beq       IRQExit             ; no
                clr       <V.WAKE,u           ; clear V.WAKE
@@ -610,17 +622,17 @@ CkSuspnd
                ifeq      Level-1
                ldb       #S$Wake
                os9       F$Send
-               else      
-               clrb      
+               else
+               clrb
                tfr       d,x                 ; copy process descriptor pointer
                lda       P$State,x           ; get state flags
                anda      #^Suspend           ; clear suspend state
                sta       P$State,x           ; save state flags
-               endc      
+               endc
 
-IRQExit                  
+IRQExit
 IRQExit2       puls      cc,dp,pc            ; restore interrupts cc,dp, return
 
-               emod      
+               emod
 eom            equ       *
-               end       
+               end

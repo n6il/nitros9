@@ -20,72 +20,72 @@
 * was for my OS-9 system. The current one is for the NitrOS-9
 * project.
 
-               NAM       dirsort
-               TTL       Directory sorting utility
+               nam       dirsort
+               ttl       Directory sorting utility
 
-               IFP1      
-               USE       defsfile
-               ENDC      
+               ifp1      
+               use       defsfile
+               endc      
 
 * If you want built-in help change the next line.
-HELP           SET       FALSE
+HELP           set       FALSE
 
-TyLg           SET       Prgrm+Objct         program object code
+TyLg           set       Prgrm+Objct         program object code
 * Re-entrant means multiple users possible
-AtRev          SET       ReEnt+Rev           re-entrant, revision 1
-Rev            SET       1
+AtRev          set       ReEnt+Rev           re-entrant, revision 1
+Rev            set       1
 
 * Create module header, needed by all OS-9 modules
-               MOD       Eom,Name,TyLg,AtRev,Start,Size
+               mod       Eom,Name,TyLg,AtRev,Start,Size
 * Data area
-DPptr          RMB       2                   pointer to our direct page
-dirsize        RMB       2                   size of the directory less 64 bytes
-count          RMB       2                   number of directory entries
-entryI         RMB       2                   pointer to nameI
-entryJ         RMB       2                   pointer to nameJ
-entryID        RMB       2                   pointer to name(I+D)
-Tx             RMB       32                  buffer for transfer
-i              RMB       2                   index
-j              RMB       2                   index
-NminusD        RMB       2                   holds last value of FOR I/NEXT loop
-path           RMB       1                   value for path to the directory
-D              RMB       2                   shellsort constant
-               RMB       40
-stack          EQU       .
-Size           EQU       .                   This initial data space will be increased as OS-9
+DPptr          rmb       2                   pointer to our direct page
+dirsize        rmb       2                   size of the directory less 64 bytes
+count          rmb       2                   number of directory entries
+entryI         rmb       2                   pointer to nameI
+entryJ         rmb       2                   pointer to nameJ
+entryID        rmb       2                   pointer to name(I+D)
+Tx             rmb       32                  buffer for transfer
+i              rmb       2                   index
+j              rmb       2                   index
+NminusD        rmb       2                   holds last value of FOR I/NEXT loop
+path           rmb       1                   value for path to the directory
+D              rmb       2                   shellsort constant
+               rmb       40
+stack          equ       .
+Size           equ       .                   This initial data space will be increased as OS-9
 * assigns space in pages of 256 bytes. Initially the stack will
 * not be here.
-buffer         EQU       .                   This will be the start of the data array in memory
+buffer         equ       .                   This will be the start of the data array in memory
 * to be requested from OS-9 as needed.
 
-Name           EQU       *
-               FCS       /dirsort/
-               FCB       1                   edition number
+Name           equ       *
+               fcs       /dirsort/
+               fcb       1                   edition number
 * Ego stroking :) identifier
-               FCC       /Written by Robert Gault, 2005/
+               fcc       /Written by Robert Gault, 2005/
 
 * Default directory name, dot, or current directory
-default        FCB       C$PERD,C$CR
+default        fcb       C$PERD,C$CR
 
 * Solutions for N,2^INT(LN(N)) -1
 * We don't need general logs just specifc values so
 * they were pre-calculated
-Dtable         FDB       2,0
-               FDB       7,1
-               FDB       20,3
-               FDB       54,7
-               FDB       148,15
+Dtable         fdb       2,0
+               fdb       7,1
+               fdb       20,3
+               fdb       54,7
+               fdb       148,15
 * If your directory has more entries than several hundred, you
 * need to learn how to organize your disk/drive.
-               FDB       403,31
-               FDB       1096,63
+               fdb       403,31
+               fdb       1096,63
 * This next will exceed normal memory limits but is needed
 * for values up to about 2000. We could just put $FFFF/32=
 * 2047 but there are size checks in the code.
-               FDB       2980,127
-DTEnd          EQU       *
+               fdb       2980,127
+DTEnd          equ       *
 
-Start          EQU       *
+Start          equ       *
                stu       <DPptr              save the direct page pointer
                leas      stack,u             put the stack where we want it or it will be
 * inside the directory buffer and crash the program.
@@ -98,15 +98,15 @@ l1             lda       ,x+                 skip over spaces, if any
                bne       a1
 noprm          leax      default,pcr         point to default directory, dot
                bra       a9
-               IFNE      HELP
+               ifne      HELP
 a1             cmpa      #'?                 if "?" then show syntax
                lbeq      syntax
                cmpa      #'-                 if attempt at options, syntax
                lbeq      syntax
                leax      -1,x
-               ELSE      
+               else      
 a1             leax      -1,x                backstep to first character of directory
-               ENDC      
+               endc      
 a9             lda       #%11000011          directory, single user access, update
                os9       I$Open              attempt to open a path to the directory
                lbcs      error
@@ -136,13 +136,13 @@ a9             lda       #%11000011          directory, single user access, upda
 * the directory is corrupted. So, ignore remainder.
                ldx       #0                  initialize counter
                ldd       <dirsize            this does not include . and ..
-               IFNE      H6309
+               ifne      H6309
                lsrd      
                lsrd      
                lsrd      
                lsrd      
                lsrd      
-               ELSE      
+               else      
                lsra      
                rorb      
                lsra      
@@ -153,7 +153,7 @@ a9             lda       #%11000011          directory, single user access, upda
                rorb      
                lsra      
                rorb      
-               ENDC      
+               endc      
                std       <count
                leax      Dtable,pcr          precalculated constants
                leay      DTEnd,pcr
@@ -234,12 +234,12 @@ s20            ldd       <i                  NEXT i
                cmpd      <NminusD
                bls       s6                  stop if i>(n-D)
                ldd       <D                  D=D/2
-               IFNE      H6309
+               ifne      H6309
                lsrd      
-               ELSE      
+               else      
                lsra      
                rorb      
-               ENDC      
+               endc      
                std       <D
                cmpd      #1
                lbhs      s2                  WHILE D>0
@@ -255,11 +255,11 @@ s20            ldd       <i                  NEXT i
                clrb      
                os9       F$Exit              release memory, close paths, and return to OS-9
 
-               IFNE      H6309
+               ifne      H6309
 movexy         ldw       #32
                tfm       x+,y+
                rts       
-               ELSE      
+               else      
 movexy         ldb       #16                 move the entry pointed to in regX to
                pshs      b
 sw1            ldd       ,x++                that pointed to by regY
@@ -267,20 +267,20 @@ sw1            ldd       ,x++                that pointed to by regY
                dec       ,s                  if not finished, continue
                bne       sw1
                puls      b,pc
-               ENDC      
+               endc      
 
 * Converts an index in regD to a memory offset in regX
 * This could easily overflow but there are size checks
 * in the above code so there is no overflow test.
 point          leax      buffer,u
                subd      #1
-               IFNE      H6309
+               ifne      H6309
                lsld      
                lsld      
                lsld      
                lsld      
                lsld      
-               ELSE      
+               else      
                lslb      
                rola      
                lslb      
@@ -291,7 +291,7 @@ point          leax      buffer,u
                rola      
                lslb      
                rola      
-               ENDC      
+               endc      
                leax      d,x
                rts       
 
@@ -336,45 +336,45 @@ write          lda       #1                  screen
                os9       I$Write
                clrb      
                os9       F$Exit
-nodir          EQU       *
-               FCC       /Directory does not exist!/
-               FCB       C$CR,C$LF
-endnd          EQU       *
+nodir          equ       *
+               fcc       /Directory does not exist!/
+               fcb       C$CR,C$LF
+endnd          equ       *
 
 Tlarge         leax      big,pcr
                ldy       #endbig-big
                bra       write
-big            EQU       *
-               FCC       /Either the directory is too large or there is insufficient /
-               FCC       /memory./
-               FCB       C$CR,C$LF
-endbig         EQU       *
+big            equ       *
+               fcc       /Either the directory is too large or there is insufficient /
+               fcc       /memory./
+               fcb       C$CR,C$LF
+endbig         equ       *
 
 getreal        leax      huh,pcr
                ldy       #endhuh-huh
                clr       ,-s
                bra       write
-huh            EQU       *
-               FCC       /Get real! You can't sort less than 2 items./
-               FCB       C$CR,C$LF
-endhuh         EQU       *
+huh            equ       *
+               fcc       /Get real! You can't sort less than 2 items./
+               fcb       C$CR,C$LF
+endhuh         equ       *
 
-               IFNE      HELP
+               ifne      HELP
 syntax         leax      usage,pcr
                ldy       #enduse-usage
                clr       ,-s
                lbra      write
-usage          FCC       /USAGE: dirsort will sort any directory. If no directory/
-               FCB       C$CR,C$LF
-               FCC       /       name is given, the current directory will be sorted./
-               FCB       C$CR,C$LF
-               FCC       /EX:    dirsort    dirsort .    dirsort ../
-               FCB       C$CR,C$LF
-               FCC       "       dirsort /dd/cmds"
-               FCB       C$CR,C$LF
-enduse         EQU       *
-               ENDC      
+usage          fcc       /USAGE: dirsort will sort any directory. If no directory/
+               fcb       C$CR,C$LF
+               fcc       /       name is given, the current directory will be sorted./
+               fcb       C$CR,C$LF
+               fcc       /EX:    dirsort    dirsort .    dirsort ../
+               fcb       C$CR,C$LF
+               fcc       "       dirsort /dd/cmds"
+               fcb       C$CR,C$LF
+enduse         equ       *
+               endc      
 
-               EMOD      
-Eom            EQU       *
-               END       
+               emod      
+Eom            equ       *
+               end       

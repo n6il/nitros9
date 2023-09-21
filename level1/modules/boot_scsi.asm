@@ -48,60 +48,60 @@
 * Ded the object to fix that AND the NULL bus address and this code broken.
 * WhichDrv is now a zero based decimal value passed in by the makefile via ITDNS
 * Thanks Boisy...
-               NAM       Boot
-               TTL       SCSI Boot Module
+               nam       Boot
+               ttl       SCSI Boot Module
 
-               IFP1
-               USE       defsfile
-               USE       rbsuper.d
-               USE       scsi.d
-               ENDC
+               ifp1      
+               use       defsfile
+               use       rbsuper.d
+               use       scsi.d
+               endc      
 
-tylg           SET       Systm+Objct
-atrv           SET       ReEnt+rev
-rev            SET       1
-edition        SET       4
+tylg           set       Systm+Objct
+atrv           set       ReEnt+rev
+rev            set       1
+edition        set       4
 
-               MOD       eom,name,tylg,atrv,start,size
+               mod       eom,name,tylg,atrv,start,size
 
-SCSIEX         EQU       1
+SCSIEX         equ       1
 
 * Data equates; subroutines must keep data in stack
-             IFNE      SCSIEX
-v$cmd          RMB       1
-v$extra        RMB       1
-v$addr0        RMB       1
-v$addr1        RMB       1
-v$addr2        RMB       1
-v$addr3        RMB       1
-v$resv         RMB       1
-v$blks0        RMB       1
-v$blks1        RMB       1
-v$ctrl         RMB       1
-             ELSE
-v$cmd          RMB       1
-v$addr0        RMB       1
-v$addr1        RMB       2
-v$blks         RMB       1
-v$opts         RMB       1
-             ENDC
-seglist        RMB       2                   pointer to segment list
-blockloc       RMB       2                   pointer to memory requested
-blockimg       RMB       2                   duplicate of the above
-bootloc        RMB       3                   sector pointer; not byte pointer
-bootsize       RMB       2                   size in bytes
-LSN0Ptr        RMB       2                   LSN0 pointer (used by boot_common.asm)
-size           EQU       .
+               ifne      SCSIEX
+v$cmd          rmb       1
+v$extra        rmb       1
+v$addr0        rmb       1
+v$addr1        rmb       1
+v$addr2        rmb       1
+v$addr3        rmb       1
+v$resv         rmb       1
+v$blks0        rmb       1
+v$blks1        rmb       1
+v$ctrl         rmb       1
+               else      
+v$cmd          rmb       1
+v$addr0        rmb       1
+v$addr1        rmb       2
+v$blks         rmb       1
+v$opts         rmb       1
+               endc      
+seglist        rmb       2                   pointer to segment list
+blockloc       rmb       2                   pointer to memory requested
+blockimg       rmb       2                   duplicate of the above
+bootloc        rmb       3                   sector pointer; not byte pointer
+bootsize       rmb       2                   size in bytes
+LSN0Ptr        rmb       2                   LSN0 pointer (used by boot_common.asm)
+size           equ       .
 
-name           FCS       /Boot/
-               FCB       edition
+name           fcs       /Boot/
+               fcb       edition
 
 * Common booter-required defines
-LSN24BIT       EQU       1
-FLOPPY         EQU       0
+LSN24BIT       equ       1
+FLOPPY         equ       0
 
 
-               USE       boot_common.asm
+               use       boot_common.asm
 
 ************************************************************
 ************************************************************
@@ -113,26 +113,26 @@ FLOPPY         EQU       0
 *   Entry: Y = hardware address
 *   Exit:  Carry Clear = OK, Set = Error
 *          B = error (Carry Set)
-HWInit
+HWInit                   
                clr       >$FF40              stop the disk motors
 *               IFNE      D4N1+HDII ??????
-             IFNE    MPI
-               leax      CntlSlot,pcr       point at byte with MPI slot in it
-               lda       ,x                 get it
-               sta       MPI.Slct           and set the MPI to us.
-             ENDC                           But this was NOT being done.
+               ifne      MPI
+               leax      CntlSlot,pcr        point at byte with MPI slot in it
+               lda       ,x                  get it
+               sta       MPI.Slct            and set the MPI to us.
+               endc                          But this was NOT being done.
                ldd       #S$SEEK*256
                ldx       #0
                bsr       setup
-             IFEQ      SCSIEX
+               ifeq      SCSIEX
                clr       v$blks,u
-             ENDC
+               endc      
                bra       command
 
 * Sets up the SCSI packet to send
 * Destroys B
 setup          sta       v$cmd,u
-             IFNE      SCSIEX
+               ifne      SCSIEX
                clr       v$extra,u
                clr       v$addr0,u
                stb       v$addr1,u
@@ -142,20 +142,20 @@ setup          sta       v$cmd,u
                ldb       #1
                stb       v$blks1,u
                clr       v$ctrl,u
-             ELSE
+               else      
                stb       v$addr0,u
                stx       v$addr1,u
                ldb       #1
                stb       v$blks,u
                clr       v$opts,u
-             ENDC
-               rts
+               endc      
+               rts       
 
 * Sooooo, at end of module, the FF64XX, the XX is not a marching bit
 * pattern any more.  Cool but a huge gotcha needing makefile changes
 * all over.  And theres too many of them.
 
-scsival        FCB       $80+1,$80+2,$80+4,$80+8,$80+16,$80+32,$80+64,$80
+scsival        fcb       $80+1,$80+2,$80+4,$80+8,$80+16,$80+32,$80+64,$80
 
 * SCSI Wake-Up Routine
 * Destroys: X
@@ -201,7 +201,7 @@ HWRead         lda       #S$READEX
                bsr       setup
 * SCSI Send Command Routine
 command        bsr       wakeup              tell SCSI we want the bus
-               bcs       wake3              return immediately if error
+               bcs       wake3               return immediately if error
                leax      v$cmd,u
                bsr       SCSISend
                bcs       command
@@ -215,23 +215,23 @@ getsta         bsr       Wait4REQ
                anda      #%00001111
                pshs      a
                bsr       Wait4REQ
-               clra
+               clra      
                sta       SCSIDATA,y
                puls      a
                bita      #X$BUSY
                bne       command
                bita      #X$ERROR
                beq       HWTerm
-reterr         comb
+reterr         comb      
                ldb       #E$Unit
-               rts
+               rts       
 
 * HWTerm - Terminate the device
 *   Entry: Y = hardware address
 *   Exit:  Carry Clear = OK, Set = Error
 *          B = error (Carry Set)
-HWTerm         clrb
-               rts
+HWTerm         clrb      
+               rts       
 
 SCSISend       bsr       Wait4REQ
                bita      #CMD
@@ -244,30 +244,30 @@ SCSISend       bsr       Wait4REQ
 ckmsg          bita      #MSG                MESSAGE IN (target->initiator)
                beq       HWTerm
                lda       SCSIDATA,y          extended message?
-               deca
+               deca      
 *
 * MESSAGE IN phase code
 *
                bne       SCSISend
                ldb       SCSIDATA,y          get extended message length
 l@             tst       SCSIDATA,y          read extended message
-               decb
+               decb      
                bne       l@
                bra       reterr              return with carry set
 
-Wait4REQ
+Wait4REQ                 
 loop@          lda       SCSISTAT,y
                bita      #REQ
                beq       loop@
-               rts
+               rts       
 
 * Patch to allow booting from sector sizes > 256 bytes - BGP 08/16/97
 * We ignore any bytes beyond byte 256, but continue to read them from
 * the SCSIDATA until the CMD bit is set.
-read
+read                     
 * next 2 lines added
                clrb                          +++ use B as counter
-read2
+read2                    
                bsr       Wait4REQ
                bita      #CMD
                bne       HWTerm
@@ -278,7 +278,7 @@ read2
                incb                          +++
                bne       read2               +++
                leax      -256,x
-read3
+read3                    
                bsr       Wait4REQ            +++
                bita      #CMD                +++
                bne       HWTerm              +++
@@ -286,7 +286,7 @@ read3
                bra       read3               +++
 
 
-             IFGT      Level-1
+               ifgt      Level-1
 * L2 kernel file is composed of rel, boot, krn. The size of each of these
 * is controlled with filler, so that (after relocation):
 * rel  starts at $ED00 and is $130 bytes in size
@@ -297,24 +297,24 @@ read3
 * Filler to get to a total size of $1D0. 3, 1, 2, 1 represent bytes after
 * the filler: the end boilerplate for the module, fcb, fdb and fcb respectively.
 * Fillers to get to $1D0
-Filler         FILL      $39,$1D0-3-1-2-1-*
-             ENDC
+Filler         fill      $39,$1D0-3-1-2-1-*
+               endc      
 
 * rev1, add selections for MPI slot and bus address of drive
 * 2012\11\05 Gene Heskett
 * The default SCSI ID is here, but first do MPI slot
-             IFEQ      MPI-1
-CntlSlot       FCB       SDMPI
-             ELSE
-CntrSlot       FCB       $FF
-             ENDC
-Address        FDB       SDAddr
+               ifeq      MPI-1
+CntlSlot       fcb       SDMPI
+               else      
+CntrSlot       fcb       $FF
+               endc      
+Address        fdb       SDAddr
 * So now, this can be a base zero decimal value!
-             IFNDEF    ITDNS
-ITDNS          EQU       0
-             ENDC
-WhichDrv       FCB       ITDNS
+               ifndef                        ITDNS
+ITDNS          equ       0
+               endc      
+WhichDrv       fcb       ITDNS
 
-               EMOD
-eom            EQU       *
-               END
+               emod      
+eom            equ       *
+               end       

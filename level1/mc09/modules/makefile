@@ -15,9 +15,8 @@ BOOTERS		= boot_sdc
 BOOTTRACK	= rel $(BOOTERS)
 KERNEL		= krn krnp2 wbug
 SYSMODS		= ioman init sysgo_dd sysgo_h0
-CLOCKS          = mc09clock_50hz\
-                clock2_soft \
-		clock2_dw
+CLOCKS          = mc09clock_soft_50hz\
+		mc09clock_dw_50hz
 
 RBF		= rbf.mn \
 		rbdw.dr \
@@ -260,9 +259,11 @@ sysgo_h0: sysgo.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $<
 
 # Clocks
-mc09clock_50hz: mc09clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=50
+mc09clock_soft_50hz: mc09clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ -DSOFT $< -DPwrLnFrq=50
 
+mc09clock_dw_50hz: mc09clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ -DDW $< -DPwrLnFrq=50
 
 clean:
 	$(CD) kernel; make $@

@@ -93,7 +93,7 @@ start          equ       *
 *    B  = error code   
 Term           equ       *
                lda       <V.PORT+1,u         get our port #
-               bmi       termbye			if this is wildcard, skip TERM
+               bmi       termbye             if this is wildcard, skip TERM
                pshs      a                   port # on stack
 * clear statics table entry
                ifgt      Level-1
@@ -243,7 +243,7 @@ dwioname       fcs       /dwio/
 Write          equ       *
                pshs      a                   ; character to send on stack
                lda       <V.PORT+1,u         ; port number into a
-               adda      #128    ; add base of command into A
+               adda      #128                ; add base of command into A
                pshs      a
                leax      ,s
                ldy       #$0002              ; 3 bytes to send.. ugh.  need WRITEM (data mode)
@@ -254,7 +254,7 @@ Write          equ       *
                endc      
                jsr       6,u
 WriteOK        clrb      
-WriteExit      puls      x,pc              ; clean stack, return
+WriteExit      puls      x,pc                ; clean stack, return
 
 
 NotReady       comb      
@@ -428,7 +428,7 @@ GetComSt       cmpa      #SS.ComSt
                sta       R$B,x
                puls      cc,dp,pc            ; restore Carry status, system DP, return			
 
-GetKySns
+GetKySns                 
                cmpa      #SS.KySns
                bne       GetSSMntr           ; no, we have no more answers, report error
 * Get key sense byte from server and return to caller
@@ -510,8 +510,8 @@ relea          lda       PD.CPR,y            get curr proc #
                bne       ex
                clr       <SSigID,u           clear process id
 ex             rts       
-sskysns        
-               rts
+sskysns                  
+               rts       
 ssig           pshs      cc
                orcc      #IntMasks
                lda       PD.CPR,y            ; get curr proc #
@@ -580,7 +580,7 @@ found          pshs      b                   save # of free entry
 * Convert netdev # in B to ASCII eqivalent with high bit set
 
                ifne      H6309
-               clra
+               clra      
                divd      #10                 divide it by 10
                else      
                lda       #-1

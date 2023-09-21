@@ -1,4 +1,4 @@
-s********************************************************************
+s*******************************           ***************************
 * scsitest - Test a SCSI device through the SS.DCmd call
 *
 * $Id$
@@ -9,45 +9,45 @@ s********************************************************************
 *   1      2005/12/11  Boisy G. Pitre
 * Created.
 
-               NAM       scsitest
-               TTL       Test a SCSI device through the SS.DCmd call
+               nam       scsitest
+               ttl       Test a SCSI device through the SS.DCmd call
 
-               IFP1      
-               USE       defsfile
-               USE       scfdefs
-               ENDC      
+               ifp1      
+               use       defsfile
+               use       scfdefs
+               endc      
 
-tylg           SET       Prgrm+Objct
-atrv           SET       ReEnt+rev
-rev            SET       $00
-edition        SET       1
+tylg           set       Prgrm+Objct
+atrv           set       ReEnt+rev
+rev            set       $00
+edition        set       1
 
-               MOD       eom,name,tylg,atrv,start,size
+               mod       eom,name,tylg,atrv,start,size
 
-               ORG       0
-code           RMB       1
-lsn            RMB       3
-left           RMB       2
-path           RMB       1
-txbuff         RMB       2048                to accomodate CD-ROM sector sizes
-               RMB       200
-size           EQU       .
+               org       0
+code           rmb       1
+lsn            rmb       3
+left           rmb       2
+path           rmb       1
+txbuff         rmb       2048                to accomodate CD-ROM sector sizes
+               rmb       200
+size           equ       .
 
-IntroM         FCC       /SCSI Direct Command Test/
-               FCB       C$CR
-StartM         FCC       /Sending START UNIT... /
-StartML        EQU       *-StartM
-Done           FCC       /Done!/
-               FCB       C$CR
-StartUnit      FCB       $1B,$00,$00,$00,$01,$00
-StopM          FCC       /Sending STOP UNIT.../
-StopML         EQU       *-StopM
-StopUnit       FCB       $1B,$00,$00,$00,$00,$00
-ReadM          FCC       /Testing READ... /
-ReadML         EQU       *-ReadM
+IntroM         fcc       /SCSI Direct Command Test/
+               fcb       C$CR
+StartM         fcc       /Sending START UNIT... /
+StartML        equ       *-StartM
+Done           fcc       /Done!/
+               fcb       C$CR
+StartUnit      fcb       $1B,$00,$00,$00,$01,$00
+StopM          fcc       /Sending STOP UNIT.../
+StopML         equ       *-StopM
+StopUnit       fcb       $1B,$00,$00,$00,$00,$00
+ReadM          fcc       /Testing READ... /
+ReadML         equ       *-ReadM
 
-name           FCS       /scsitest/
-               FCB       edition
+name           fcs       /scsitest/
+               fcb       edition
 
 start          leay      txbuff,u
                lda       #$08
@@ -80,17 +80,17 @@ ok@            ldd       #'@*256+C$CR
                os9       I$WritLn
 
                bsr       DoStartUnit
-			   bcs       exit
-			   
+               bcs       exit
+
                bsr       DoReadSector
-			   bcs       exit
-			   
+               bcs       exit
+
                bsr       DoStopUnit
-			   bcs       exit
-			   
+               bcs       exit
+
                bsr       DoStartUnit
-			   bcs       exit
-			   
+               bcs       exit
+
 exitok         clrb      
 exit           os9       F$Exit
 
@@ -109,8 +109,8 @@ DoStartUnit    leax      StartM,pcr
                ldy       #100
                lda       #1
                os9       I$WritLn
-exit@          rts
-			   
+exit@          rts       
+
 * Do READ of sector
 DoReadSector   leax      ReadM,pcr
                lda       #1
@@ -134,7 +134,7 @@ w              lda       <lsn
                ldy       #100
                lda       #1
                os9       I$WritLn
-exit@          rts
+exit@          rts       
 
 * Do STOP UNIT
 DoStopUnit     leax      StopM,pcr
@@ -151,8 +151,8 @@ DoStopUnit     leax      StopM,pcr
                ldy       #100
                lda       #1
                os9       I$WritLn
-exit@          rts
-			   
-               EMOD      
-eom            EQU       *
-               END       
+exit@          rts       
+
+               emod      
+eom            equ       *
+               end       

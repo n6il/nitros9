@@ -3,8 +3,8 @@
 * DWInit
 *    Initialize DriveWire for CoCo Bit Banger
 
-DWInit
-               IFNE     ARDUINO
+DWInit                   
+               ifne      ARDUINO
 
 * setup PIA PORTA (read)
                clr       $FF51
@@ -18,12 +18,12 @@ DWInit
                sta       $FF52
                lda       #$2C
                sta       $FF53
-               rts
+               rts       
 
-               ELSE
+               else      
 
                pshs      a,x
-               IFDEF     PIA1Base
+               ifdef     PIA1Base
                ldx       #PIA1Base           $FF20
                clr       1,x                 clear CD
                lda       #%11111110
@@ -31,7 +31,7 @@ DWInit
                lda       #%00110100
                sta       1,x
                lda       ,x
-               ENDC
-               puls       a,x,pc
+               endc      
+               puls      a,x,pc
 
-               ENDC
+               endc      

@@ -47,82 +47,82 @@
 *          2008/01/21  Boisy G. Pitre
 * Fixed issue in DCmd where Y was not being saved when os9 F$ID was being called.
 
-               NAM       llscsi              
-               TTL       Low-level SCSI driver
+               nam       llscsi              
+               ttl       Low-level SCSI driver
 
-               IFP1      
-               USE       defsfile
-               USE       rbsuper.d
-               USE       scsi.d
-               ENDC      
+               ifp1      
+               use       defsfile
+               use       rbsuper.d
+               use       scsi.d
+               endc      
 
-tylg           SET       Sbrtn+Objct
-atrv           SET       ReEnt+rev
-rev            SET       0
+tylg           set       Sbrtn+Objct
+atrv           set       ReEnt+rev
+rev            set       0
 
 
 *
 * SCSI Delay Constants
 *
-               IFGT      Level-1
-BUSYDELAY      EQU       $FFFF
-               ELSE      
-BUSYDELAY      EQU       $FFFF/2
-               ENDC      
-NUMTRIES       EQU       8
+               ifgt      Level-1
+BUSYDELAY      equ       $FFFF
+               else      
+BUSYDELAY      equ       $FFFF/2
+               endc      
+NUMTRIES       equ       8
 
-               MOD       eom,name,tylg,atrv,start,0
+               mod       eom,name,tylg,atrv,start,0
 
-               ORG       V.LLMem
+               org       V.LLMem
 * Low-level driver static memory area
 * SCSI Command Packet
 * SCSI packet length is 14 bytes
-V.SCSICMD      RMB       1
-V.SCSILUN      RMB       1
-V.SCSIPrm0     RMB       1
-V.SCSIPrm1     RMB       1
-V.SCSIPrm2     RMB       1
-V.SCSIPrm3     RMB       1
-V.SCSIPrm4     RMB       1
-V.SCSIPrm5     RMB       1
-V.SCSIPrm6     RMB       1
-V.SCSIPrm7     RMB       1
-               RMB       4
-SCSIPkLn       EQU       .-V.SCSICMD
-V.Retries      RMB       1                   SCSI command retry counter   
-V.OS9Err       RMB       1                   (0 = return OS-9 error code, 1 = return SCSI error code)
-V.Turbo        RMB       1                   turbo flag (0 = regular read, 1 = turbo read)
-V.TfrBuf       RMB       2                   transfer buffer pointer
-V.RetryVct     RMB       2                   retry vector
-V.ReadVct      RMB       2                   normal/turbo read vectoor
-V.WriteVct     RMB       2                   normal/turbo write vector
-V.DnsByte      RMB       1                   copy of PD.DNS from last accessed drive
-               IFNE      D4N1+HDII
-V.MPISlot      RMB       1                   MPI slot
-V.MPISave      RMB       1                   contents of original MPI slot
-               ENDC      
+V.SCSICMD      rmb       1
+V.SCSILUN      rmb       1
+V.SCSIPrm0     rmb       1
+V.SCSIPrm1     rmb       1
+V.SCSIPrm2     rmb       1
+V.SCSIPrm3     rmb       1
+V.SCSIPrm4     rmb       1
+V.SCSIPrm5     rmb       1
+V.SCSIPrm6     rmb       1
+V.SCSIPrm7     rmb       1
+               rmb       4
+SCSIPkLn       equ       .-V.SCSICMD
+V.Retries      rmb       1                   SCSI command retry counter   
+V.OS9Err       rmb       1                   (0 = return OS-9 error code, 1 = return SCSI error code)
+V.Turbo        rmb       1                   turbo flag (0 = regular read, 1 = turbo read)
+V.TfrBuf       rmb       2                   transfer buffer pointer
+V.RetryVct     rmb       2                   retry vector
+V.ReadVct      rmb       2                   normal/turbo read vectoor
+V.WriteVct     rmb       2                   normal/turbo write vector
+V.DnsByte      rmb       1                   copy of PD.DNS from last accessed drive
+               ifne      D4N1+HDII
+V.MPISlot      rmb       1                   MPI slot
+V.MPISave      rmb       1                   contents of original MPI slot
+               endc      
 * The Request Sense Packet and Read Capacity return data share the same space
-ReqSnPkt       EQU       .
-V.TxBuf        EQU       .                   used by DSize
-V.R$Err        RMB       2                   SCSI error code return value
-V.UTxBuf       EQU       .
-V.R$Err2       RMB       10
-V.R$AdSns      RMB       1
-ReqPkL         EQU       .-ReqSnPkt          length of packet
-               RMB       3                   makes V.TxBuf 16 bytes
+ReqSnPkt       equ       .
+V.TxBuf        equ       .                   used by DSize
+V.R$Err        rmb       2                   SCSI error code return value
+V.UTxBuf       equ       .
+V.R$Err2       rmb       10
+V.R$AdSns      rmb       1
+ReqPkL         equ       .-ReqSnPkt          length of packet
+               rmb       3                   makes V.TxBuf 16 bytes
 
-name           FCC       /ll/
-               IFNE      TC3
-               FCS       /tc3/
-               ELSE      
-               IFNE      KTLR
-               FCS       /ktlr/
-               ELSE      
-               IFNE      D4N1+HDII
-               FCS       /disto/
-               ENDC      
-               ENDC      
-               ENDC      
+name           fcc       /ll/
+               ifne      TC3
+               fcs       /tc3/
+               else      
+               ifne      KTLR
+               fcs       /ktlr/
+               else      
+               ifne      D4N1+HDII
+               fcs       /disto/
+               endc      
+               endc      
+               endc      
 
 start          bra       ll_init
                nop       
@@ -158,13 +158,13 @@ ll_term
 *    B  = error code
 *
 ll_init                  
-               IFNE      D4N1+HDII
+               ifne      D4N1+HDII
 * Disto 4-N-1 and HD-II: Get MPI slot select value from descriptor
 * and save it in our static storage.
                lda       IT.MPI,y
                anda      #$0F                preserve *SCS bits only
                sta       V.MPISlot,u
-               ENDC      
+               endc      
                clrb      
                rts       
 
@@ -234,9 +234,9 @@ DSize          lbsr      SCSIPrep            do SCSI prep stuff
                sta       V.SCSICMD,u
                leax      V.TxBuf,u
                stx       V.TfrBuf,u
-               IFNE      D4N1+HDII
+               ifne      D4N1+HDII
                lbsr      MPIIn
-               ENDC      
+               endc      
                lbsr      SCSIXfer
                bcs       ex@
                ldd       V.TxBuf+2,u         get bits 15-0 of block count
@@ -251,11 +251,11 @@ b@             lda       V.TxBuf+6,u
                ldx       V.TxBuf,u
                ldy       V.TxBuf+2,u
 ex@                      
-               IFNE      D4N1+HDII
+               ifne      D4N1+HDII
                lbra      MPIOut
-               ELSE      
+               else      
                rts       
-               ENDC      
+               endc      
 
 
 * ll_setstat
@@ -275,30 +275,30 @@ ll_setstat
                beq       StopUnit
                cmpa      #SS.DCmd
                bne       n@
-               pshs      x                  save pointer to caller registers
-               bsr       DCmd               call DCmd
-               puls      x                  get pointer to caller registers
-               sta       R$A,x              save status byte in A
+               pshs      x                   save pointer to caller registers
+               bsr       DCmd                call DCmd
+               puls      x                   get pointer to caller registers
+               sta       R$A,x               save status byte in A
 n@             clrb      
 ex             rts       
 
 * Entry:
 *    R$B = SS.SQD 
-StopUnit                    
+StopUnit                 
                lbsr      SCSIPrep            do SCSI prep stuff
                lda       #S$UNIT
                sta       V.SCSICMD,u
                clr       V.SCSIPrm2,u        we want to STOP unit
 s@                       
-               IFNE      D4N1+HDII
+               ifne      D4N1+HDII
                lbsr      MPIIn
-               ENDC      
+               endc      
                lbra      SCSIXfer
 
-noperms        comb
+noperms        comb      
                ldb       #E$FNA
-               rts
-               
+               rts       
+
 * Entry:
 *    X   = caller regs
 *    Y   = path descriptor
@@ -317,7 +317,7 @@ DCmd
                ldy       R$X,x               get caller's transfer buffer
                sty       V.UTxBuf,u          save off in mem for later
                ldx       R$Y,x               get ptr to caller's SCSI command buffer
-               IFGT      Level-1
+               ifgt      Level-1
                ldy       D.Proc              get current process ptr
                lda       P$Task,y            get task # for current process
                ldb       D.SysTsk            get system task #
@@ -327,32 +327,32 @@ DCmd
                os9       F$Move              copy from caller to temporary task
                puls      u
                bcs       ex                  error copying, exit
-               ELSE      
+               else      
                ldb       #SCSIPkLn
                leay      V.SCSICMD,u
 cl@            lda       ,x+
                sta       ,y+
                decb      
                bne       cl@
-               ENDC      
+               endc      
                ldy       V.PORT-UOFFSET,u    get hw address (because we overwrite Y earlier)
-               IFNE      D4N1+HDII
+               ifne      D4N1+HDII
                lbsr      MPIIn
-               ENDC      
+               endc      
                inc       V.OS9Err,u          we want real SCSI errors returned
                inc       V.CchDirty,u        and make cache dirty
                leax      retry@,pcr
                stx       V.RetryVct,u
 retry@         lbsr      SCSISend
-               IFNE      D4N1+HDII
+               ifne      D4N1+HDII
                lbcs      MPIOut
-               ELSE      
+               else      
                bcs       ex
-               ENDC      
-               IFGT      Level-1
+               endc      
+               ifgt      Level-1
                ldx       D.Proc              get current process ptr
                ldb       P$Task,x            get task # for current process
-               ENDC      
+               endc      
                ldx       V.UTxBuf,u
 
 msgloop@       lbsr      Wait4REQ            wait for REQ to be asserted
@@ -360,21 +360,21 @@ msgloop@       lbsr      Wait4REQ            wait for REQ to be asserted
                lbne      PostXfr             yes, return
 io@            bita      #INOUT              data coming in or going out?
                bne       in@                 branch if coming in...
-               IFGT      Level-1
+               ifgt      Level-1
                os9       F$LDABX
                leax      1,x
-               ELSE      
+               else      
                lda       ,x+
-               ENDC      
+               endc      
                sta       SCSIDATA,y
                bra       msgloop@
 in@            lda       SCSIDATA,y
-               IFGT      Level-1
+               ifgt      Level-1
                os9       F$STABX
                leax      1,x
-               ELSE      
+               else      
                sta       ,x+
-               ENDC      
+               endc      
                bra       msgloop@
 
 
@@ -390,16 +390,16 @@ in@            lda       SCSIDATA,y
 *    V.SectCnt      = sectors to read
 *    V.PhysSect = physical sector to start read from
 ll_read                  
-               IFNE      D4N1+HDII
+               ifne      D4N1+HDII
                lbsr      MPIIn
-               ENDC      
-               IFNE      SIZEMATTERS
+               endc      
+               ifne      SIZEMATTERS
                bsr       SCSIPrep            do SCSI prep stuff
                bsr       MakeRead            make read command packet
                ldx       V.CchPSpot,u
                stx       V.TfrBuf,u
                lbra      SCSIXfer
-               ELSE      
+               else      
                leax      SCSIReadRetry,pcr
                stx       V.RetryVct,u
                lbsr      SCSIPrep            do SCSI prep stuff
@@ -432,14 +432,14 @@ loop@
                puls      a
                lbra      PostXfr
 mpiex                    
-               IFNE      D4N1+HDII
+               ifne      D4N1+HDII
                lbra      MPIOut
-               ELSE      
+               else      
                rts       
-               ENDC      
+               endc      
 
 TurboRead                
-               IFNE      H6309
+               ifne      H6309
 
 * 6309 Turbo READ
                ldw       #256
@@ -449,7 +449,7 @@ TurboRead
                lbsr      DeauxDeaux
                rts       
 
-               ELSE      
+               else      
 
 * 6809 Turbo READ
                lda       #16
@@ -482,7 +482,7 @@ l2@            lda       SCSIDATA,y
                dec       ,s                  decrement counter
                bne       l2@
                puls      a,pc
-               ENDC      
+               endc      
 
 RegRead256               
                clrb      
@@ -505,7 +505,7 @@ RegRead
                rts       
 
 
-               ENDC      
+               endc      
 
 
 * Make Read/Write Packet
@@ -565,19 +565,19 @@ chkerr@        bita      #X$ERROR            error?
 * Error occurred.. retry
 retry@         dec       V.Retries,u         decrement retry count
                bne       jmp@                try again if not at end
-               IFNE      D4N1+HDII
+               ifne      D4N1+HDII
                lbsr      SCSIErr
                lbra      MPIOut
-               ELSE      
+               else      
                lbra      SCSIErr
-               ENDC      
+               endc      
 jmp@           jmp       [V.RetryVct,u]
 ok@            clrb      
-               IFNE      D4N1+HDII
+               ifne      D4N1+HDII
                lbra      MPIOut
-               ELSE      
+               else      
                rts       
-               ENDC      
+               endc      
 
 
 * ll_write
@@ -592,15 +592,15 @@ ok@            clrb
 *    V.SectCnt      = sectors to read
 *    V.PhysSect     = physical sector to start read from
 ll_write                 
-               IFNE      D4N1+HDII
+               ifne      D4N1+HDII
                lbsr      MPIIn
-               ENDC      
-               IFNE      SIZEMATTERS
+               endc      
+               ifne      SIZEMATTERS
                bsr       SCSIPrep            do SCSI prep stuff
                bsr       MakeWrite           make read command packet
                ldx       V.CchPSpot,u
                stx       V.TfrBuf,u
-               ELSE      
+               else      
                leax      SCSIWriteRetry,pcr
                stx       V.RetryVct,u
                bsr       SCSIPrep            do SCSI prep stuff
@@ -631,7 +631,7 @@ loop@          jsr       [V.WriteVct,u]
                bra       PostXfr
 
 TurboWrite               
-               IFNE      H6309
+               ifne      H6309
 
 * 6309 Turbo WRITE
 loop@          orcc      #IntMasks           we have to mask interrupts for Level 1
@@ -641,7 +641,7 @@ loop@          orcc      #IntMasks           we have to mask interrupts for Leve
                lbsr      DeauxDeaux
                rts       
 
-               ELSE      
+               else      
 
 * 6809 Turbo WRITE
                lda       #16
@@ -675,7 +675,7 @@ l2@            ldd       ,x
                bne       l2@
                puls      a,pc
 
-               ENDC      
+               endc      
 
 *
 * "Non-Turbo" Write Data to controller
@@ -693,9 +693,9 @@ loop@          lda       SCSISTAT,y
                bne       loop@
                rts       
 
-               ENDC      
+               endc      
 
-               IFNE      D4N1+HDII
+               ifne      D4N1+HDII
 * Disto 4-N-1/HD-II: Map in MPI HERE
 MPIIn          pshs      cc,a
                lda       MPI.Slct            get MPI value
@@ -708,7 +708,7 @@ MPIWrite       sta       MPI.Slct            write out to MPI
 MPIOut         pshs      cc,a
                lda       V.MPISave,u
                bra       MPIWrite
-               ENDC      
+               endc      
 
 
 * SCSIXfer
@@ -741,11 +741,11 @@ sr@            rts
 
 * Give up timeslice several times unless this is the system
 DeauxDeaux     pshs      x
-               IFGT      Level-1
+               ifgt      Level-1
                ldx       D.Proc              get proc descriptor
                cmpx      D.SysPrc            system?
                beq       WaitDone            yep, system cannot sleep
-               ENDC      
+               endc      
 *               ldx       D.AProcQ            get active proc queue
 *               beq       WaitDone            if empty, return
 *               ldx       #$0001
@@ -766,7 +766,7 @@ GetStatB       bsr       Wait4REQ
                puls      pc,a
 
 * SCSI ID table with hi-bit set for SCSI-3 compliance
-IDTBL          FCB       $80+1,$80+2,$80+4,$80+8,$80+16,$80+32,$80+64,128
+IDTBL          fcb       $80+1,$80+2,$80+4,$80+8,$80+16,$80+32,$80+64,128
 
 *
 * SCSI Packet Send Routine
@@ -849,13 +849,13 @@ sleep@         lbsr      DeauxDeaux
 *        B = mask (result must match this byte)
 StatusWait               
                pshs      x,d
-               IFEQ      Level-1
+               ifeq      Level-1
                ldb       #$02
                ldx       #$0000
-               ELSE      
+               else      
                ldb       #$04
                ldx       #$0000
-               ENDC      
+               endc      
 l@             lda       SCSISTAT,y
                anda      ,s                  apply flip
                cmpa      1,s                 compare to mask
@@ -945,26 +945,26 @@ ErrErr         coma
 * This table is contructed so that gaps are actually continuations of
 * the previous entry.  For example, $14 maps to E$Seek, and so does $15 and
 * $16.
-ErrTbl         FCB       $01,E$NotRdy
-               FCB       $02,E$Seek
-               FCB       $03,E$Write
-               FCB       $04,E$NotRdy
-               FCB       $06,E$Seek
-               FCB       $10,E$CRC
-               FCB       $11,E$Read
-               FCB       $14,E$Seek
-               FCB       $17,E$CRC
-               FCB       $19,E$IllArg
-               FCB       $1C,E$Read
-               FCB       $1E,E$CRC
-               FCB       $20,E$IllCmd
-               FCB       $21,E$Sect
-               FCB       $25,E$IllArg
-               FCB       $29,E$NotRdy
-               FCB       $00
+ErrTbl         fcb       $01,E$NotRdy
+               fcb       $02,E$Seek
+               fcb       $03,E$Write
+               fcb       $04,E$NotRdy
+               fcb       $06,E$Seek
+               fcb       $10,E$CRC
+               fcb       $11,E$Read
+               fcb       $14,E$Seek
+               fcb       $17,E$CRC
+               fcb       $19,E$IllArg
+               fcb       $1C,E$Read
+               fcb       $1E,E$CRC
+               fcb       $20,E$IllCmd
+               fcb       $21,E$Sect
+               fcb       $25,E$IllArg
+               fcb       $29,E$NotRdy
+               fcb       $00
 
 
-               EMOD      
-eom            EQU       *
-               END       
+               emod      
+eom            equ       *
+               end       
 

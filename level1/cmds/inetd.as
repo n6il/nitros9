@@ -18,16 +18,16 @@
                nam       inetd
                ttl       internet daemon
 
-               section   __os9
+               section                       __os9
 type           equ       Prgrm
 lang           equ       Objct
 attr           equ       ReEnt
 rev            equ       $00
 edition        equ       3
 stack          equ       200
-               endsect
+               endsect   
 
-               section   bss
+               section                       bss
 targetport     rmb       2
 netdatardy     rmb       1
 nbufferl       equ       128
@@ -45,9 +45,9 @@ targetprog     rmb       128
 targetparams   rmb       128
 tmodeparamlen  rmb       1
 tmodeparams    rmb       128
-               endsect
+               endsect   
 
-               section   code
+               section                       code
 
 DEBUG          equ       1
 
@@ -63,7 +63,7 @@ sigint         cmpb      #NetSig
 sigex          rti       
 
 **** Entry Point ****
-__start
+__start                  
 * setup signal intercept
                leax      sigint,pcr
                os9       F$Icpt
@@ -74,14 +74,14 @@ __start
                stx       nnext,u
 
 * Turn off pause in standard out
-               ldd		#$01*256+SS.Opt
+               ldd       #$01*256+SS.Opt
                leas      -32,s
                tfr       s,x
                os9       I$GetStt
                bcs       opterr
                clr       PD.PAU-PD.OPT,x
                os9       I$SetStt
-opterr
+opterr                   
                leas      32,s
 
 * open the path to the control channel
@@ -91,21 +91,21 @@ opterr
                leax      SetupPorts,pcr
                lbsr      ProcInetd
                lbcs      errex
-               
-               IFNE      DEBUG
+
+               ifne      DEBUG
                lbsr      PRINTS
                fcc       /Got netpath and setup ports/
                fcb       C$CR
                fcb       $00
-               ENDC
+               endc      
 
-ssignetpath
-               IFNE      DEBUG
+ssignetpath              
+               ifne      DEBUG
                lbsr      PRINTS
                fcc       /SS.SSig on NetPath/
                fcb       C$CR
                fcb       $00
-               ENDC
+               endc      
 
                lda       netpath,u
                ldb       #SS.SSig            send signal on data ready
@@ -114,40 +114,40 @@ ssignetpath
                lbcs      errex
 
 **** MAIN LOOP ****
-mainloop
+mainloop                 
                pshs      cc
                orcc      #IntMasks
                tst       netdatardy,u
                bne       gotdata
-               
+
 * wait for a child to die (or wake up via signal)
                os9       F$Wait
                bcc       chkrdy
                cmpb      #E$NoChld
-               bne       chkrdy			got error other than "no children"
+               bne       chkrdy              got error other than "no children"
 * if no children, go to sleep
                ldx       #$0000
                os9       F$Sleep
 
 chkrdy         puls      cc
                bra       ssignetpath
-               
+
 gotdata        puls      cc
                dec       netdatardy,u
 * read the data from netpath
-               IFNE      DEBUG
+               ifne      DEBUG
                lbsr      PRINTS
                fcc       /Reading data from netpath/
                fcb       C$CR
                fcb       $00
-               ENDC
+               endc      
 
                lda       netpath,u
                ldb       #SS.Ready
                os9       I$GetStt
                bcs       ssignetpath
-               
-               clra
+
+               clra      
                tfr       d,y
                lda       netpath,u
                ldx       nnext,u
@@ -159,27 +159,27 @@ gotdata        puls      cc
                lda       -1,x
                cmpa      #C$CR
                lbne      ssignetpath
-               
+
                leax      nbuffer,u
                stx       nnext,u
 
                lda       #1
                ldy       #256
-               os9       I$WritLn 
+               os9       I$WritLn
 
 * determine response
                lda       ,x
                cmpa      #'9
                ble       incoming
-               
+
                cmpa      #'F
                lbra      ssignetpath
- 
+
 * get token number
-incoming
+incoming                 
                lbsr      DEC_BIN
                std       token,u
-               IFNE      DEBUG
+               ifne      DEBUG
                pshs      d
                lbsr      PRINTS
                fcc       /Got token /
@@ -189,29 +189,29 @@ incoming
                lbsr      PRINTS
                fcb       C$CR
                fcb       $00
-               ENDC
+               endc      
 
 * skip over token number
-               IFNE      DEBUG
+               ifne      DEBUG
                lbsr      PRINTS
                fcc       /To Space.../
                fcb       C$CR
                fcb       $00
-               ENDC
+               endc      
                lbsr      TO_SP
-               IFNE      DEBUG
+               ifne      DEBUG
                lbsr      PRINTS
                fcc       /To Non-Space.../
                fcb       C$CR
                fcb       $00
-               ENDC
+               endc      
                lbsr      TO_NON_SP
 
 * get port number
                lbsr      DEC_BIN
                std       targetport,u
-               
-               IFNE      DEBUG
+
+               ifne      DEBUG
                pshs      d
                lbsr      PRINTS
                fcc       /Got request for port /
@@ -222,11 +222,11 @@ incoming
                fcb       C$CR
                fcb       $00
                puls      d
-               ENDC
+               endc      
 
                leax      ForkProcForPort,pcr
                lbsr      ProcInetd
-               lbra      ssignetpath            we may want to tell server we have no app
+               lbra      ssignetpath         we may want to tell server we have no app
 
 errex          os9       F$Exit
 
@@ -244,25 +244,25 @@ ProcInetd      pshs      x
                lda       #READ.
                os9       I$Open
                bcs       adex
-               IFNE      DEBUG
+               ifne      DEBUG
                pshs      d
                lbsr      PRINTS
                fcc       /Opened inetd.conf ok/
                fcb       C$CR
                fcb       $00
                puls      d
-               ENDC
+               endc      
 nextline       leax      lbuffer,u
                ldy       #lbufferl-1
                lbsr      FGETS
                bcs       closeup
-               lbsr      TO_NON_SP        skip any leading spaces
-               ldb       ,x               check for EOL or comment
+               lbsr      TO_NON_SP           skip any leading spaces
+               ldb       ,x                  check for EOL or comment
                cmpb      #C$CR
                beq       nextline
                cmpb      #'#
                beq       nextline
-               IFNE      DEBUG
+               ifne      DEBUG
                pshs      d,x
                lbsr      PRINTS
                fcc       /Reading line: /
@@ -270,20 +270,20 @@ nextline       leax      lbuffer,u
                ldx       2,s
                lbsr      PUTS
                puls      d,x
-               ENDC
+               endc      
                pshs      a
                jsr       [1,s]
                puls      a
                bcc       nextline
 closeup        cmpb      #E$EOF
                bne       closeandex
-               clrb
+               clrb      
 closeandex     pshs      b,cc
                os9       I$Close
                puls      b,cc
 adex           puls      x,pc
 
-               
+
 * Setup ports
 * Extract first parameter at X and send to server
 SetupPorts     lbsr      DEC_BIN
@@ -296,31 +296,31 @@ setuploop      lda       ,y+
                beq       ret0
                cmpa      #',
                bne       setuploop
-setuplisten 
+setuplisten              
                clr       -1,y
-               IFNE      DEBUG
+               ifne      DEBUG
                pshs      d,x
                lbsr      PRINTS
                fcc       /Send listen/
                fcb       C$CR
                fcb       $00
                puls      d,x
-               ENDC
+               endc      
                lda       netpath,u
                lbsr      TCPListen
-ret0           rts
+ret0           rts       
 
-retcc          clrb
-               rts
+retcc          clrb      
+               rts       
 
 * Fork Proccess that matches target port
 * Extract first parameter at X and see if it matches target port
 * if so, read rest of line and fork the process
 * Line looks like this:  portnumberplusoptions,prog,params,path opts
-ForkProcForPort
+ForkProcForPort           
 * get port number
                lbsr      DEC_BIN
-               IFNE      DEBUG
+               ifne      DEBUG
                pshs      d
                lbsr      PRINTS
                fcc       /Reading port /
@@ -339,7 +339,7 @@ ForkProcForPort
                fcb       C$CR
                fcb       $00
                puls      d
-               ENDC
+               endc      
                cmpd      targetport,u
                lbne      retcc
 * point Y to byte after comma
@@ -370,7 +370,7 @@ parloop        lda       ,x+
                cmpa      #C$CR
                beq       gotprocparms
 
-procopts
+procopts                 
                leay      tmodeparams,u
 procoptsloop   lda       ,x+
                sta       ,y+
@@ -378,15 +378,15 @@ procoptsloop   lda       ,x+
                cmpa      #C$CR
                beq       procoptsloop
 
-gotprocparms
-               IFNE      DEBUG
+gotprocparms             
+               ifne      DEBUG
                pshs      d
                lbsr      PRINTS
                fcc       /Got proc and params to fork/
                fcb       C$CR
                fcb       $00
                puls      d
-               ENDC
+               endc      
 
 * ignore client port number and hostname for now
                lbsr      TCPOpen
@@ -402,46 +402,46 @@ gotprocparms
                leas      8,s
                lbra      forkex
 
-savechild
+savechild                
                sta       childnetpath,u
                ldd       token,u
                leas      -8,s
                leax      ,s
                lbsr      BIN_DEC
-               lda       childnetpath,u               
+               lda       childnetpath,u
                tfr       x,y
                lbsr      TCPJoin
                leas      8,s
                bcc       turnonechoalf
                os9       I$Close
                lbra      forkex
- 
-turnonechoalf
-               IFNE      DEBUG
+
+turnonechoalf            
+               ifne      DEBUG
                pshs      d
                lbsr      PRINTS
                fcc       /Turning on PD.EKO and PD.ALF/
                fcb       C$CR
                fcb       $00
                puls      d
-               ENDC
+               endc      
                lbsr      SetEchoOn
                lbcs      ret
                lbsr      SetAutoLFOn
                lbcs      ret
 
 * dup paths
-duper
-               IFNE      DEBUG
+duper                    
+               ifne      DEBUG
                pshs      d
                lbsr      PRINTS
                fcc       /Duping paths/
                fcb       C$CR
                fcb       $00
                puls      d
-               ENDC
+               endc      
 
-               clra
+               clra      
                os9       I$Dup
                lbcs      errex
                sta       orgstdin,u
@@ -455,12 +455,12 @@ duper
                sta       orgstderr,u
 
 * close original stdin/out/err paths
-               clra 
-               os9       I$Close                     
-               inca 
-               os9       I$Close                     
-               inca 
-               os9       I$Close                     
+               clra      
+               os9       I$Close
+               inca      
+               os9       I$Close
+               inca      
+               os9       I$Close
 
 * Dup child net path to stdin/stdout/stderr
                lda       childnetpath,u
@@ -474,23 +474,23 @@ duper
 * fork tmode process if tmode param length > 0
                tst       tmodeparamlen,u
                beq       forkchild
-               pshs      u 
+               pshs      u
                leax      tmode,pcr
                leau      tmodeparams,u
                lda       #Objct
-               clrb
+               clrb      
                ldy       #256
                os9       F$Fork
                puls      u
                os9       F$Wait
 
 * fork child process
-forkchild
-               pshs      u 
+forkchild                
+               pshs      u
                leax      targetprog,u
                leau      targetparams,u
                lda       #Objct
-               clrb
+               clrb      
                ldy       #256
                os9       F$Fork
                puls      u
@@ -498,11 +498,11 @@ forkchild
 *              bcs       ret2
 
 * restore orginal paths
-               clra
+               clra      
                os9       I$Close
-               inca
+               inca      
                os9       I$Close
-               inca
+               inca      
                os9       I$Close
 
                lda       orgstdin,u
@@ -523,19 +523,19 @@ forkchild
                lda       childnetpath,u
                os9       I$Close
 
-               IFNE      DEBUG
+               ifne      DEBUG
                pshs      d
                lbsr      PRINTS
                fcc       /Proc forked/
                fcb       C$CR
                fcb       $00
                puls      d
-               ENDC
+               endc      
 
-forkex         comb
+forkex         comb      
                ldb       #E$EOF
-ret            rts
+ret            rts       
 
 inetdconf      fcc       "....../SYS/inetd.conf"
                fcb       C$CR
-               endsect
+               endsect   

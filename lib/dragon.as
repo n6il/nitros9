@@ -1,4 +1,4 @@
-               section   _constant
+               section                       _constant
 
 DRAGON         equ       1
 Level          equ       1
@@ -12,4 +12,4 @@ H6309          equ       0
                use       ../defs/dragon.d
                use       ../defs/cocovtio.d
 
-               endsect
+               endsect   

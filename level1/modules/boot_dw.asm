@@ -11,42 +11,42 @@
 *   1      2008/02/09  Boisy G. Pitre
 * Created.
 
-               NAM       Boot
-               TTL       DriveWire Boot Module
+               nam       Boot
+               ttl       DriveWire Boot Module
 
-             IFP1
-               USE       defsfile
-               USE       drivewire.d
-             ENDC
+               ifp1      
+               use       defsfile
+               use       drivewire.d
+               endc      
 
-tylg           SET       Systm+Objct
-atrv           SET       ReEnt+rev
-rev            SET       0
-edition        SET       1
+tylg           set       Systm+Objct
+atrv           set       ReEnt+rev
+rev            set       0
+edition        set       1
 
-               MOD       eom,name,tylg,atrv,start,size
+               mod       eom,name,tylg,atrv,start,size
 
 * on-stack buffer to use
-               ORG       0
-seglist        RMB       2                   pointer to segment list
-blockloc       RMB       2                   pointer to memory requested
-blockimg       RMB       2                   duplicate of the above
-bootloc        RMB       3                   sector pointer; not byte pointer
-bootsize       RMB       2                   size in bytes
-LSN0Ptr        RMB       2                   LSN0 pointer
-size           EQU       .
+               org       0
+seglist        rmb       2                   pointer to segment list
+blockloc       rmb       2                   pointer to memory requested
+blockimg       rmb       2                   duplicate of the above
+bootloc        rmb       3                   sector pointer; not byte pointer
+bootsize       rmb       2                   size in bytes
+LSN0Ptr        rmb       2                   LSN0 pointer
+size           equ       .
 
-name           EQU       *
-               FCS       /Boot/
-               FCB       edition
+name           equ       *
+               fcs       /Boot/
+               fcb       edition
 
 
 * Common booter-required defines
-LSN24BIT       EQU       1
-FLOPPY         EQU       0
+LSN24BIT       equ       1
+FLOPPY         equ       0
 
 
-               USE       boot_common.asm
+               use       boot_common.asm
 
 
 ************************************************************
@@ -59,11 +59,11 @@ FLOPPY         EQU       0
 *   Entry: Y = hardware address
 *   Exit:  Carry Clear = OK, Set = Error
 *          B = error (Carry Set)
-HWInit
+HWInit                   
                use       dwinit.asm
 
-HWTerm         clrb
-               rts
+HWTerm         clrb      
+               rts       
 
 
 * HWRead - Read a 256 byte sector from the device
@@ -73,20 +73,20 @@ HWTerm         clrb
 *                  blockloc,u = ptr to 256 byte sector
 *   Exit:  X = ptr to data (i.e. ptr in blockloc,u)
 *          Carry Clear = OK, Set = Error
-HWRead
+HWRead                   
                pshs      cc,d,x
 * Send out op code and 3 byte LSN
-               lda       #OP_READEX           load A with READ opcode
+               lda       #OP_READEX          load A with READ opcode
 Read2          ldb       WhichDrv,pcr
                std       ,s
                leax      ,s
                ldy       #5
-               lbsr      DWWrite              send it to server
+               lbsr      DWWrite             send it to server
 * Get 256 bytes of sector data
                ldx       blockloc,u
                ldy       #256
-               bsr       DWRead               read bytes from server
-               bcs       ReadEr               branch if framing error
+               bsr       DWRead              read bytes from server
+               bcs       ReadEr              branch if framing error
                bne       ReadEr2
 
 * Send two byte checksum
@@ -98,28 +98,28 @@ Read2          ldb       WhichDrv,pcr
                bsr       DWRead
                leas      2,s
                bcs       ReadEx
-               bne      ReadEr2
+               bne       ReadEr2
                ldb       ,s
                beq       ReadEx
                cmpb      #E_CRC
                bne       ReadEr
                lda       #OP_REREADEX
                bra       Read2
-ReadEx         EQU       *
+ReadEx         equ       *
                leas      5,s                 eat stack
                ldx       blockloc,u
-               clrb
-               rts
+               clrb      
+               rts       
 ReadEr2        ldb       #E$Read
-ReadEr
+ReadEr                   
                leas      5,s                 eat stack
                orcc      #Carry
-               rts
+               rts       
 
-               USE       dwread.asm
-               USE       dwwrite.asm
+               use       dwread.asm
+               use       dwwrite.asm
 
-             IFGT      Level-1
+               ifgt      Level-1
 * L2 kernel file is composed of rel, boot, krn. The size of each of these
 * is controlled with filler, so that (after relocation):
 * rel  starts at $ED00 and is $130 bytes in size
@@ -129,12 +129,12 @@ ReadEr
 *
 * Filler to get to a total size of $1D0. 3, 2, 1 represent bytes after
 * the filler: the end boilerplate for the module, fdb and fcb respectively.
-Filler         FILL      $39,$1D0-3-2-1-*
-             ENDC
+Filler         fill      $39,$1D0-3-2-1-*
+               endc      
 
-Address        FDB       $0000
-WhichDrv       FCB       $00
+Address        fdb       $0000
+WhichDrv       fcb       $00
 
-               EMOD
-eom            EQU       *
-               END
+               emod      
+eom            equ       *
+               end       

@@ -33,49 +33,49 @@
 * a OS9Boot file off of the real NitrOS-9 volume without need
 * of the OS9Boot file being stored in the HDBDOS virtual drive
 
-               NAM       Boot
-               TTL       IDE Boot Module
+               nam       Boot
+               ttl       IDE Boot Module
 
-             IFP1
-               USE       defsfile
-               USE       ide.d
-             ENDC
+               ifp1      
+               use       defsfile
+               use       ide.d
+               endc      
 
-tylg           SET       Systm+Objct
-atrv           SET       ReEnt+rev
-rev            SET       $00
-edition        SET       9
+tylg           set       Systm+Objct
+atrv           set       ReEnt+rev
+rev            set       $00
+edition        set       9
 
 * Disassembled 94/06/25 11:37:47 by Alan DeKok
 * ReDone by Paul T. Barton 99/08/17, for IDE
 
-               MOD       eom,name,tylg,atrv,start,size
+               mod       eom,name,tylg,atrv,start,size
 
 * on-stack static storage
-               ORG       0
-cyls           RMB       2
-sides          RMB       1
-sects          RMB       2
-mode           RMB       1
-seglist        RMB       2                   pointer to segment list
-blockloc       RMB       2                   pointer to memory requested
-blockimg       RMB       2                   duplicate of the above
-bootloc        RMB       3                   sector pointer; not byte pointer
-bootsize       RMB       2                   size in bytes
-LSN0Ptr        RMB       2                   LSN0 pointer (used by boot_common.asm)
-             IFDEF     DEBLOCK
-HalfSect       RMB       1
-             ENDC
-size           EQU       .
+               org       0
+cyls           rmb       2
+sides          rmb       1
+sects          rmb       2
+mode           rmb       1
+seglist        rmb       2                   pointer to segment list
+blockloc       rmb       2                   pointer to memory requested
+blockimg       rmb       2                   duplicate of the above
+bootloc        rmb       3                   sector pointer; not byte pointer
+bootsize       rmb       2                   size in bytes
+LSN0Ptr        rmb       2                   LSN0 pointer (used by boot_common.asm)
+               ifdef     DEBLOCK
+HalfSect       rmb       1
+               endc      
+size           equ       .
 
-name           FCS       /Boot/
-               FCB       edition
+name           fcs       /Boot/
+               fcb       edition
 
 * Common booter-required defines
-LSN24BIT       EQU       1
-FLOPPY         EQU       0
+LSN24BIT       equ       1
+FLOPPY         equ       0
 
-               USE       boot_common.asm
+               use       boot_common.asm
 
 * HWInit - Initialize the device
 *   Entry: Y = hardware address
@@ -84,7 +84,7 @@ FLOPPY         EQU       0
 HWInit         ldb       Address+2,pcr
                bne       slave@
                lda       #%10100000
-               FCB       $8C
+               fcb       $8C
 slave@         lda       #%10110000
                sta       mode,u
                stb       DevHead,y           select device
@@ -111,7 +111,7 @@ b@             tst       Status,y
                ldb       #43
 l@             tst       DataReg,y
                lda       Latch,y
-               decb
+               decb      
                bne       l@
 * A holds byte with LBA bit
                anda      #%00000010          LBA drive?
@@ -121,10 +121,10 @@ l@             tst       DataReg,y
                stb       mode,u
 nope@          ldb       #256-50
 o@             tst       DataReg,y
-               decb
+               decb      
                bne       o@
-HWTerm         clrb
-               rts
+HWTerm         clrb      
+               rts       
 
 * HWRead - Read a 256 byte sector from the device
 *   Entry: Y = hardware address
@@ -133,18 +133,18 @@ HWTerm         clrb
 *          blockloc,u = ptr to 256 byte sector
 *   Exit:  X = ptr to data (i.e. ptr in blockloc,u)
 *          Carry Clear = OK, Set = Error
-HWRead
+HWRead                   
                pshs      x,b
 b@             tst       Status,y
                bmi       b@                  if =1 then loop
-             IFDEF     DEBLOCK
+               ifdef     DEBLOCK
                clra                          clear A so we can hold half sector flag
                lsr       ,s                  ok shift the 3 bytes on stack that
                ror       1,s                 hold LSN to the right to create a
                ror       2,s                 divide by 2.  Then put last bit in
                rola                          A for use as the half sector flag
                sta       HalfSect,u          then store the flag on the stack
-             ENDC
+               endc      
                lda       mode,u
                sta       DevHead,y           0L0d/0hhh device=CHS
 r@             ldb       Status,y            is IDE ready for commands?
@@ -161,7 +161,7 @@ r@             ldb       Status,y            is IDE ready for commands?
                stb       SectNum,y
                sta       CylLow,y
                bra       DoCmd
-chs@
+chs@                     
 * Compute proper C:H:S value
                lda       sides,u             get device's head
                ldb       sects+1,u           and sector
@@ -205,12 +205,12 @@ Blk2           lda       Status,y            is IDE ready to send?
 
                ldx       blockloc,u
                clr       ,s
-             IFDEF     DEBLOCK
+               ifdef     DEBLOCK
                lda       HalfSect,u          load half sector flag
                cmpa      #$01                check to see which routine we
                beq       Blk2Lp              need and branch to it.
-             ENDC
-BlkLp
+               endc      
+BlkLp                    
                lda       DataReg,y           A <- IDE
                ldb       Latch,y
                std       ,x++                into RAM
@@ -220,27 +220,27 @@ b@             lda       DataReg,y           read remaining 256 bytes
                dec       ,s
                bne       b@
 
-BlkEnx
+BlkEnx                   
                leax      -256,x
                stx       1,s
                lda       Status,y            check for error-bit
-               clrb
+               clrb      
                puls      b,x,pc
 
-             IFDEF     DEBLOCK
-Blk2Lp
+               ifdef     DEBLOCK
+Blk2Lp                   
                lda       DataReg,y           A <- IDE
                inc       ,s                  Here we toss out the
                bpl       Blk2Lp              first 256 bytes of the sector
                clr       ,s
-b2@
+b2@                      
                lda       DataReg,y           Now we read the second
                ldb       Latch,y             half of the sector and put
                std       ,x++                into RAM
                inc       ,s
                bpl       b2@                 go get the rest
                bra       BlkEnx
-             ENDC
+               endc      
 
 * ------------------------------------------
 
@@ -273,7 +273,7 @@ b2@
 *s@ jsr   <D.BtBug
 * rts
 
-             IFGT      Level-1
+               ifgt      Level-1
 * L2 kernel file is composed of rel, boot, krn. The size of each of these
 * is controlled with filler, so that (after relocation):
 * rel  starts at $ED00 and is $130 bytes in size
@@ -283,12 +283,12 @@ b2@
 *
 * Filler to get to a total size of $1D0. 3, 2, 1 represent bytes after
 * the filler: the end boilerplate for the module, fdb and fcb respectively.
-Filler         FILL      $39,$1D0-3-2-1-*
-             ENDC
+Filler         fill      $39,$1D0-3-2-1-*
+               endc      
 
-Address        FDB       SDAddr
-WhchDriv       FCB       0                   Drive to use (0 = master, 1 = slave)
+Address        fdb       SDAddr
+WhchDriv       fcb       0                   Drive to use (0 = master, 1 = slave)
 
-               EMOD
-eom            EQU       *
-               END
+               emod      
+eom            equ       *
+               end       

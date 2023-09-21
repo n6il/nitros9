@@ -8,26 +8,26 @@
 * ------------------------------------------------------------------
 *   1      ????/??/??  Alan DeKok
 * Created.
- 
-         nam   End
-         ttl   OS-9 Level 3 End Marker
 
-         IFP1
-         use   defsfile
-         ENDC
+               nam       End
+               ttl       OS-9 Level 3 End Marker
 
-tylg     set   Systm+Obj6309
-attrev   set   ReEnt+rev
-rev      set   4
-edition  set   1
+               ifp1      
+               use       defsfile
+               endc      
 
-         mod   eom,name,tylg,attrev,start,0
+tylg           set       Systm+Obj6309
+attrev         set       ReEnt+rev
+rev            set       4
+edition        set       1
 
-name     fcs   /_end/
-         fcb   Edition 
+               mod       eom,name,tylg,attrev,start,0
 
-start    rts
+name           fcs       /_end/
+               fcb       Edition
 
-         emod
-eom      equ   *
-         end
+start          rts       
+
+               emod      
+eom            equ       *
+               end       

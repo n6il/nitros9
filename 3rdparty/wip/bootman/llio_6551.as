@@ -1,33 +1,33 @@
-         NAM    llio_coco3
-         TTL    CoCo 3 low-level I/O handler
+               nam       llio_coco3
+               ttl       CoCo 3 low-level I/O handler
 
-         SECTION code
+               section                       code
 
-llio:
-         lbsr   llinit
-         lbsr   llread
-         lbsr   llwrite
-         lbsr   llterm
+llio                     
+               lbsr      llinit
+               lbsr      llread
+               lbsr      llwrite
+               lbsr      llterm
 
 ********** I/O ROUTINES ********** 
 
 * 6551 Parameters
-ADDR           EQU       $FF68
+ADDR           equ       $FF68
 
-A_RXD          EQU       ADDR+$00
-A_TXD          EQU       ADDR+$00
-A_STATUS       EQU       ADDR+$01
-A_RESET        EQU       ADDR+$01
-A_CMD          EQU       ADDR+$02
-A_CTRL         EQU       ADDR+$03
+A_RXD          equ       ADDR+$00
+A_TXD          equ       ADDR+$00
+A_STATUS       equ       ADDR+$01
+A_RESET        equ       ADDR+$01
+A_CMD          equ       ADDR+$02
+A_CTRL         equ       ADDR+$03
 
 * Baud rates
-_B2400         EQU       $1A                 2400 bps, 8-N-1
-_B4800         EQU       $1C                 4800 bps, 8-N-1
-_B9600         EQU       $1E                 9600 bps, 8-N-1
-_B19200        EQU       $1F                 19200 bps, 8-N-1
+_B2400         equ       $1A                 2400 bps, 8-N-1
+_B4800         equ       $1C                 4800 bps, 8-N-1
+_B9600         equ       $1E                 9600 bps, 8-N-1
+_B19200        equ       $1F                 19200 bps, 8-N-1
 
-BAUD           EQU       _B9600
+BAUD           equ       _B9600
 
 * ll_init - Initialize the low-level I/O
 * Exit: Carry = 0: Init success; Carry = 1; Init failed
@@ -72,10 +72,10 @@ w              lda       A_STATUS            get status byte
                rts       
 
 
-llterm
-               rts
+llterm                   
+               rts       
 
-               IFNE      0
+               ifne      0
 * llwout - Write an entire string
 * llwerr - Write an entire string
 llwerr                   
@@ -128,6 +128,6 @@ bs@            cmpx      1,s                 are we at start
                leay      1,y                 count back up free char
                lda       #$08                another backspace
                bra       m@
-               ENDC
+               endc      
 
-         ENDSECT
+               endsect   

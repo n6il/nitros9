@@ -9,56 +9,56 @@
 *   1      ????/??/??
 * From Tandy OS-9 Level One VR 02.00.00.
 
-               NAM       p[wx]d
-               TTL       Print work/execution directory
+               nam       p[wx]d
+               ttl       Print work/execution directory
 
 * Disassembled 98/09/10 23:50:10 by Disasm v1.6 (C) 1988 by RML
 
-               IFP1      
-               USE       defsfile
-               ENDC      
+               ifp1      
+               use       defsfile
+               endc      
 
-tylg           SET       Prgrm+Objct
-atrv           SET       ReEnt+rev
-rev            SET       $00
-edition        SET       1
+tylg           set       Prgrm+Objct
+atrv           set       ReEnt+rev
+rev            set       $00
+edition        set       1
 
-               MOD       eom,name,tylg,atrv,start,size
+               mod       eom,name,tylg,atrv,start,size
 
-               ORG       0
-fildes         RMB       1
-bufptr         RMB       2
-dotdotfd       RMB       3                   LSN of ..
-dotfd          RMB       3                   LSN of .
-ddcopy         RMB       5
-dentry         RMB       160
-buffer         RMB       1
-sttbuf         RMB       282
-size           EQU       .
+               org       0
+fildes         rmb       1
+bufptr         rmb       2
+dotdotfd       rmb       3                   LSN of ..
+dotfd          rmb       3                   LSN of .
+ddcopy         rmb       5
+dentry         rmb       160
+buffer         rmb       1
+sttbuf         rmb       282
+size           equ       .
 
-               IFNE      PXD
-name           FCS       /pxd/
-               ELSE      
-               IFNE      PWD
-name           FCS       /pwd/
-               ENDC      
-               ENDC      
-               FCB       edition
+               ifne      PXD
+name           fcs       /pxd/
+               else      
+               ifne      PWD
+name           fcs       /pwd/
+               endc      
+               endc      
+               fcb       edition
 
-               IFNE      PXD
-badnam         FCC       "pxd"
-               ELSE      
-               IFNE      PWD
-badnam         FCC       "pwd"
-               ENDC      
-               ENDC      
-               FCC       ": bad name in path"
-               FCB       C$CR
-dotdot         FCC       "."
-dot            FCC       "."
-cr             FCB       C$CR
-rdmsg          FCC       "read error"
-               FCB       C$CR
+               ifne      PXD
+badnam         fcc       "pxd"
+               else      
+               ifne      PWD
+badnam         fcc       "pwd"
+               endc      
+               endc      
+               fcc       ": bad name in path"
+               fcb       C$CR
+dotdot         fcc       "."
+dot            fcc       "."
+cr             fcb       C$CR
+rdmsg          fcc       "read error"
+               fcb       C$CR
 
 start          leax      buffer,u            point X to buffer
                lda       #C$CR               get CR
@@ -80,13 +80,13 @@ pdloop
                beq       there               branch if so
                leax      dotdot,pcr          else point to '..'
 * Inlined the chdir routine - BGP 03/09/06
-               IFNE      PXD
+               ifne      PXD
                lda       #DIR.+EXEC.+READ.
-               ELSE      
-               IFNE      PWD
+               else      
+               ifne      PWD
                lda       #DIR.+READ.
-               ENDC      
-               ENDC      
+               endc      
+               endc      
                os9       I$ChgDir
                lda       <fildes             get path to previous dir
                os9       I$Close             close it
@@ -118,13 +118,13 @@ there
                clrb      
 exit           bra       exit1
 
-               IFNE      PXD
+               ifne      PXD
 open           lda       #DIR.+EXEC.+READ.
-               ELSE      
-               IFNE      PWD
+               else      
+               ifne      PWD
 open           lda       #DIR.+READ.
-               ENDC      
-               ENDC      
+               endc      
+               endc      
                os9       I$Open
                rts       
 
@@ -188,7 +188,7 @@ wrerr          lda       #$02
                os9       I$WritLn
 exit1          os9       F$Exit
 
-               EMOD      
-eom            EQU       *
-               END       
+               emod      
+eom            equ       *
+               end       
 

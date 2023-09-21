@@ -59,230 +59,230 @@
 * 	Notes to reference rbf.d for IT.TYP, IT.DNS above
 *	Raise SAS default to 10, shortens FD.SEG usage
 *--------------------------------------------------------------------
-               NAM       SuperDesc
-               TTL       Super Driver Device Descriptor Template
+               nam       SuperDesc
+               ttl       Super Driver Device Descriptor Template
 
 * Super Driver specific fields
 *               IFEQ      ITDRV
-		IFNDEF	ITDRV
-ITDRV          SET       $00
-               ENDC
+               ifndef                        ITDRV
+ITDRV          set       $00
+               endc      
 *               IFEQ      ITSTP
-		IFNDEF	ITSTP
-ITSTP          SET       $00
-               ENDC
+               ifndef                        ITSTP
+ITSTP          set       $00
+               endc      
 *               IFEQ      ITTYP
-		IFNDEF	ITTYP
-ITTYP          SET       $81
-               ENDC
+               ifndef                        ITTYP
+ITTYP          set       $81
+               endc      
 *               IFEQ      ITDNS
-		IFNDEF	ITDNS
-ITDNS          SET       $00
-               ENDC
+               ifndef                        ITDNS
+ITDNS          set       $00
+               endc      
 
 *               IFEQ      ITSOFS1
-		IFNDEF	ITSOFS1
-ITSOFS1        SET       $00
-               ENDC
+               ifndef                        ITSOFS1
+ITSOFS1        set       $00
+               endc      
 *               IFEQ      ITSOFS2
-		IFNDEF	ITSOFS2
-ITSOFS2        SET       $00
-               ENDC
+               ifndef                        ITSOFS2
+ITSOFS2        set       $00
+               endc      
 *               IFEQ      ITSOFS3
-		IFNDEF	ITSOFS3
-ITSOFS3        SET       $00
-               ENDC
+               ifndef                        ITSOFS3
+ITSOFS3        set       $00
+               endc      
 
-		IFNE	CC3FPGA
-Sides		SET	$01
-Cyls		SET	$7100
-SectTrk	SET	$0012
-SectTrk0	SET	$0012
-Interlv		SET	$01
-SAS		SET	$08
-		ELSE
+               ifne      CC3FPGA
+Sides          set       $01
+Cyls           set       $7100
+SectTrk        set       $0012
+SectTrk0       set       $0012
+Interlv        set       $01
+SAS            set       $08
+               else      
 * Geometry for an EZ-135
 *               IFEQ      Sides
-		IFNDEF	Sides
-Sides          SET       $40
-               ENDC
+               ifndef                        Sides
+Sides          set       $40
+               endc      
 *               IFEQ      Cyls
-		IFNDEF	Cyls
-Cyls           SET       $007f
-               ENDC
+               ifndef                        Cyls
+Cyls           set       $007f
+               endc      
 *               IFEQ      SectTrk
-		IFNDEF	SectTrk
-SectTrk        SET       $0020
-               ENDC
+               ifndef                        SectTrk
+SectTrk        set       $0020
+               endc      
 *               IFEQ      SectTrk0
-		IFNDEF	SectTrk0
-SectTrk0       SET       $0020
-               ENDC
+               ifndef                        SectTrk0
+SectTrk0       set       $0020
+               endc      
 *               IFEQ      Interlv
-		IFNDEF	Interlv
-Interlv        SET       $01
-               ENDC
+               ifndef                        Interlv
+Interlv        set       $01
+               endc      
 *               IFEQ      SAS
-		IFNDEF	SAS
-SAS            SET       $10
-               ENDC
-			   ENDC
+               ifndef                        SAS
+SAS            set       $10
+               endc      
+               endc      
 
-               IFP1
-               USE       defsfile
-               USE       rbsuper.d
-               IFNE      IDE
-               USE       ide.d
-               ELSE
-               IFNE      TC3+KTLR+D4N1+HDII
-               USE       scsi.d
-               ELSE
-               USE       cocosdc.d
-               ENDC
-               ENDC
-               ENDC
+               ifp1      
+               use       defsfile
+               use       rbsuper.d
+               ifne      IDE
+               use       ide.d
+               else      
+               ifne      TC3+KTLR+D4N1+HDII
+               use       scsi.d
+               else      
+               use       cocosdc.d
+               endc      
+               endc      
+               endc      
 
-		IFNE	CC3FPGA
-SDAddr	SET	$FF64
-		ENDC
+               ifne      CC3FPGA
+SDAddr         set       $FF64
+               endc      
 
-tylg           SET       Devic+Objct
-atrv           SET       ReEnt+rev
-rev            SET       $09
+tylg           set       Devic+Objct
+atrv           set       ReEnt+rev
+rev            set       $09
 
-               MOD       eom,name,tylg,atrv,mgrnam,drvnam
+               mod       eom,name,tylg,atrv,mgrnam,drvnam
 
-               IFNE      CDROM
-               FCB       DIR.+SHARE.+PEXEC.+PREAD.+EXEC.+READ.
-               ELSE
-               FCB       DIR.+SHARE.+PEXEC.+PREAD.+PWRIT.+EXEC.+UPDAT.
-               ENDC
-               FCB       HW.PAGE             extended controller address
-               FDB       SDAddr              physical controller address
-               FCB       initsize-*-1        initilization table size
-               FCB       DT.RBF              device type:0=scf,1=rbf,2=pipe,3=scf
-               FCB       ITDRV               drive number
-               FCB       ITSTP               step rate
-               FCB       ITTYP               drive device type
-               FCB       ITDNS               media density
-               FDB       Cyls                number of cylinders (tracks)
-               FCB       Sides               number of sides
-               FCB       $01                 verify disk writes:0=on
-               FDB       SectTrk             # of sectors per track
-               FDB       SectTrk0            # of sectors per track (track 0)
-               FCB       Interlv             sector interleave factor
-               FCB       SAS                 minimum size of sector allocation
-               FCB       0                   IT.TFM
-               FDB       0                   IT.Exten
-               FCB       0                   IT.STOff
+               ifne      CDROM
+               fcb       DIR.+SHARE.+PEXEC.+PREAD.+EXEC.+READ.
+               else      
+               fcb       DIR.+SHARE.+PEXEC.+PREAD.+PWRIT.+EXEC.+UPDAT.
+               endc      
+               fcb       HW.PAGE             extended controller address
+               fdb       SDAddr              physical controller address
+               fcb       initsize-*-1        initilization table size
+               fcb       DT.RBF              device type:0=scf,1=rbf,2=pipe,3=scf
+               fcb       ITDRV               drive number
+               fcb       ITSTP               step rate
+               fcb       ITTYP               drive device type
+               fcb       ITDNS               media density
+               fdb       Cyls                number of cylinders (tracks)
+               fcb       Sides               number of sides
+               fcb       $01                 verify disk writes:0=on
+               fdb       SectTrk             # of sectors per track
+               fdb       SectTrk0            # of sectors per track (track 0)
+               fcb       Interlv             sector interleave factor
+               fcb       SAS                 minimum size of sector allocation
+               fcb       0                   IT.TFM
+               fdb       0                   IT.Exten
+               fcb       0                   IT.STOff
 * Super Driver specific additions to the device descriptor go here
 * NOTE: These do NOT get copied into the path descriptor; they
 *       cannot due to the fact that there is simply NO ROOM in
 *       the path descriptor to do so.  The driver must access
 *       these values directly from the descriptor.
-	IFNE	CC3FPGA
-	IFNE	ITDRV
-	FCB	$03	(IT.WPC)
-	FCB	$F9	(IT.OFS)
-	ELSE
-	FCB	ITSOFS1	(IT.WPC)
-	FCB	ITSOFS2	(IT.OFS)
-	ENDC
-	ELSE
-               FCB       ITSOFS1             (IT.WPC)
-               FCB       ITSOFS2             (IT.OFS)
-               ENDC
-               FCB       ITSOFS3
-initsize       EQU       *
-               FDB       lldrv               (IT.RWC)
-               FCB       SDMPI               (IT.MPI)
+               ifne      CC3FPGA
+               ifne      ITDRV
+               fcb       $03                 (IT.WPC)
+               fcb       $F9                 (IT.OFS)
+               else      
+               fcb       ITSOFS1             (IT.WPC)
+               fcb       ITSOFS2             (IT.OFS)
+               endc      
+               else      
+               fcb       ITSOFS1             (IT.WPC)
+               fcb       ITSOFS2             (IT.OFS)
+               endc      
+               fcb       ITSOFS3
+initsize       equ       *
+               fdb       lldrv               (IT.RWC)
+               fcb       SDMPI               (IT.MPI)
 
-               IFNE      NULL
-name           FCC       /NULL/
-               FCB       '0+ITDRV+$80
-               ELSE
-               IFNE      DD
-name           FCS       /DD/
-               ELSE
-               IFNE      DRIVEWIRE
-name           FCC       /X/
-               IFNE      HB
-               FCS       /H/
-               ELSE
-               FCB       '0+ITDRV+$80
-               ENDC
-               ELSE
-               IFNE      IDE
-name           FCC       /I/
-               IFNE      HB
-               FCS       /H/
-               ELSE
-               FCB       '0+ITDNS+$80
-               ENDC
-               ELSE
-               IFNE	COCOSDC+CC3FPGA
-name           FCC       /SD/
-               IFNE      HB
-               FCS       /H/
-               ELSE
-               FCB       '0+ITDRV+$80
-               ENDC
-               ELSE
-name           FCC       /S/
-               IFNE      HB
-               FCS       /H/
-               ELSE
-               FCB       '0+ITDRV+$80
-               ENDC
-               ENDC
-               ENDC
-               ENDC
-               ENDC
-               ENDC
+               ifne      NULL
+name           fcc       /NULL/
+               fcb       '0+ITDRV+$80
+               else      
+               ifne      DD
+name           fcs       /DD/
+               else      
+               ifne      DRIVEWIRE
+name           fcc       /X/
+               ifne      HB
+               fcs       /H/
+               else      
+               fcb       '0+ITDRV+$80
+               endc      
+               else      
+               ifne      IDE
+name           fcc       /I/
+               ifne      HB
+               fcs       /H/
+               else      
+               fcb       '0+ITDNS+$80
+               endc      
+               else      
+               ifne      COCOSDC+CC3FPGA
+name           fcc       /SD/
+               ifne      HB
+               fcs       /H/
+               else      
+               fcb       '0+ITDRV+$80
+               endc      
+               else      
+name           fcc       /S/
+               ifne      HB
+               fcs       /H/
+               else      
+               fcb       '0+ITDRV+$80
+               endc      
+               endc      
+               endc      
+               endc      
+               endc      
+               endc      
 
-mgrnam         FCS       /RBF/
-drvnam         FCS       /rbsuper/
-lldrv          EQU       *
-               IFNE      NULL
-               FCS       /llnull/
-               FCB       0
-               ELSE
-               IFNE      DRIVEWIRE
-               FCS       /lldw/
-               FCB       0,0,0
-               ELSE
-               IFNE      TC3+SB
-               FCS       /lltc3/
-               FCB       0,0
-               ELSE
-               IFNE      KTLR
-               FCS       /llktlr/
-               FCB       0
-               ELSE
-               IFNE      HDII+D4N1
-               FCS       /lldisto/
-               ELSE
-               IFNE      IDE
-               FCS       /llide/
-               FCB       0,0
-               ELSE
-               IFNE      COCOSDC
-               FCS       /llcocosdc/
-               FCB       0,0,0
-               ELSE
-               IFNE      CC3FPGA
-               FCS       /llcoco3fpga/
-               FCB       0,0,0
-               ENDC
-               ENDC
-               ENDC
-               ENDC
-               ENDC
-               ENDC
-               ENDC
-               ENDC
+mgrnam         fcs       /RBF/
+drvnam         fcs       /rbsuper/
+lldrv          equ       *
+               ifne      NULL
+               fcs       /llnull/
+               fcb       0
+               else      
+               ifne      DRIVEWIRE
+               fcs       /lldw/
+               fcb       0,0,0
+               else      
+               ifne      TC3+SB
+               fcs       /lltc3/
+               fcb       0,0
+               else      
+               ifne      KTLR
+               fcs       /llktlr/
+               fcb       0
+               else      
+               ifne      HDII+D4N1
+               fcs       /lldisto/
+               else      
+               ifne      IDE
+               fcs       /llide/
+               fcb       0,0
+               else      
+               ifne      COCOSDC
+               fcs       /llcocosdc/
+               fcb       0,0,0
+               else      
+               ifne      CC3FPGA
+               fcs       /llcoco3fpga/
+               fcb       0,0,0
+               endc      
+               endc      
+               endc      
+               endc      
+               endc      
+               endc      
+               endc      
+               endc      
 
 
-               EMOD
-eom            EQU       *
-               END
+               emod      
+eom            equ       *
+               end       

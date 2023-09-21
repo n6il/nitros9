@@ -1,6019 +1,6019 @@
-           NAM   Basic09Runtime
+               nam       Basic09Runtime
 
-           IFP1
-           USE   defsfile
-           ENDC
+               ifp1      
+               use       defsfile
+               endc      
 
 * RunB from BASICBOOST from Chris Dekker - 6309'ized version of RunB
 * Created a proper jump table at L204 R.G. 03/05/13
 
-edition    equ   1
-membase    equ   $00
-memsize    equ   $02
-moddir     equ   $04
-ResTop     equ   $08            top of reserved space
-freemem    equ   $0C
-table1     equ   $0E
-table2     equ   $10
-table3     equ   $12
-table4     equ   $14
-extnum     equ   $18
-Vsys       equ   $20
-Vinkey     equ   $22
-holdnum    equ   $25
-errpath    equ   $2E
-PGMaddre   equ   $2F            starting address program
-WSbase     equ   $31            base address workspace
-errcode    equ   $36
-DATApoin   equ   $39            address DATA item
-VarAddr    equ   $3C            address of variable
-fieldsiz   equ   $3E            it's max. size
-ArrBase    equ   $42
-SStop      equ   $44            top of string space area
-userSP     equ   $46            subroutine stackpointer
-exprSP     equ   $48            current expression
-exprBase   equ   $4A            expr.stack's base
-callex     equ   $5D
-callcode   equ   $5F
-VarPtrba   equ   $62
-vectorba   equ   $66
-excoffse   equ   $6A            module exec.offset
-excEnd     equ   $6C
-expneg     equ   $75
-digits     equ   $76
-decpoint   equ   $77
-negativ    equ   $78
-decimals   equ   $79
-charcoun   equ   $7D            length output string
-IOpath     equ   $7F
-Sstack     equ   $80            start of current string
-Spointer   equ   $82            end of current string
-subrcode   equ   $85
-fieldwid   equ   $86
-justify    equ   $87
-BUPaddr    equ   $FB
-BUPsize    equ   $FD
+edition        equ       1
+membase        equ       $00
+memsize        equ       $02
+moddir         equ       $04
+ResTop         equ       $08                 top of reserved space
+freemem        equ       $0C
+table1         equ       $0E
+table2         equ       $10
+table3         equ       $12
+table4         equ       $14
+extnum         equ       $18
+Vsys           equ       $20
+Vinkey         equ       $22
+holdnum        equ       $25
+errpath        equ       $2E
+PGMaddre       equ       $2F                 starting address program
+WSbase         equ       $31                 base address workspace
+errcode        equ       $36
+DATApoin       equ       $39                 address DATA item
+VarAddr        equ       $3C                 address of variable
+fieldsiz       equ       $3E                 it's max. size
+ArrBase        equ       $42
+SStop          equ       $44                 top of string space area
+userSP         equ       $46                 subroutine stackpointer
+exprSP         equ       $48                 current expression
+exprBase       equ       $4A                 expr.stack's base
+callex         equ       $5D
+callcode       equ       $5F
+VarPtrba       equ       $62
+vectorba       equ       $66
+excoffse       equ       $6A                 module exec.offset
+excEnd         equ       $6C
+expneg         equ       $75
+digits         equ       $76
+decpoint       equ       $77
+negativ        equ       $78
+decimals       equ       $79
+charcoun       equ       $7D                 length output string
+IOpath         equ       $7F
+Sstack         equ       $80                 start of current string
+Spointer       equ       $82                 end of current string
+subrcode       equ       $85
+fieldwid       equ       $86
+justify        equ       $87
+BUPaddr        equ       $FB
+BUPsize        equ       $FD
 
-MODMEM     equ   $2000
+MODMEM         equ       $2000
 
-           mod   MODEND,MODNAM,Prgrm+Objct,$82,ENTRY,MODMEM
+               mod       MODEND,MODNAM,Prgrm+Objct,$82,ENTRY,MODMEM
 
-MODNAM     fcs   /RunB/
-           fcb   edition
+MODNAM         fcs       /RunB/
+               fcb       edition
 
 * interrupt processing *
-L93        lda   5,s            native mode
-           bra   L95
+L93            lda       5,s                 native mode
+               bra       L95
 
-L94        LDA   3,S            emulation mode
-L95        TFR   A,DP
-           STB   <$35
+L94            lda       3,S                 emulation mode
+L95            tfr       A,DP
+               stb       <$35
 *          oim   #$80,<$34
-           fcb   1,$80,$34
-           RTI
+               fcb       1,$80,$34
+               rti       
 
 *  Check for processor type?
-procID     pshs  d
-           comd             Will only do COMA on 6809
-           cmpb  1,s
-           beq   L6809
-           puls  pc,d
+procID         pshs      d
+               comd                          Will only do COMA on 6809
+               cmpb      1,s
+               beq       L6809
+               puls      pc,d
 
-L6809      leax  <L6810,pc
-           lbsr  prnterr
-           clrb
-           os9   F$Exit
+L6809          leax      <L6810,pc
+               lbsr      prnterr
+               clrb      
+               os9       F$Exit
 
-L6810      fcc   /  6809 detected: can not proceed/
-           fcb   10,10,13
+L6810          fcc       /  6809 detected: can not proceed/
+               fcb       10,10,13
 
 *  adjust parameter format *
-chprm      tfr   x,y
-           lbsr  skpblank
-           leax  -256,x
-           ldb   #2
-L133       lda   ,y+
-           sta   ,x+            copy mod.name
-           incb
-           cmpa  #32            Space?
-           bne   L133
-           ldf   #$28           '('
-           stf   ,x+
-           ldf   #$2C           ,
-L136       clre
-           lbsr  skpblank
-           lbsr  ISnum
-           bcc   L135           number
-           lde   #$22           "
-           ste   ,x+            string
-           incb
-L135       lda   ,y+
-           cmpa  #34            " ??
-           beq   L135           skip it
-           incb
-           cmpa  #13
-           beq   L139           end of list
-           cmpa  #32            space ??
-           bne   L138
-           bsr   quote          yes!!
-           stf   ,x+
-           bra   L136           check if string
+chprm          tfr       x,y
+               lbsr      skpblank
+               leax      -256,x
+               ldb       #2
+L133           lda       ,y+
+               sta       ,x+                 copy mod.name
+               incb      
+               cmpa      #32                 Space?
+               bne       L133
+               ldf       #$28                '('
+               stf       ,x+
+               ldf       #$2C                ,
+L136           clre      
+               lbsr      skpblank
+               lbsr      ISnum
+               bcc       L135                number
+               lde       #$22                "
+               ste       ,x+                 string
+               incb      
+L135           lda       ,y+
+               cmpa      #34                 " ??
+               beq       L135                skip it
+               incb      
+               cmpa      #13
+               beq       L139                end of list
+               cmpa      #32                 space ??
+               bne       L138
+               bsr       quote               yes!!
+               stf       ,x+
+               bra       L136                check if string
 
-L138       sta   ,x+
-           bra   L135
+L138           sta       ,x+
+               bra       L135
 
-L139       bsr   quote
-           ldf   #$29           )
-           stf   ,x+
-           sta   ,x             new string complete
-           ldw   -2,x           Get last 2 chars
+L139           bsr       quote
+               ldf       #$29                )
+               stf       ,x+
+               sta       ,x                  new string complete
+               ldw       -2,x                Get last 2 chars
 * NOTE: Was originally CMPW >$2829, changed since seemed wrong
 *           cmpw  #'(*256+')     Just ()?
-           cmpw  $2829
-           bne   L141           No, go process parameters
-           leax  -2,x
-           sta   ,x             delete empty string
-           subb  #2
-L141       clre
-           tfr   b,f            string length
-           leay  -1,y
-           tfm   x-,y-          copy -> org. position
-           leax  1,y
-           rts
+               cmpw      $2829
+               bne       L141                No, go process parameters
+               leax      -2,x
+               sta       ,x                  delete empty string
+               subb      #2
+L141           clre      
+               tfr       b,f                 string length
+               leay      -1,y
+               tfm       x-,y-               copy -> org. position
+               leax      1,y
+               rts       
 
-quote      tste
-           beq   L137
-           ste   ,x+
-           incb
-L137       rts
+quote          tste      
+               beq       L137
+               ste       ,x+
+               incb      
+L137           rts       
 
-ENTRY      lbsr  procID         check processor
-           tfr   u,d
-           ldw   #256
-           clr   ,-s
-           tfm   s,u+
-           LEAU  ,X
-           STD   membase
-           INCA
-           STA   <$D9
-           STD   Sstack
-           STD   Spointer
-           inca
-           inca
-           STD   userSP
-           STD   SStop
-           INCA
-           TFR   D,S
-           STD   moddir
-           INCA
-           STD   ResTop
-           STD   exprBase
-           tfr   x,y
-           lbsr  skpblank
-L90        lda   ,y+
-           cmpa  #32
-           beq   L89
-           cmpa  #13
-           beq   L97            no params
-           bra   L90            skip modulename
+ENTRY          lbsr      procID              check processor
+               tfr       u,d
+               ldw       #256
+               clr       ,-s
+               tfm       s,u+
+               leau      ,X
+               std       membase
+               inca      
+               sta       <$D9
+               std       Sstack
+               std       Spointer
+               inca      
+               inca      
+               std       userSP
+               std       SStop
+               inca      
+               tfr       D,S
+               std       moddir
+               inca      
+               std       ResTop
+               std       exprBase
+               tfr       x,y
+               lbsr      skpblank
+L90            lda       ,y+
+               cmpa      #32
+               beq       L89
+               cmpa      #13
+               beq       L97                 no params
+               bra       L90                 skip modulename
 
-L89        lbsr  skpblank
-           cmpa  #40            left par.??
-           beq   L97            format OK
-           lbsr  L302           check char
-           bcc   L99            = letter or number
-           cmpa  #45            = -
-           beq   L99
-           cmpa  #47            = /
-           bne   L97            do not adjust format
-L99        lbsr  chprm
-L97        TFR   X,D
-           SUBD  membase
-           STD   memsize
-           LDB   #1             default errpath
-           STB   <$2E
-           LDA   #3             Close all paths 4-16
-L92        os9   I$Close
-           INCA
-           CMPA  #$10
-           BLO   L92
-           CLR   <$35
-           PSHS  X,DP
-           pshs  x,y            Setup up a stack big enough for 6309 RTI
-           pshs  u,y,x,dp,d,cc
-           leax  <ckexit,pc     Point to routine below
-           stx   10,s           Save as return address from RTI for both 6809
-           stx   12,s             & 6309 stacks
-           stw   6,s
-           rti                  Pull all regs & return
+L89            lbsr      skpblank
+               cmpa      #40                 left par.??
+               beq       L97                 format OK
+               lbsr      L302                check char
+               bcc       L99                 = letter or number
+               cmpa      #45                 = -
+               beq       L99
+               cmpa      #47                 = /
+               bne       L97                 do not adjust format
+L99            lbsr      chprm
+L97            tfr       X,D
+               subd      membase
+               std       memsize
+               ldb       #1                  default errpath
+               stb       <$2E
+               lda       #3                  Close all paths 4-16
+L92            os9       I$Close
+               inca      
+               cmpa      #$10
+               blo       L92
+               clr       <$35
+               pshs      X,DP
+               pshs      x,y                 Setup up a stack big enough for 6309 RTI
+               pshs      u,y,x,dp,d,cc
+               leax      <ckexit,pc          Point to routine below
+               stx       10,s                Save as return address from RTI for both 6809
+               stx       12,s                & 6309 stacks
+               stw       6,s
+               rti                           Pull all regs & return
 
-ckexit     leax  ,x             X pointing to where it is supposed to?
-           beq   ntive          Yes, we are in native mode
-           lda   #7             beep to signal
-           pshs  a              emulation mode
-           leax  ,s
-           ldy   #1
-           lda   #1
-           os9   I$Write
-           leas  3,s            clear stack
-           leax  L94,pc
-           bra   L96
+ckexit         leax      ,x                  X pointing to where it is supposed to?
+               beq       ntive               Yes, we are in native mode
+               lda       #7                  beep to signal
+               pshs      a                   emulation mode
+               leax      ,s
+               ldy       #1
+               lda       #1
+               os9       I$Write
+               leas      3,s                 clear stack
+               leax      L94,pc
+               bra       L96
 
-ntive      LEAX  L93,PC
-L96        puls  dp
-           os9   F$Icpt
-           ldx   moddir
-           ldw   ResTop
-           subr  x,w
-           clr   ,-s
-           tfm   s,x+           clear module dir
-           leas  1,s
-           TFR   DP,A
-           LDB   #$50
-           LEAX  L1382,PC
-           ldw   #17
-           tfm   x+,d+          init RND & syscall
-           LEAX  L710,PC
-           STX   table1
-           LEAX  L1386,PC
-           STX   table2
-           LEAX  L1388,PC
-           STX   table3
-           LDA   #$7E
-           STA   table4
-           LEAX  L1390,PC
-           STX   <table4+1
-           ldx   #$FFFF         init links
-           stx   Vsys
-           stx   Vinkey
-           PULS  Y
-           BSR   L102
-           LDX   moddir
-           LDD   ,X
-           STD   PGMaddre
-           BSR   L134
-L102       LEAX  <L106,PC
-           PULS  U
-           BSR   L108
-           PSHS  U
-           CLR   <$34
-           LDD   membase
-           ADDD  memsize
-           SUBD  ResTop
-           STD   freemem
-           LEAU  2,S
-           STU   userSP
-           STU   SStop
-           LEAS  >-$FE,S
-           JMP   [-2,U]
+ntive          leax      L93,PC
+L96            puls      dp
+               os9       F$Icpt
+               ldx       moddir
+               ldw       ResTop
+               subr      x,w
+               clr       ,-s
+               tfm       s,x+                clear module dir
+               leas      1,s
+               tfr       DP,A
+               ldb       #$50
+               leax      L1382,PC
+               ldw       #17
+               tfm       x+,d+               init RND & syscall
+               leax      L710,PC
+               stx       table1
+               leax      L1386,PC
+               stx       table2
+               leax      L1388,PC
+               stx       table3
+               lda       #$7E
+               sta       table4
+               leax      L1390,PC
+               stx       <table4+1
+               ldx       #$FFFF              init links
+               stx       Vsys
+               stx       Vinkey
+               puls      Y
+               bsr       L102
+               ldx       moddir
+               ldd       ,X
+               std       PGMaddre
+               bsr       L134
+L102           leax      <L106,PC
+               puls      U
+               bsr       L108
+               pshs      U
+               clr       <$34
+               ldd       membase
+               addd      memsize
+               subd      ResTop
+               std       freemem
+               leau      2,S
+               stu       userSP
+               stu       SStop
+               leas      >-$FE,S
+               jmp       [-2,U]
 
-err43      LDB   #$2B
-L118       LBSR  PRerror
-L116       LDS   <$B7
-           PULS  d
-           STD   <$B7
-ClrSstac   lde   #1
-           ste   charcoun
-           LDW   Sstack
-           STW   Spointer
-           rts
+err43          ldb       #$2B
+L118           lbsr      PRerror
+L116           lds       <$B7
+               puls      d
+               std       <$B7
+ClrSstac       lde       #1
+               ste       charcoun
+               ldw       Sstack
+               stw       Spointer
+               rts       
 
-L108       LDD   <$B7
-           PSHS  d
-           STS   <$B7
-           LDD   2,S
-           STX   2,S
-           TFR   D,PC
-L106       BSR   L102
-           BRA   BYE
-
-* ----------------------- *
-L134       LBSR  skpblank
-           LBSR  link
-           BCS   err43
-           LDX   ,X
-           STX   PGMaddre
-           LDA   6,X
-           BEQ   L144
-           ANDA  #$0F
-           CMPA  #2             B09 program?
-           BNE   err51
-           BRA   L148
-
-L144       LDA   <$17,X         BASIC09 program has no errors?
-           RORA
-           BCS   err51          Errors, report it
-L148       LBSR  L230           check prmlist
-           LDY   exprBase
-           LDB   ,Y
-           CMPB  #$3D
-           BEQ   err51
-           STY   excoffse
-           LDX   <$AB
-           STX   excEnd
-           LDX   PGMaddre
-           LDA   <$17,X
-           RORA
-           BCS   err51
-           LEAS  >$0102,S
-           LDD   membase
-           ADDD  memsize
-           TFR   D,Y
-           STD   userSP
-           STD   SStop
-           LDU   #0
-           STU   WSbase
-           STU   <$B3
-           INC   <$B4
-           CLR   errcode
-           LDD   exprBase
-           LDX   freemem
-           PSHS  X,d
-           LEAX  <L154,PCR
-           BSR   L108
-           LDX   exprBase
-           LBSR  L670           set up prm stack
-           LBSR  ClrSstac
-           LDX   PGMaddre
-           LBSR  L676           execute module
-           LBRA  L116
-
-L154       PULS  X,d
-           STD   exprBase
-           STX   freemem
-           LBRA  L116
-
-err51      LDB   #$33
-           LBRA  L118
+L108           ldd       <$B7
+               pshs      d
+               sts       <$B7
+               ldd       2,S
+               stx       2,S
+               tfr       D,PC
+L106           bsr       L102
+               bra       BYE
 
 * ----------------------- *
-BYE        BSR   unlink
-           CLRB
-           os9   F$Exit
+L134           lbsr      skpblank
+               lbsr      link
+               bcs       err43
+               ldx       ,X
+               stx       PGMaddre
+               lda       6,X
+               beq       L144
+               anda      #$0F
+               cmpa      #2                  B09 program?
+               bne       err51
+               bra       L148
+
+L144           lda       <$17,X              BASIC09 program has no errors?
+               rora      
+               bcs       err51               Errors, report it
+L148           lbsr      L230                check prmlist
+               ldy       exprBase
+               ldb       ,Y
+               cmpb      #$3D
+               beq       err51
+               sty       excoffse
+               ldx       <$AB
+               stx       excEnd
+               ldx       PGMaddre
+               lda       <$17,X
+               rora      
+               bcs       err51
+               leas      >$0102,S
+               ldd       membase
+               addd      memsize
+               tfr       D,Y
+               std       userSP
+               std       SStop
+               ldu       #0
+               stu       WSbase
+               stu       <$B3
+               inc       <$B4
+               clr       errcode
+               ldd       exprBase
+               ldx       freemem
+               pshs      X,d
+               leax      <L154,PCR
+               bsr       L108
+               ldx       exprBase
+               lbsr      L670                set up prm stack
+               lbsr      ClrSstac
+               ldx       PGMaddre
+               lbsr      L676                execute module
+               lbra      L116
+
+L154           puls      X,d
+               std       exprBase
+               stx       freemem
+               lbra      L116
+
+err51          ldb       #$33
+               lbra      L118
+
+* ----------------------- *
+BYE            bsr       unlink
+               clrb      
+               os9       F$Exit
 
 *
-KILL       JSR   table4
-           LDY   1,Y
-           PSHS  X
-           LBSR  skpblank
-           pshs  y
-           LBSR  ISlett
-           BCS   L164           invalid string
-           LEAY  1,Y
-L304       LDA   ,Y+
-           LBSR  L302           number/letter?
-           BCC   L304
+KILL           jsr       table4
+               ldy       1,Y
+               pshs      X
+               lbsr      skpblank
+               pshs      y
+               lbsr      ISlett
+               bcs       L164                invalid string
+               leay      1,Y
+L304           lda       ,Y+
+               lbsr      L302                number/letter?
+               bcc       L304
 *           oim   #$80,-2,y
-           fcb   $61,$80,$3e
-           puls  y
-           BSR   L166           in moddir?
-           BCS   L164
-           ldu   ,x++           module address
-           os9   F$UnLink
+               fcb       $61,$80,$3e
+               puls      y
+               bsr       L166                in moddir?
+               bcs       L164
+               ldu       ,x++                module address
+               os9       F$UnLink
 * update module directory *
-           leay  -2,x
-L176       LDD   ,X++
-L178       STD   ,Y++
-           BNE   L176
-           CMPD  ,Y
-           BNE   L178           clear old data
-           PULS  PC,X
+               leay      -2,x
+L176           ldd       ,X++
+L178           std       ,Y++
+               bne       L176
+               cmpd      ,Y
+               bne       L178                clear old data
+               puls      PC,X
 
-L164       COMB
-           LDB   #$2B           error 43
-           puls  pc,x
+L164           comb      
+               ldb       #$2B                error 43
+               puls      pc,x
 
-unlink     LDY   Spointer
-           LDA   #$2A           = *
-           STA   ,Y
-           STA   <$35
-           CLR   PGMaddre
-           ldx   moddir
-L172       LDU   ,X++           module address
-           beq   L175
-           os9   F$Unlink
-           bra   L172           next module
+unlink         ldy       Spointer
+               lda       #$2A                = *
+               sta       ,Y
+               sta       <$35
+               clr       PGMaddre
+               ldx       moddir
+L172           ldu       ,X++                module address
+               beq       L175
+               os9       F$Unlink
+               bra       L172                next module
 
 * clear module dir *
-L175       tfr   x,w
-           ldd   moddir
-           subr  d,w            w=length of moddir
-           tfm   x,d+
-           rts
+L175           tfr       x,w
+               ldd       moddir
+               subr      d,w                 w=length of moddir
+               tfm       x,d+
+               rts       
 
-L166       PSHS  U,Y
-           LDX   moddir
-L182       LDY   ,S
-           LDU   ,X++           module address
-           BEQ   L180           end of directory
-           LDD   4,U            name offset
-           LEAU  D,U            address of name
-L184       LDA   ,U+
-           EORA  ,Y+
-           ANDA  #$DF
-           BNE   L182           next module
-           TST   -1,U
-           BPL   L184           next char
-           CLRA  found          it!
-L186       LEAX  -2,X
-           PULS  PC,U,d
+L166           pshs      U,Y
+               ldx       moddir
+L182           ldy       ,S
+               ldu       ,X++                module address
+               beq       L180                end of directory
+               ldd       4,U                 name offset
+               leau      D,U                 address of name
+L184           lda       ,U+
+               eora      ,Y+
+               anda      #$DF
+               bne       L182                next module
+               tst       -1,U
+               bpl       L184                next char
+               clra                          found          it!
+L186           leax      -2,X
+               puls      PC,U,d
 
-L180       COMA
-           BRA   L186
+L180           coma      
+               bra       L186
 
-link       BSR   L166
-           BCS   L188           not in mod.dir.
-           RTS
+link           bsr       L166
+               bcs       L188                not in mod.dir.
+               rts       
 
-L188       PSHS  U,Y,X
-           LDB   1,S
-           CMPB  #$FE
-           blo   L190
-           ldb   #32            error 32
-           lbra  L118
+L188           pshs      U,Y,X
+               ldb       1,S
+               cmpb      #$FE
+               blo       L190
+               ldb       #32                 error 32
+               lbra      L118
 
-L190       LEAX  ,Y
-           clrd
-           os9   F$Link
-           BCC   L192
-           LDX   2,S            module not in mem.
-           clrd
-           os9   F$Load
-           BCS   L194
-L192       STX   2,S
-           STU   [,S]           add to moddir
-L194       PULS  PC,U,Y,X
+L190           leax      ,Y
+               clrd      
+               os9       F$Link
+               bcc       L192
+               ldx       2,S                 module not in mem.
+               clrd      
+               os9       F$Load
+               bcs       L194
+L192           stx       2,S
+               stu       [,S]                add to moddir
+L194           puls      PC,U,Y,X
 
-PRerror    os9   F$PErr
-           RTS
+PRerror        os9       F$PErr
+               rts       
 
-L650       PSHS  X,d
-L208       LEAX  <L204,PC
-           LDA   ,Y+
-L206       CMPA  ,X++
-           BLO   L206
-           LDB   ,-X
-           JMP   B,X
+L650           pshs      X,d
+L208           leax      <L204,PC
+               lda       ,Y+
+L206           cmpa      ,X++
+               blo       L206
+               ldb       ,-X
+               jmp       B,X
 
 *  embedded jumptable
 *  do not change until L264
-L204       fcb   $F2
-           fcb   LA2-*
-           fcb   $92
-           fcb   LA4-*
-           fcb   $91
-           fcb   LA2-*
-           fcb   $90
-           fcb   L210-*
-           fcb   $8f
-           fcb   LA1-*
-           fcb   $8e
-           fcb   LA2-*
-           fcb   $8d
-           fcb   LA3-*
-           fcb   $55
-           fcb   LA2-*
-           fcb   $4b
-           fcb   LA4-*
-           fcb   $3e
-           fcb   L21C-*
-           fcb   $00
-           fcb   LA4-*
-LA1        LEAY  3,Y
-LA2        LEAY  1,Y
-LA3        LEAY  1,Y
-LA4        BRA   L208
+L204           fcb       $F2
+               fcb       LA2-*
+               fcb       $92
+               fcb       LA4-*
+               fcb       $91
+               fcb       LA2-*
+               fcb       $90
+               fcb       L210-*
+               fcb       $8f
+               fcb       LA1-*
+               fcb       $8e
+               fcb       LA2-*
+               fcb       $8d
+               fcb       LA3-*
+               fcb       $55
+               fcb       LA2-*
+               fcb       $4b
+               fcb       LA4-*
+               fcb       $3e
+               fcb       L21C-*
+               fcb       $00
+               fcb       LA4-*
+LA1            leay      3,Y
+LA2            leay      1,Y
+LA3            leay      1,Y
+LA4            bra       L208
 
-L210       TST   ,Y+
-           BPL   L210
-           BRA   L208
-L21C       PULS  PC,X,d
+L210           tst       ,Y+
+               bpl       L210
+               bra       L208
+L21C           puls      PC,X,d
 
 * check param list for:
-           fcb   0,7,3
-L264       fcb   L272-L270,75,12,172 ,
-           fcb   L272-L270,77,12,168 (
-           fcb   L272-L270,78,12,169 )
-           fcb   L18-L270,137,12,174 "
-           fcb   L17-L270,144,6,162 .
-           fcb   0,145,6,164    $
-           fcb   L272-L270,63,2,141 %
+               fcb       0,7,3
+L264           fcb       L272-L270,75,12,172 ,
+               fcb       L272-L270,77,12,168 (
+               fcb       L272-L270,78,12,169 )
+               fcb       L18-L270,137,12,174 "
+               fcb       L17-L270,144,6,162  .
+               fcb       0,145,6,164         $
+               fcb       L272-L270,63,2,141  %
 
 * error: print problem statement
 *   and point to error
-L236       LDA   #12
-L252       PSHS  A
-           LDX   <$A7           strip high order bits
-           LDA   #$0D
-L218       fcb   $62,$7f,$84
+L236           lda       #12
+L252           pshs      A
+               ldx       <$A7                strip high order bits
+               lda       #$0D
+L218           fcb       $62,$7f,$84
 *L218       aim   #$7F,,x
-           CMPA  ,X+
-           BNE   L218
-           LDX   <$A7
-           BSR   prnterr
-           LDD   <$B9
-           SUBD  <$A7
-           tfr   b,f
-           clre
-           LDX   <$AF
-           STX   <$AB
-           LDY   <$A7
-           LDA   #$3D
-           LBSR  L222
-           LDA   #$3F
-           LBSR  L222
-           LDA   #$20       Bunch of spaces
-           pshs  a
-           LDX   Sstack
-           tfm   s,x+
-           LDD   #$5E0D     ^ + CR
-           STD   -1,X
-           LDX   Sstack
-           BSR   prnterr
-           PULS  D
-           LBSR  PRerror
-           LDX   userSP
-           STX   SStop
-           LBRA  L116
+               cmpa      ,X+
+               bne       L218
+               ldx       <$A7
+               bsr       prnterr
+               ldd       <$B9
+               subd      <$A7
+               tfr       b,f
+               clre      
+               ldx       <$AF
+               stx       <$AB
+               ldy       <$A7
+               lda       #$3D
+               lbsr      L222
+               lda       #$3F
+               lbsr      L222
+               lda       #$20                Bunch of spaces
+               pshs      a
+               ldx       Sstack
+               tfm       s,x+
+               ldd       #$5E0D              ^ + CR
+               std       -1,X
+               ldx       Sstack
+               bsr       prnterr
+               puls      D
+               lbsr      PRerror
+               ldx       userSP
+               stx       SStop
+               lbra      L116
 
-prnterr    LDY   #$0100
-           LDA   errpath
-           os9   I$WritLn
-           RTS
+prnterr        ldy       #$0100
+               lda       errpath
+               os9       I$WritLn
+               rts       
 
 **** decode parameters passed ***
-L230       STY   <$A7
-           LDX   exprBase
-           STX   <$AF
-           STX   <$AB
-           INC   <$A0
-           BSR   L232
-           BSR   L234
-           CLR   <$A0
-           LDA   <$A3
-           CMPA  #$3F           % ??
-           BNE   L236           error 12
-           LBRA  L222
+L230           sty       <$A7
+               ldx       exprBase
+               stx       <$AF
+               stx       <$AB
+               inc       <$A0
+               bsr       L232
+               bsr       L234
+               clr       <$A0
+               lda       <$A3
+               cmpa      #$3F                % ??
+               bne       L236                error 12
+               lbra      L222
 
-L234       CMPA  #$4D           ( ??
-           BNE   L238           no params
-L246       LBSR  L222
-           LDD   <$AB
-           BSR   L242
-           LDB   <$A4
-           CMPB  #6             . or $ ??
-           BNE   L238
-           BSR   L232
-           BSR   L244
-           BEQ   L246
-           PSHS  A
-           BRA   L248
+L234           cmpa      #$4D                ( ??
+               bne       L238                no params
+L246           lbsr      L222
+               ldd       <$AB
+               bsr       L242
+               ldb       <$A4
+               cmpb      #6                  . or $ ??
+               bne       L238
+               bsr       L232
+               bsr       L244
+               beq       L246
+               pshs      A
+               bra       L248
 
-L238       RTS
-L232       BSR   L242
-           LDX   <$AD
-           STX   <$AB
-           LDA   <$A3
-           RTS
+L238           rts       
+L232           bsr       L242
+               ldx       <$AD
+               stx       <$AB
+               lda       <$A3
+               rts       
 
-L244       LDA   <$A3
-           CMPA  #$4B           , ??
-L250       RTS
+L244           lda       <$A3
+               cmpa      #$4B                , ??
+L250           rts       
 
-L254       LDA   <$A3
-           CMPA  #$4E           ) ??
-           BEQ   L250           end of list
-           LDA   #$25           error 37
-L256       LBRA  L252
+L254           lda       <$A3
+               cmpa      #$4E                ) ??
+               beq       L250                end of list
+               lda       #$25                error 37
+L256           lbra      L252
 
-L248       BSR   L254
-           PULS  A
-           LBSR  L222
-           BRA   L232
+L248           bsr       L254
+               puls      A
+               lbsr      L222
+               bra       L232
 
-err10      LDA   #$0A
-           BRA   L256
+err10          lda       #$0A
+               bra       L256
 
-L242       LDD   <$AB
-           STD   <$AD
-           LBSR  skpblank
-           STY   <$B9
-           LDA   ,Y
-           LBSR  ISnum
-           BCC   L262
-           LEAX  L264,PCR
-           LDA   #$80
-           LBSR  L266           ill. chars in prmlist?
-           BEQ   err10          yes!!
-           LDB   ,X
-           LEAU  <L270,PC
-           JMP   B,U
+L242           ldd       <$AB
+               std       <$AD
+               lbsr      skpblank
+               sty       <$B9
+               lda       ,Y
+               lbsr      ISnum
+               bcc       L262
+               leax      L264,PCR
+               lda       #$80
+               lbsr      L266                ill. chars in prmlist?
+               beq       err10               yes!!
+               ldb       ,X
+               leau      <L270,PC
+               jmp       B,U
 
-L272       LDD   1,X
-           STB   <$A4
-           STA   <$A3
-           LBRA  L222
+L272           ldd       1,X
+               stb       <$A4
+               sta       <$A3
+               lbra      L222
 
-L18        LDA   ,Y
-           LBSR  ISnum
-           BCS   L272           NO!!
-           LEAY  -1,Y
-L262       BSR   L274
-           BNE   L276
-           LDD   #$8F05
-L282       STA   <$A3
-           tfr   d,w
-           clre
-           pshs  u
-           ldu   <$AB
-           addr  u,w
-           subw  exprBase
-           cmpf  #$FF
-           bcc   err13
-           tfr   d,w
-           clre
-L280       sta   ,u+
-           LDA   ,X+
-           DECF
-           BPL   L280
-           stu   <$AB
-           puls  u
-           LDA   #6
-           STA   <$A4
-           RTS
+L18            lda       ,Y
+               lbsr      ISnum
+               bcs       L272                NO!!
+               leay      -1,Y
+L262           bsr       L274
+               bne       L276
+               ldd       #$8F05
+L282           sta       <$A3
+               tfr       d,w
+               clre      
+               pshs      u
+               ldu       <$AB
+               addr      u,w
+               subw      exprBase
+               cmpf      #$FF
+               bcc       err13
+               tfr       d,w
+               clre      
+L280           sta       ,u+
+               lda       ,X+
+               decf      
+               bpl       L280
+               stu       <$AB
+               puls      u
+               lda       #6
+               sta       <$A4
+               rts       
 
-L276       LDD   #$8E02
-           TST   ,X
-           BNE   L282
-           LDD   #$8D01
-           LEAX  1,X
-           BRA   L282
+L276           ldd       #$8E02
+               tst       ,X
+               bne       L282
+               ldd       #$8D01
+               leax      1,X
+               bra       L282
 
-L270       LEAY  -1,Y
-           BSR   L274
-           LDD   #$9102
-           BRA   L282
+L270           leay      -1,Y
+               bsr       L274
+               ldd       #$9102
+               bra       L282
 
-L274       BSR   skpblank
-           LEAX  ,Y
-           LDY   SStop
-           LBSR  AtoITR         string -> number
-           EXG   X,Y
-           BCS   err22
-           LDA   ,X+
-           CMPA  #2
-           RTS
+L274           bsr       skpblank
+               leax      ,Y
+               ldy       SStop
+               lbsr      AtoITR              string -> number
+               exg       X,Y
+               bcs       err22
+               lda       ,X+
+               cmpa      #2
+               rts       
 
-err22      LDA   #$16
-           BRA   L288
+err22          lda       #$16
+               bra       L288
 
-L17        BSR   L272
-           BRA   L290
+L17            bsr       L272
+               bra       L290
 
-L294       BSR   L222
-L290       LDA   ,Y+
-           CMPA  #$0D
-           BEQ   err41
-           CMPA  #$22           " ??
-           BNE   L294
-           CMPA  ,Y+
-           BEQ   L294
-           LEAY  -1,Y
-           LDA   #$FF
-L278       BRA   L222
+L294           bsr       L222
+L290           lda       ,Y+
+               cmpa      #$0D
+               beq       err41
+               cmpa      #$22                " ??
+               bne       L294
+               cmpa      ,Y+
+               beq       L294
+               leay      -1,Y
+               lda       #$FF
+L278           bra       L222
 
-err41      LDA   #$29
-L288       LBRA  L252
+err41          lda       #$29
+L288           lbra      L252
 
-           LDA   #$31           error 49 (HOW DOES IT GET HERE?)
-           BRA   L288
+               lda       #$31                error 49 (HOW DOES IT GET HERE?)
+               bra       L288
 
-L222       PSHS  X,D
-           LDX   <$AB
-           STA   ,X+
-           STX   <$AB
-           LDD   <$AB
-           SUBD  exprBase
-           CMPB  #$FF
-           BCC   err13
-           CLRA
-           PULS  PC,X,D
+L222           pshs      X,D
+               ldx       <$AB
+               sta       ,X+
+               stx       <$AB
+               ldd       <$AB
+               subd      exprBase
+               cmpb      #$FF
+               bcc       err13
+               clra      
+               puls      PC,X,D
 
-err13      LDA   #$0D
-           LBSR  PRerror
-           LBRA  L116
+err13          lda       #$0D
+               lbsr      PRerror
+               lbra      L116
 
 *
-skpblank  LDA   ,Y+
-           CMPA  #$20
-           BEQ   skpblank      skip blanks
-           CMPA  #$0A
-           BEQ   skpblank      and LF's
-           LEAY  -1,Y
-           RTS
+skpblank       lda       ,Y+
+               cmpa      #$20
+               beq       skpblank            skip blanks
+               cmpa      #$0A
+               beq       skpblank            and LF's
+               leay      -1,Y
+               rts       
 
-L302       BSR   ISlett
-           BCC   L308
-ISnum      CMPA  #$30           0 ??
-           BCS   L308
-           CMPA  #$39           9 ??
-           BLS   L310
-           BRA   L312
+L302           bsr       ISlett
+               bcc       L308
+ISnum          cmpa      #$30                0 ??
+               bcs       L308
+               cmpa      #$39                9 ??
+               bls       L310
+               bra       L312
 
-ISlett     ANDA  #$7F
-           CMPA  #$41           A ??
-           BCS   L308
-           CMPA  #$5A           Z ??
-           BLS   L310
-           CMPA  #$5F           _ ??
-           BEQ   L308
-           CMPA  #$61           a ??
-           BCS   L308
-           CMPA  #$7A           z ??
-           BLS   L310
-L312       ORCC  #1             NO
-           RTS
+ISlett         anda      #$7F
+               cmpa      #$41                A ??
+               bcs       L308
+               cmpa      #$5A                Z ??
+               bls       L310
+               cmpa      #$5F                _ ??
+               beq       L308
+               cmpa      #$61                a ??
+               bcs       L308
+               cmpa      #$7A                z ??
+               bls       L310
+L312           orcc      #1                  NO
+               rts       
 
-L310       ANDCC #$FE           YES
-L308       RTS
+L310           andcc     #$FE                YES
+L308           rts       
 
 * search prm list for special chars *
-L266       PSHS  U,Y,X,A
-           LDU   -3,X
-           LDB   -1,X
-L326       STX   1,S
-           CMPU  #0             USE CMPR 0,U (SAME SPEED, 2 BYTES SHORTER)
-           BEQ   L320
-           LEAU  -1,U
-           LDY   3,S
-           LEAX  B,X
-L328       LDA   ,X+
-           EORA  ,Y+
-           BEQ   L322
-           CMPA  ,S
-           BEQ   L322
-           LEAX  -1,X
-L324       LDA   ,X+
-           BPL   L324
-           BRA   L326
+L266           pshs      U,Y,X,A
+               ldu       -3,X
+               ldb       -1,X
+L326           stx       1,S
+               cmpu      #0                  USE CMPR 0,U (SAME SPEED, 2 BYTES SHORTER)
+               beq       L320
+               leau      -1,U
+               ldy       3,S
+               leax      B,X
+L328           lda       ,X+
+               eora      ,Y+
+               beq       L322
+               cmpa      ,S
+               beq       L322
+               leax      -1,X
+L324           lda       ,X+
+               bpl       L324
+               bra       L326
 
-L322       TST   -1,X
-           BPL   L328
-           STY   3,S
-L320       PULS  PC,U,Y,X,A
+L322           tst       -1,X
+               bpl       L328
+               sty       3,S
+L320           puls      PC,U,Y,X,A
 
-L710       fdb   L1900-L710     table @ L204
-           fdb   L1900-L710     PARAM
-           fdb   L1900-L710     TYPE
-           fdb   L1900-L710     DIM
-           fdb   L1900-L710     DATA
-           fdb   STOP-L710
-           fdb   BYE-L710
-           fdb   L386-L710      TRON
-           fdb   L386-L710      TROFF
-           fdb   L386-L710      PAUSE
-           fdb   DEG-L710
-           fdb   RAD-L710
-           fdb   RETURN-L710
-           fdb   L370-L710
-           fdb   LET-L710
-           fdb   POKE-L710
-           fdb   IF-L710
-           fdb   GOTO-L710      = ELSE
-           fdb   ENDIF-L710
-           fdb   FOR-L710
-           fdb   NEXT-L710      table @ L388
-           fdb   UNTIL-L710     = WHILE
-           fdb   GOTO-L710      = ENDWHILE
-           fdb   L370-L710      = REPEAT
-           fdb   UNTIL-L710
-           fdb   L370-L710      = LOOP
-           fdb   GOTO-L710      = ENDLOOP
-           fdb   UNTIL-L710     = EXITIF
-           fdb   GOTO-L710      = ENDEXIT
-           fdb   ON-L710
-           fdb   ERROR-L710
-           fdb   errs51-L710
-           fdb   GOTO-L710
-           fdb   errs51-L710
-           fdb   GOSUB-L710
-           fdb   RUN-L710
-           fdb   KILL-L710
-           fdb   INPUT-L710
-           fdb   PRINT-L710
-           fdb   CHD-L710
-           fdb   CHX-L710
-           fdb   CREATE-L710
-           fdb   OPEN-L710
-           fdb   SEEK-L710
-           fdb   READ-L710
-           fdb   WRITE-L710
-           fdb   GET-L710
-           fdb   PUT-L710
-           fdb   CLOSE-L710
-           fdb   RESTORE-L710
-           fdb   DELETE-L710
-           fdb   CHAIN-L710
-           fdb   SHELL-L710
-           fdb   BASE0-L710
-           fdb   BASE1-L710
-           fdb   386-L710       REM
-           fdb   386-L710
-           fdb   END-L710
+L710           fdb       L1900-L710          table @ L204
+               fdb       L1900-L710          PARAM
+               fdb       L1900-L710          TYPE
+               fdb       L1900-L710          DIM
+               fdb       L1900-L710          DATA
+               fdb       STOP-L710
+               fdb       BYE-L710
+               fdb       L386-L710           TRON
+               fdb       L386-L710           TROFF
+               fdb       L386-L710           PAUSE
+               fdb       DEG-L710
+               fdb       RAD-L710
+               fdb       RETURN-L710
+               fdb       L370-L710
+               fdb       LET-L710
+               fdb       POKE-L710
+               fdb       IF-L710
+               fdb       GOTO-L710           = ELSE
+               fdb       ENDIF-L710
+               fdb       FOR-L710
+               fdb       NEXT-L710           table @ L388
+               fdb       UNTIL-L710          = WHILE
+               fdb       GOTO-L710           = ENDWHILE
+               fdb       L370-L710           = REPEAT
+               fdb       UNTIL-L710
+               fdb       L370-L710           = LOOP
+               fdb       GOTO-L710           = ENDLOOP
+               fdb       UNTIL-L710          = EXITIF
+               fdb       GOTO-L710           = ENDEXIT
+               fdb       ON-L710
+               fdb       ERROR-L710
+               fdb       errs51-L710
+               fdb       GOTO-L710
+               fdb       errs51-L710
+               fdb       GOSUB-L710
+               fdb       RUN-L710
+               fdb       KILL-L710
+               fdb       INPUT-L710
+               fdb       PRINT-L710
+               fdb       CHD-L710
+               fdb       CHX-L710
+               fdb       CREATE-L710
+               fdb       OPEN-L710
+               fdb       SEEK-L710
+               fdb       READ-L710
+               fdb       WRITE-L710
+               fdb       GET-L710
+               fdb       PUT-L710
+               fdb       CLOSE-L710
+               fdb       RESTORE-L710
+               fdb       DELETE-L710
+               fdb       CHAIN-L710
+               fdb       SHELL-L710
+               fdb       BASE0-L710
+               fdb       BASE1-L710
+               fdb       386-L710            REM
+               fdb       386-L710
+               fdb       END-L710
 * From here on is added from original BASIC09 table @ L1D60
-           fdb   L1943-L710     go to next instruction
-           fdb   L1943-L710
-           fdb   L1944-L710     jump to [regs.x]
-           fdb   errs51-L710
-           fdb   L386-L710      RTS
-           fdb   L386-L710
-           fdb   CpMbyte-L710
-           fdb   CpMint-L710
-           fdb   CpMreal-L710
-           fdb   CpMbyte-L710
-           fdb   CpMstrin-L710
-           fdb   CpMarray-L710
-L448       fcc   /STOP Encountered/
-           fcb   10,255
+               fdb       L1943-L710          go to next instruction
+               fdb       L1943-L710
+               fdb       L1944-L710          jump to [regs.x]
+               fdb       errs51-L710
+               fdb       L386-L710           RTS
+               fdb       L386-L710
+               fdb       CpMbyte-L710
+               fdb       CpMint-L710
+               fdb       CpMreal-L710
+               fdb       CpMbyte-L710
+               fdb       CpMstrin-L710
+               fdb       CpMarray-L710
+L448           fcc       /STOP Encountered/
+               fcb       10,255
 
 *
 * setup workspace for module
-L676       LDA   $17,X
-           BITA  #1
-           BEQ   L346
-           LBRA  errs51
+L676           lda       $17,X
+               bita      #1
+               beq       L346
+               lbra      errs51
 
-L346       TFR   S,D
-           deca
-           CMPD  Sstack
-           BCC   L350
-           LDB   #$39           error 57 (system stack overflow)
-           BRA   L348
+L346           tfr       S,D
+               deca      
+               cmpd      Sstack
+               bcc       L350
+               ldb       #$39                error 57 (system stack overflow)
+               bra       L348
 
-L350       LDD   freemem
-           SUBD  $0B,X
-           BCS   err32
-           CMPD  #$0100
-           BCC   L354
-err32      LDB   #$20
-L348       LBRA  L356
+L350           ldd       freemem
+               subd      $0B,X
+               bcs       err32
+               cmpd      #$0100
+               bcc       L354
+err32          ldb       #$20
+L348           lbra      L356
 
-L354       STD   freemem
-           TFR   Y,D
-           SUBD  $0B,X
-           EXG   D,U
-           STS   5,U
-           STD   7,U
-           STX   3,U
-L344       LDD   #1             default:base 1
-           STD   ArrBase
-           STA   1,U            default: radians
-           STA   <$13,U
-           STU   $14,U
-           BSR   L358
-           LDD   <$13,X
-           BEQ   L360
-           ADDD  excoffse
-L360       STD   DATApoin
-           LDW   $0B,X
-           LDD   <$11,X
-           LEAY  D,U
-           subr  d,w
-           bls   L362
-           clr   ,-s
-           tfm   s,y+
-           LEAS  1,S
-L362       LDX   PGMaddre
-           LDD   excoffse
-           ADDD  <$15,X
-           TFR   D,X
-           BRA   L366           start execution
+L354           std       freemem
+               tfr       Y,D
+               subd      $0B,X
+               exg       D,U
+               sts       5,U
+               std       7,U
+               stx       3,U
+L344           ldd       #1                  default:base 1
+               std       ArrBase
+               sta       1,U                 default: radians
+               sta       <$13,U
+               stu       $14,U
+               bsr       L358
+               ldd       <$13,X
+               beq       L360
+               addd      excoffse
+L360           std       DATApoin
+               ldw       $0B,X
+               ldd       <$11,X
+               leay      D,U
+               subr      d,w
+               bls       L362
+               clr       ,-s
+               tfm       s,y+
+               leas      1,S
+L362           ldx       PGMaddre
+               ldd       excoffse
+               addd      <$15,X
+               tfr       D,X
+               bra       L366                start execution
 
 *
-L358       STX   PGMaddre
-           STU   WSbase
-           LDD   $0D,X
-           ADDD  PGMaddre
-           STD   VarPtrba
-           LDD   $0F,X
-           ADDD  PGMaddre
-           STD   vectorba
-           STD   excEnd
-           LDD   9,X
-           ADDD  PGMaddre
-           STD   excoffse
-           LDD   $14,U
-           STD   userSP
-           STD   SStop
-           RTS
+L358           stx       PGMaddre
+               stu       WSbase
+               ldd       $0D,X
+               addd      PGMaddre
+               std       VarPtrba
+               ldd       $0F,X
+               addd      PGMaddre
+               std       vectorba
+               std       excEnd
+               ldd       9,X
+               addd      PGMaddre
+               std       excoffse
+               ldd       $14,U
+               std       userSP
+               std       SStop
+               rts       
 
 *** MAIN LOOP
-L372       LDA   <$34           Check if signal received
-           BPL   L368           No, execute next instruction
-           ANDA  #$7F           flag signal received
-           STA   <$34
-           LDB   <$35
-           BNE   L348           process it
-L368       BSR   L370
-L366       CMPX  excEnd
-           BCS   L372
-           BRA   L374
+L372           lda       <$34                Check if signal received
+               bpl       L368                No, execute next instruction
+               anda      #$7F                flag signal received
+               sta       <$34
+               ldb       <$35
+               bne       L348                process it
+L368           bsr       L370
+L366           cmpx      excEnd
+               bcs       L372
+               bra       L374
 
 *
-END        LDB   ,X
-           LBSR  nextinst
-           BEQ   L374
-           LBSR  PRINT
-L374       LDU   WSbase
-           LDS   5,U
-           LDU   7,U
-L386       RTS
+END            ldb       ,X
+               lbsr      nextinst
+               beq       L374
+               lbsr      PRINT
+L374           ldu       WSbase
+               lds       5,U
+               ldu       7,U
+L386           rts       
 
-L1943      LEAX  2,X
-L370       LDB   ,X+
-           BPL   L382
-           ADDB  #$40
-L382       ASLB
-           CLRA
-           LDU   table1         = L710
-           LDD   D,U
-           JMP   D,U            go to instruction
-
-*
-IF         JSR   table4         if....
-           TST   2,Y
-           BEQ   GOTO           = FALSE
-           LEAX  3,X            THEN
-           LDB   ,X
-           CMPB  #$3B
-           BNE   L386
-           LEAX  1,X            ELSE
-GOTO       LDD   ,X
-           ADDD  excoffse
-           TFR   D,X
-           RTS
-
-ENDIF      LEAX  1,X
-           RTS
-
-UNTIL      JSR   table4
-           TST   2,Y
-           BEQ   GOTO           = FALSE
-           LEAX  3,X
-           RTS
+L1943          leax      2,X
+L370           ldb       ,X+
+               bpl       L382
+               addb      #$40
+L382           aslb      
+               clra      
+               ldu       table1              = L710
+               ldd       D,U
+               jmp       D,U                 go to instruction
 
 *
-L388       fdb   L70-L388       int. step 1
-           fdb   L71-L388       int. step x
-           fdb   L72-L388       real step 1
-           fdb   L73-L388       real step x
+IF             jsr       table4              if....
+               tst       2,Y
+               beq       GOTO                = FALSE
+               leax      3,X                 THEN
+               ldb       ,X
+               cmpb      #$3B
+               bne       L386
+               leax      1,X                 ELSE
+GOTO           ldd       ,X
+               addd      excoffse
+               tfr       D,X
+               rts       
+
+ENDIF          leax      1,X
+               rts       
+
+UNTIL          jsr       table4
+               tst       2,Y
+               beq       GOTO                = FALSE
+               leax      3,X
+               rts       
 
 *
-NEXT       LEAY  <L388,PC
-L414       LDB   ,X+
-           ASLB
-           LDD   B,Y
-           LDU   WSbase
-           JMP   D,Y
+L388           fdb       L70-L388            int. step 1
+               fdb       L71-L388            int. step x
+               fdb       L72-L388            real step 1
+               fdb       L73-L388            real step x
 
-L75        LDD   ,X
-           LEAY  D,U
-           BRA   L390
+*
+NEXT           leay      <L388,PC
+L414           ldb       ,X+
+               aslb      
+               ldd       B,Y
+               ldu       WSbase
+               jmp       D,Y
 
-L76        LDD   ,X
-           LEAY  D,U
-           LDD   4,X
-           LDA   D,U
-           BPL   L390
-           BRA   L392
+L75            ldd       ,X
+               leay      D,U
+               bra       L390
+
+L76            ldd       ,X
+               leay      D,U
+               ldd       4,X
+               lda       D,U
+               bpl       L390
+               bra       L392
 
 *  FOR .. NEXT  /integer  *
-L70        LDD   ,X             offset counter
-           LEAY  D,U            address counter
-           LDD   ,Y
-           incd                 increment counter
-           STD   ,Y
-L390       LDD   2,X            offset target
-           LEAX  6,X
-           LDD   D,U            target value
-           CMPD  ,Y
-           BGE   GOTO           loop again
-           LEAX  3,X
-           RTS
+L70            ldd       ,X                  offset counter
+               leay      D,U                 address counter
+               ldd       ,Y
+               incd                          increment counter
+               std       ,Y
+L390           ldd       2,X                 offset target
+               leax      6,X
+               ldd       D,U                 target value
+               cmpd      ,Y
+               bge       GOTO                loop again
+               leax      3,X
+               rts       
 
 *  FOR .. NEXT .. STEP  /integer *
-L71        LDD   ,X
-           LEAY  D,U
-           LDD   4,X
-           LDD   D,U
-           tfr   a,e
-           ADDD  ,Y             update counter
-           STD   ,Y
-           tste
-           BPL   L390           incrementing
-L392       LDD   2,X
-           LEAX  6,X
-           LDD   D,U
-           CMPD  ,Y
-           BLE   GOTO           loop again
-           LEAX  3,X
-           RTS
+L71            ldd       ,X
+               leay      D,U
+               ldd       4,X
+               ldd       D,U
+               tfr       a,e
+               addd      ,Y                  update counter
+               std       ,Y
+               tste      
+               bpl       L390                incrementing
+L392           ldd       2,X
+               leax      6,X
+               ldd       D,U
+               cmpd      ,Y
+               ble       GOTO                loop again
+               leax      3,X
+               rts       
 
-L77        LDY   userSP
-           CLRB
-           BSR   L394
-           BRA   L396
+L77            ldy       userSP
+               clrb      
+               bsr       L394
+               bra       L396
 
-L78        LDY   userSP
-           CLRB
-           BSR   L394
-           LDD   4,X
-           ADDD  #4
-           LDU   WSbase
-           LDA   D,U
-           LSRA  examine        sign
-           BCC   L396
-           BRA   L398
+L78            ldy       userSP
+               clrb      
+               bsr       L394
+               ldd       4,X
+               addd      #4
+               ldu       WSbase
+               lda       D,U
+               lsra                          examine        sign
+               bcc       L396
+               bra       L398
 
 *  FOR .. NEXT   /real  *
-L72        LDY   userSP
-           CLRB
-           BSR   L394
-           LEAY  -6,Y
-           LDD   #$0180         step 1 (save in temp var)
-           STD   1,Y
-           clrd
-           STD   3,Y
-           STA   5,Y
-           LBSR  RLADD
-           LDQ   1,Y
-           STQ   ,U
-           LDA   5,Y
-           STA   4,U
-L396       LDB   #2             incrementing
-           BSR   L394
-           LEAX  6,X
-           LBSR  RLCMP
-           LBLE  GOTO           loop again
-           LEAX  3,X
-           RTS
+L72            ldy       userSP
+               clrb      
+               bsr       L394
+               leay      -6,Y
+               ldd       #$0180              step 1 (save in temp var)
+               std       1,Y
+               clrd      
+               std       3,Y
+               sta       5,Y
+               lbsr      RLADD
+               ldq       1,Y
+               stq       ,U
+               lda       5,Y
+               sta       4,U
+L396           ldb       #2                  incrementing
+               bsr       L394
+               leax      6,X
+               lbsr      RLCMP
+               lble      GOTO                loop again
+               leax      3,X
+               rts       
 
-L394       LDD   B,X            copy number
-           ADDD  WSbase
-           TFR   D,U
-           LEAY  -6,Y
-           LDA   #2
-           LDB   ,U
-           STD   ,Y
-           LDQ   1,U
-           STQ   2,Y
-           RTS
+L394           ldd       B,X                 copy number
+               addd      WSbase
+               tfr       D,U
+               leay      -6,Y
+               lda       #2
+               ldb       ,U
+               std       ,Y
+               ldq       1,U
+               stq       2,Y
+               rts       
 
 *  FOR .. NEXT .. STEP /real  *
-L73        LDY   userSP
-           CLRB
-           BSR   L394
-           STU   <$D2
-           LDB   #4
-           BSR   L394
-           LDA   4,U
-           STA   <$D1
-           LBSR  RLADD          incr. counter
-           LDU   <$D2
-           LDQ   1,Y
-           STQ   ,U
-           LDA   5,Y
-           STA   4,U
-           LSR   <$D1           check sign
-           BCC   L396
-L398       LDB   #2             decrementing
-           BSR   L394
-           LEAX  6,X
-           LBSR  RLCMP
-           LBGE  GOTO           loop again
-           LEAX  3,X
-           RTS
+L73            ldy       userSP
+               clrb      
+               bsr       L394
+               stu       <$D2
+               ldb       #4
+               bsr       L394
+               lda       4,U
+               sta       <$D1
+               lbsr      RLADD               incr. counter
+               ldu       <$D2
+               ldq       1,Y
+               stq       ,U
+               lda       5,Y
+               sta       4,U
+               lsr       <$D1                check sign
+               bcc       L396
+L398           ldb       #2                  decrementing
+               bsr       L394
+               leax      6,X
+               lbsr      RLCMP
+               lbge      GOTO                loop again
+               leax      3,X
+               rts       
 
 ******* table for FOR ********
-L412       fdb   L75-L412       int. step 1
-           fdb   L76-L412       int. step x
-           fdb   L77-L412       real step 1
-           fdb   L78-L412       real step x
+L412           fdb       L75-L412            int. step 1
+               fdb       L76-L412            int. step x
+               fdb       L77-L412            real step 1
+               fdb       L78-L412            real step x
 
 *
-FOR        LDB   ,X+
-           CMPB  #$82
-           BEQ   L405
-           BSR   CpMint
-           BSR   L410
-           LDB   -1,X
-           CMPB  #$47
-           BNE   L408
-           BSR   L410
-L408       LBSR  GOTO
-           LEAY  <L412,PC
-           LBRA  L414
-L410       LDD   ,X++
-           ADDD  WSbase
-           PSHS  d
-           JSR   table4
-           LDD   1,Y
-           STD   [,S++]
-           RTS
+FOR            ldb       ,X+
+               cmpb      #$82
+               beq       L405
+               bsr       CpMint
+               bsr       L410
+               ldb       -1,X
+               cmpb      #$47
+               bne       L408
+               bsr       L410
+L408           lbsr      GOTO
+               leay      <L412,PC
+               lbra      L414
+L410           ldd       ,X++
+               addd      WSbase
+               pshs      d
+               jsr       table4
+               ldd       1,Y
+               std       [,S++]
+               rts       
 
-L405       BSR   CpMreal
-           BSR   L418
-           LDB   -1,X
-           CMPB  #$47
-           BNE   L408
-           BSR   L418
-           BRA   L408
+L405           bsr       CpMreal
+               bsr       L418
+               ldb       -1,X
+               cmpb      #$47
+               bne       L408
+               bsr       L418
+               bra       L408
 
-L418       LDD   ,X++
-           ADDD  WSbase
-           PSHS  d
-           JSR   table4
-           BRA   L420
+L418           ldd       ,X++
+               addd      WSbase
+               pshs      d
+               jsr       table4
+               bra       L420
 
-LET        JSR   table4         get var. type
-L422       CMPA  #4
-           BCS   L442
-           PSHS  U
-           LDU   fieldsiz
-L442       PSHS  U,A
-           LEAX  1,X
-           JSR   table4
-L516       PULS  A
-           ASLA
-           LEAU  <L424,PC
-           JMP   A,U            copy
+LET            jsr       table4              get var. type
+L422           cmpa      #4
+               bcs       L442
+               pshs      U
+               ldu       fieldsiz
+L442           pshs      U,A
+               leax      1,X
+               jsr       table4
+L516           puls      A
+               asla      
+               leau      <L424,PC
+               jmp       A,U                 copy
 
-L424       BRA   L426           byte
-           BRA   L428           integer
-           BRA   L420           real
-           BRA   L426           boolean
-           BRA   L430           string
-           BRA   L432           array
+L424           bra       L426                byte
+               bra       L428                integer
+               bra       L420                real
+               bra       L426                boolean
+               bra       L430                string
+               bra       L432                array
 
-CpMbyte    LDD   ,X
-           ADDD  WSbase
-           PSHS  D
-           LEAX  3,X
-           JSR   table4
-L426       LDB   2,Y
-           STB   [,S++]
-           RTS
+CpMbyte        ldd       ,X
+               addd      WSbase
+               pshs      D
+               leax      3,X
+               jsr       table4
+L426           ldb       2,Y
+               stb       [,S++]
+               rts       
 
-CpMint     LDD   ,X
-           ADDD  WSbase
-           PSHS  d
-           LEAX  3,X
-           JSR   table4
-L428       LDD   1,Y
-           STD   [,S++]
-           RTS
+CpMint         ldd       ,X
+               addd      WSbase
+               pshs      d
+               leax      3,X
+               jsr       table4
+L428           ldd       1,Y
+               std       [,S++]
+               rts       
 
-CpMreal    LDD   ,X
-           ADDD  WSbase
-           PSHS  d
-           LEAX  3,X
-           JSR   table4
-L420       PULS  U
-           LDQ   1,Y
-           STQ   ,U
-           LDA   5,Y
-           STA   4,U
-           RTS
+CpMreal        ldd       ,X
+               addd      WSbase
+               pshs      d
+               leax      3,X
+               jsr       table4
+L420           puls      U
+               ldq       1,Y
+               stq       ,U
+               lda       5,Y
+               sta       4,U
+               rts       
 
-CpMstrin   LDD   ,X
-           ADDD  vectorba
-           TFR   D,U
-           LDQ   ,U
-           ADDD  WSbase
-           PSHS  D
-           PSHSW
-           LEAX  3,X
-           JSR   table4
-L430       PULS  U,D            D=Max Size of string to copy
-           ldw   3,y
-           stw   BUPsize
-           incw                 Allow for $FF terminator
-           cmpr  d,w            Other string big enough?
-           bls   L431           Yes, copy
-           tfr   d,w            No, only copy smaller size
-           stw   BUPsize
-L431       ldd   1,y            Get address of string to copy
-           STD   exprSP         Save it
-           stu   BUPaddr        Save address of destination string
-           tfm   d+,u+          Copy (ignore $FF?)
-           clra                 clear carry
-           RTS
+CpMstrin       ldd       ,X
+               addd      vectorba
+               tfr       D,U
+               ldq       ,U
+               addd      WSbase
+               pshs      D
+               pshsw     
+               leax      3,X
+               jsr       table4
+L430           puls      U,D                 D=Max Size of string to copy
+               ldw       3,y
+               stw       BUPsize
+               incw                          Allow for $FF terminator
+               cmpr      d,w                 Other string big enough?
+               bls       L431                Yes, copy
+               tfr       d,w                 No, only copy smaller size
+               stw       BUPsize
+L431           ldd       1,y                 Get address of string to copy
+               std       exprSP              Save it
+               stu       BUPaddr             Save address of destination string
+               tfm       d+,u+               Copy (ignore $FF?)
+               clra                          clear carry
+               rts       
 
-CpMarray   LBSR  L728
-           LBRA  L422
+CpMarray       lbsr      L728
+               lbra      L422
 
-L432       PULS  U,D
-           ldw   3,y
-           cmpr  d,w
-           BLS   L444
-           tfr   d,w
-L444       ldd   1,y
-           tfm   d+,u+
-           rts
+L432           puls      U,D
+               ldw       3,y
+               cmpr      d,w
+               bls       L444
+               tfr       d,w
+L444           ldd       1,y
+               tfm       d+,u+
+               rts       
 
-POKE       JSR   table4
-           LDD   1,Y
-           PSHS  d
-           JSR   table4
-           LDB   2,Y
-           STB   [,S++]
-           RTS
+POKE           jsr       table4
+               ldd       1,Y
+               pshs      d
+               jsr       table4
+               ldb       2,Y
+               stb       [,S++]
+               rts       
 
-STOP       LBSR  PRINT
-           LDA   errpath
-           STA   IOpath
-           LEAX  L448,PC
-           LBSR  Sprint
-           LBRA  L116           exit
+STOP           lbsr      PRINT
+               lda       errpath
+               sta       IOpath
+               leax      L448,PC
+               lbsr      Sprint
+               lbra      L116                exit
 
-GOSUB      LDD   ,X
-           LEAX  3,X
-L464       LDY   WSbase
-           LDU   $14,Y
-           CMPU  exprBase
-           BHI   L456
-           LDB   #$35           error 53
-           LBRA  L356
+GOSUB          ldd       ,X
+               leax      3,X
+L464           ldy       WSbase
+               ldu       $14,Y
+               cmpu      exprBase
+               bhi       L456
+               ldb       #$35                error 53
+               lbra      L356
 
-L456       STX   ,--U           pshs x (pshu x?)
-           STU   $14,Y
-           STU   userSP
-           ADDD  excoffse
-           TFR   D,X            address subroutine
-           RTS
+L456           stx       ,--U                pshs x (pshu x?)
+               stu       $14,Y
+               stu       userSP
+               addd      excoffse
+               tfr       D,X                 address subroutine
+               rts       
 
-RETURN     LDY   WSbase
-           CMPY  $14,Y
-           BHI   L458
-           LDB   #$36           error 54
-           LBRA  L356
+RETURN         ldy       WSbase
+               cmpy      $14,Y
+               bhi       L458
+               ldb       #$36                error 54
+               lbra      L356
 
-L458       LDU   $14,Y
-           LDX   ,U++           puls x  (pulu x)
-           STU   $14,Y
-           STU   userSP
-           RTS
+L458           ldu       $14,Y
+               ldx       ,U++                puls x  (pulu x)
+               stu       $14,Y
+               stu       userSP
+               rts       
 
-ON         LDD   ,X
-           CMPA  #$1E
-           BEQ   L460           set trap
-           JSR   table4
-           LDD   ,X
-           asld
-           asld
-           incd
-           incd
-           LEAU  D,X
-           PSHS  U
-           LDD   1,Y
-           BLE   L462
-           CMPD  ,X++
-           BHI   L462
-           decd
-           asld
-           asld
-           incd
-           LDD   D,X
-           PSHS  d
-           LDB   ,X
-           CMPB  #$22
-           PULS  X,d
-           BEQ   L464
-           ADDD  excoffse
-           TFR   D,X
-           RTS
+ON             ldd       ,X
+               cmpa      #$1E
+               beq       L460                set trap
+               jsr       table4
+               ldd       ,X
+               asld      
+               asld      
+               incd      
+               incd      
+               leau      D,X
+               pshs      U
+               ldd       1,Y
+               ble       L462
+               cmpd      ,X++
+               bhi       L462
+               decd      
+               asld      
+               asld      
+               incd      
+               ldd       D,X
+               pshs      d
+               ldb       ,X
+               cmpb      #$22
+               puls      X,d
+               beq       L464
+               addd      excoffse
+               tfr       D,X
+               rts       
 
-L462       PULS  PC,X
+L462           puls      PC,X
 
-L460       LDU   WSbase
-           CMPB  #$20
-           BNE   L466           clear trap
-           LDD   2,X
-           ADDD  excoffse
-           STD   <$11,U
-           LDA   #1
-           STA   <$13,U
-           LEAX  5,X
-           RTS
+L460           ldu       WSbase
+               cmpb      #$20
+               bne       L466                clear trap
+               ldd       2,X
+               addd      excoffse
+               std       <$11,U
+               lda       #1
+               sta       <$13,U
+               leax      5,X
+               rts       
 
-L466       CLR   <$13,U
-           LEAX  2,X
-           RTS
+L466           clr       <$13,U
+               leax      2,X
+               rts       
 
-CREATE     BSR   L468
-           LDB   #$0B           R/W/PR
-           os9   I$Create
-           BRA   L470
+CREATE         bsr       L468
+               ldb       #$0B                R/W/PR
+               os9       I$Create
+               bra       L470
 
-OPEN       BSR   L468
-           os9   I$Open
-L470       LBCS  L356           error
-           PULS  U,B
-           CMPB  #1
-           BNE   L472           store as byte
-           CLR   ,U+            integer
-L472       STA   ,U             path number
-           PULS  PC,X
+OPEN           bsr       L468
+               os9       I$Open
+L470           lbcs      L356                error
+               puls      U,B
+               cmpb      #1
+               bne       L472                store as byte
+               clr       ,U+                 integer
+L472           sta       ,U                  path number
+               puls      PC,X
 
-L468       LEAX  1,X
-           LBSR  getvar
-           LEAX  1,X
-           JSR   table4
-           LDA   #3             default: UPDATE
-           CMPB  #$4A
-           BNE   L476
-           LDA   ,X++           access mode
-L476       LDU   3,S
-           STX   3,S
-           LDX   1,Y
-           JMP   ,U             = RTS
+L468           leax      1,X
+               lbsr      getvar
+               leax      1,X
+               jsr       table4
+               lda       #3                  default: UPDATE
+               cmpb      #$4A
+               bne       L476
+               lda       ,X++                access mode
+L476           ldu       3,S
+               stx       3,S
+               ldx       1,Y
+               jmp       ,U                  = RTS
 
-SEEK       LBSR  setpath
-           JSR   table4
-           LBSR  setFP          set filepointer
-           LBCS  errman
-           RTS
+SEEK           lbsr      setpath
+               jsr       table4
+               lbsr      setFP               set filepointer
+               lbcs      errman
+               rts       
 
-L500       fcc   /? /
-           fcb   255
+L500           fcc       /? /
+               fcb       255
 
-L514       fcc   /** Input error - reenter **/
-           fcb   13,255
+L514           fcc       /** Input error - reenter **/
+               fcb       13,255
 
-INPUT      LDA   errpath
-           LBSR  setpath
-           LDA   #$2C
-           STA   <$DD
-           PSHS  X
-L508       LDX   ,S
-           LDB   ,X
-           CMPB  #$90
-           BNE   L498           use default
-           JSR   table4
-           PSHS  Y,X
-           LDX   1,Y            get prompt
-           ldy   3,y
-           BRA   L490
+INPUT          lda       errpath
+               lbsr      setpath
+               lda       #$2C
+               sta       <$DD
+               pshs      X
+L508           ldx       ,S
+               ldb       ,X
+               cmpb      #$90
+               bne       L498                use default
+               jsr       table4
+               pshs      Y,X
+               ldx       1,Y                 get prompt
+               ldy       3,y
+               bra       L490
 
-L498       PSHS  Y,X
-           LEAX  <L500,PC      default prompt
-           ldy   #2
-L490       lda   IOpath
-           os9   I$WritLn
-           PULS  Y,X
-           LDA   IOpath
-           CMPA  errpath
-           BNE   L502
-           LDA   <$2D
-           STA   IOpath
-L502       LBSR  READLN
-           BCC   L504           NO error
-           CMPB  #3
-           LBNE  errman
-           LBSR  L506           BREAK pressed
-           CLR   errcode
-           BRA   L508
+L498           pshs      Y,X
+               leax      <L500,PC            default prompt
+               ldy       #2
+L490           lda       IOpath
+               os9       I$WritLn
+               puls      Y,X
+               lda       IOpath
+               cmpa      errpath
+               bne       L502
+               lda       <$2D
+               sta       IOpath
+L502           lbsr      READLN
+               bcc       L504                NO error
+               cmpb      #3
+               lbne      errman
+               lbsr      L506                BREAK pressed
+               clr       errcode
+               bra       L508
 
-L504       BSR   L510           check input
-           BCC   L512
-           LEAX  <L514,PC      input error
-           BSR   Sprint
-           BRA   L508           try again
+L504           bsr       L510                check input
+               bcc       L512
+               leax      <L514,PC            input error
+               bsr       Sprint
+               bra       L508                try again
 
-L512       LDB   ,X+
-           CMPB  #$4B
-           BEQ   L504           more items!!
-           PULS  PC,d
+L512           ldb       ,X+
+               cmpb      #$4B
+               beq       L504                more items!!
+               puls      PC,d
 
-L510       BSR   getvar
-           LDB   ,S
-           ADDB  #7
-           LDY   userSP
-           LBSR  L46
-           LBCC  L516
-L518       LEAS  3,S            clear stack
-           COMA  signal         an error
-           RTS
+L510           bsr       getvar
+               ldb       ,S
+               addb      #7
+               ldy       userSP
+               lbsr      L46
+               lbcc      L516
+L518           leas      3,S                 clear stack
+               coma                          signal         an error
+               rts       
 
 *print a message
-Sprint     pshs  y,x
-           ldy   Sstack
-L473       lda   ,x+
-           sta   ,y+
-           cmpa  #$FF
-           bne   L473
-           leay  -1,y
-           sty   <$Spointer
-           lbsr  WRITLN
-           puls  pc,y,x
+Sprint         pshs      y,x
+               ldy       Sstack
+L473           lda       ,x+
+               sta       ,y+
+               cmpa      #$FF
+               bne       L473
+               leay      -1,y
+               sty       <$Spointer
+               lbsr      WRITLN
+               puls      pc,y,x
 
-getvar     LDA   ,X+
-           CMPA  #$0E           vectored variable?
-           BNE   L520
-           JSR   table4
-           BRA   L522
+getvar         lda       ,X+
+               cmpa      #$0E                vectored variable?
+               bne       L520
+               jsr       table4
+               bra       L522
 
-L520       SUBA  #$80
-           CMPA  #4
-           BCS   L524           byte,int,real
-           BEQ   L526           string
-           LBSR  L728           array
-           BRA   L522
+L520           suba      #$80
+               cmpa      #4
+               bcs       L524                byte,int,real
+               beq       L526                string
+               lbsr      L728                array
+               bra       L522
 
-L526       LDD   ,X++
-           ADDD  vectorba
-           TFR   D,U
-           LDQ   ,U
-           stw   fieldsiz
-           BRA   L528
+L526           ldd       ,X++
+               addd      vectorba
+               tfr       D,U
+               ldq       ,U
+               stw       fieldsiz
+               bra       L528
 
-L524       LDD   ,X++
-L528       ADDD  WSbase
-           TFR   D,U
-           LDA   -3,X
-           SUBA  #$80
-L522       PULS  Y
-           CMPA  #4
-           BCS   L530
-           PSHS  U
-           LDU   fieldsiz
-L530       PSHS  U,A
-           JMP   ,Y             = RTS
+L524           ldd       ,X++
+L528           addd      WSbase
+               tfr       D,U
+               lda       -3,X
+               suba      #$80
+L522           puls      Y
+               cmpa      #4
+               bcs       L530
+               pshs      U
+               ldu       fieldsiz
+L530           pshs      U,A
+               jmp       ,Y                  = RTS
 
 * set IO path
 * called by #path statement
-setpath    LDB   ,X
-           CMPB  #$54           path number given?
-           BNE   L532
-           LEAX  1,X
-           JSR   table4
-           CMPB  #$4B           string follows?
-           BEQ   L534
-           LEAX  -1,X
-L534       LDA   2,Y
-L532       STA   IOpath
-           RTS
+setpath        ldb       ,X
+               cmpb      #$54                path number given?
+               bne       L532
+               leax      1,X
+               jsr       table4
+               cmpb      #$4B                string follows?
+               beq       L534
+               leax      -1,X
+L534           lda       2,Y
+L532           sta       IOpath
+               rts       
 
-READ       LDB   ,X
-           CMPB  #$54
-           BNE   L536           read from DATA statement
-           BSR   setpath
-           CLR   <$DD
-           CMPB  #$4B
-           BNE   L538
-           LEAX  -1,X
-L538       LBSR  READLN
-           BCC   L540
-           CMPB  #$E4           error 228 ?
-           BEQ   L538
-L542       LBRA  errman
+READ           ldb       ,X
+               cmpb      #$54
+               bne       L536                read from DATA statement
+               bsr       setpath
+               clr       <$DD
+               cmpb      #$4B
+               bne       L538
+               leax      -1,X
+L538           lbsr      READLN
+               bcc       L540
+               cmpb      #$E4                error 228 ?
+               beq       L538
+L542           lbra      errman
 
-L544       LBSR  L510           check input
-           BCS   L542
-L540       LDB   ,X+
-           CMPB  #$4B
-           BEQ   L544           more items
-           RTS
+L544           lbsr      L510                check input
+               bcs       L542
+L540           ldb       ,X+
+               cmpb      #$4B
+               beq       L544                more items
+               rts       
 
-L536       BSR   nextinst
-           BEQ   L546           literal data
+L536           bsr       nextinst
+               beq       L546                literal data
 * process data statements that are expressions
-L550       BSR   L548
-           LDB   ,X+
-           CMPB  #$4B
-           BEQ   L550
-           RTS
+L550           bsr       L548
+               ldb       ,X+
+               cmpb      #$4B
+               beq       L550
+               rts       
 
-L548       LBSR  getvar
-           BSR   L552           get data item
-           LDA   ,S
-           BNE   L554
-           INCA
-L554       CMPA  ,Y
-           LBEQ  L516
-           CMPA  #2
-           BCS   L556           byte,integer
-           BEQ   L558           real numbers
-err71      LDB   #$47
-           BRA   L560
+L548           lbsr      getvar
+               bsr       L552                get data item
+               lda       ,S
+               bne       L554
+               inca      
+L554           cmpa      ,Y
+               lbeq      L516
+               cmpa      #2
+               bcs       L556                byte,integer
+               beq       L558                real numbers
+err71          ldb       #$47
+               bra       L560
 
-L556       LDA   ,Y
-           CMPA  #2
-           BNE   err71
-           LBSR  FIX
-           LBRA  L516
+L556           lda       ,Y
+               cmpa      #2
+               bne       err71
+               lbsr      FIX
+               lbra      L516
 
-L558       CMPA  ,Y
-           BCS   err71
-           LBSR  FLOAT
-           LBRA  L516
+L558           cmpa      ,Y
+               bcs       err71
+               lbsr      FLOAT
+               lbra      L516
 
 *
-L546       LEAX  1,X
-L552       PSHS  X
-           LDX   DATApoin
-           BNE   L568
-           LDB   #$4F           error 79
-L560       LBRA  L356
+L546           leax      1,X
+L552           pshs      X
+               ldx       DATApoin
+               bne       L568
+               ldb       #$4F                error 79
+L560           lbra      L356
 
-L568       JSR   table4
-           CMPB  #$4B
-           BEQ   L570
-           LDD   ,X
-           ADDD  excoffse
-           TFR   D,X
-L570       STX   DATApoin
-           PULS  PC,X
+L568           jsr       table4
+               cmpb      #$4B
+               beq       L570
+               ldd       ,X
+               addd      excoffse
+               tfr       D,X
+L570           stx       DATApoin
+               puls      PC,X
 
 * instruction delimiters
-nextinst   CMPB  #$3F           = end of line
-           BEQ   L572
-           CMPB  #$3E           = "back slash"
-L572       RTS
+nextinst       cmpb      #$3F                = end of line
+               beq       L572
+               cmpb      #$3E                = "back slash"
+L572           rts       
 
-PRINT      LDA   errpath
-           LBSR  setpath
-           LDD   Sstack
-           STD   Spointer
-           LDB   ,X+
-           CMPB  #$49           print using
-           BEQ   L574
-L584       BSR   nextinst
-           BEQ   L576
-L586       CMPB  #$4B           comma separator?
-           BEQ   L578
-           CMPB  #$51           semi-colon?
-           BEQ   L580
-           LEAX  -1,X
-           JSR   table4         get variable address
-           LDB   ,Y
-           incb
-           LBSR  L46            copy to Sstack
-           LBCS  errman
-           LDB   -1,X
-           BRA   L584
+PRINT          lda       errpath
+               lbsr      setpath
+               ldd       Sstack
+               std       Spointer
+               ldb       ,X+
+               cmpb      #$49                print using
+               beq       L574
+L584           bsr       nextinst
+               beq       L576
+L586           cmpb      #$4B                comma separator?
+               beq       L578
+               cmpb      #$51                semi-colon?
+               beq       L580
+               leax      -1,X
+               jsr       table4              get variable address
+               ldb       ,Y
+               incb      
+               lbsr      L46                 copy to Sstack
+               lbcs      errman
+               ldb       -1,X
+               bra       L584
 
-L578       LBSR  L2012          print spaces
-           lbcs  errman
-L580       LDB   ,X+
-           BSR   nextinst
-           BNE   L586
-           BRA   L588
+L578           lbsr      L2012               print spaces
+               lbcs      errman
+L580           ldb       ,X+
+               bsr       nextinst
+               bne       L586
+               bra       L588
 
-L576       lbsr  Strterm
-           lbcs  errman
-L588       lbsr  WRITLN
-           lbcs  errman
-           RTS
+L576           lbsr      Strterm
+               lbcs      errman
+L588           lbsr      WRITLN
+               lbcs      errman
+               rts       
 
-L574       JSR   table4
-           LDD   exprBase
-           STD   <$8E
-           STD   <$8C
-           LDU   userSP
-           PSHS  U,d
-           LDD   exprSP
-           STD   exprBase
-L598       LDB   -1,X
-           BSR   nextinst
-           BEQ   L594
-           LDB   ,X+
-           BSR   nextinst
-           BEQ   L596
-           LEAX  -1,X
-           LBSR  PRNTUSIN
-           BCC   L598
-           PULS  U,d          error encountered
-           STD   exprBase
-           STU   userSP
-           LBRA  errman
+L574           jsr       table4
+               ldd       exprBase
+               std       <$8E
+               std       <$8C
+               ldu       userSP
+               pshs      U,d
+               ldd       exprSP
+               std       exprBase
+L598           ldb       -1,X
+               bsr       nextinst
+               beq       L594
+               ldb       ,X+
+               bsr       nextinst
+               beq       L596
+               leax      -1,X
+               lbsr      PRNTUSIN
+               bcc       L598
+               puls      U,d                 error encountered
+               std       exprBase
+               stu       userSP
+               lbra      errman
 
-L596       LEAY  <L588,PC
-           BRA   L600
+L596           leay      <L588,PC
+               bra       L600
 
-L594       LEAY  <L576,PC
-L600       PULS  U,d
-           STD   exprBase
-           STU   userSP
-           JMP   ,Y
+L594           leay      <L576,PC
+L600           puls      U,d
+               std       exprBase
+               stu       userSP
+               jmp       ,Y
 
-WRITE      LDA   errpath
-           LBSR  setpath
-           LDU   Sstack
-           STU   Spointer
-           LDB   ,X+
-           LBSR  nextinst
-           BEQ   L602
-           CMPB  #$4B           comma separator?
-           BEQ   L604
-           LEAX  -1,X
-           BRA   L604
+WRITE          lda       errpath
+               lbsr      setpath
+               ldu       Sstack
+               stu       Spointer
+               ldb       ,X+
+               lbsr      nextinst
+               beq       L602
+               cmpb      #$4B                comma separator?
+               beq       L604
+               leax      -1,X
+               bra       L604
 
-L606       CLRA
-           LBSR  L1632
-           LBCS  errman
-L604       JSR   table4
-           LDB   ,Y
-           incb
-           LBSR  L46
-           LBCS  errman
-           LDB   -1,X
-           LBSR  nextinst
-           BNE   L606
-L602       LBRA  L576
+L606           clra      
+               lbsr      L1632
+               lbcs      errman
+L604           jsr       table4
+               ldb       ,Y
+               incb      
+               lbsr      L46
+               lbcs      errman
+               ldb       -1,X
+               lbsr      nextinst
+               bne       L606
+L602           lbra      L576
 
-GET        BSR   L608
-           stx   BUPaddr
-           os9   I$Read
-           sty   BUPsize
-           BRA   L610
+GET            bsr       L608
+               stx       BUPaddr
+               os9       I$Read
+               sty       BUPsize
+               bra       L610
 
-PUT        BSR   L608
-           os9   I$Write
-L610       LEAX  ,U
-           BCC   L612
-L620       LBRA  L356
+PUT            bsr       L608
+               os9       I$Write
+L610           leax      ,U
+               bcc       L612
+L620           lbra      L356
 
-L608       LBSR  setpath
-           LBSR  getvar
-           LEAU  ,X
-           PULS  A
-           CMPA  #4
-           bcs   L609
-           puls  y
-           bra   L618
+L608           lbsr      setpath
+               lbsr      getvar
+               leau      ,X
+               puls      A
+               cmpa      #4
+               bcs       L609
+               puls      y
+               bra       L618
 
-L609       LEAX  L616,PC
-           LDB   A,X
-           CLRA
-           TFR   D,Y
-L618       PULS  X
-           LDA   IOpath
-L612       RTS
+L609           leax      L616,PC
+               ldb       A,X
+               clra      
+               tfr       D,Y
+L618           puls      X
+               lda       IOpath
+L612           rts       
 
-CLOSE      LBSR  setpath
-           os9   I$Close
-           BCS   L620
-           CMPB  #$4B
-           BEQ   CLOSE          multiple paths
-           RTS
+CLOSE          lbsr      setpath
+               os9       I$Close
+               bcs       L620
+               cmpb      #$4B
+               beq       CLOSE               multiple paths
+               rts       
 
-RESTORE    LDB   ,X+
-           CMPB  #$3B
-           BEQ   L624           to line ...
-           LDU   PGMaddre
-           LDD   <$13,U         rewind
-L626       ADDD  excoffse
-           STD   DATApoin
-           RTS
+RESTORE        ldb       ,X+
+               cmpb      #$3B
+               beq       L624                to line ...
+               ldu       PGMaddre
+               ldd       <$13,U              rewind
+L626           addd      excoffse
+               std       DATApoin
+               rts       
 
-L624       LDD   ,X
-           incd
-           LEAX  3,X
-           BRA   L626
+L624           ldd       ,X
+               incd      
+               leax      3,X
+               bra       L626
 
-DELETE     JSR   table4
-           PSHS  X
-           LDX   1,Y
-           os9   I$Delete
-L628       BCS   L620
-           PULS  PC,X
+DELETE         jsr       table4
+               pshs      X
+               ldx       1,Y
+               os9       I$Delete
+L628           bcs       L620
+               puls      PC,X
 
-CHD        JSR   table4
-           LDA   #3             read & write
-L630       PSHS  X
-           LDX   1,Y
-           os9   I$ChgDir
-           BRA   L628
+CHD            jsr       table4
+               lda       #3                  read & write
+L630           pshs      X
+               ldx       1,Y
+               os9       I$ChgDir
+               bra       L628
 
-CHX        JSR   table4
-           LDA   #4             execute
-           BRA   L630
+CHX            jsr       table4
+               lda       #4                  execute
+               bra       L630
 
-CHAIN      JSR   table4
-           LDY   1,Y
-           PSHS  U,Y,X
-           LBSR  unlink
-           PULS  U,Y,X
-           BSR   L634           set up registers
-           STS   <$B1           Save stack ptr
-           LDS   Sstack
-           os9   F$Chain
-           LDS   <$B1           If gets this far, chain failed
-           BRA   L356
+CHAIN          jsr       table4
+               ldy       1,Y
+               pshs      U,Y,X
+               lbsr      unlink
+               puls      U,Y,X
+               bsr       L634                set up registers
+               sts       <$B1                Save stack ptr
+               lds       Sstack
+               os9       F$Chain
+               lds       <$B1                If gets this far, chain failed
+               bra       L356
 
-SHELL      JSR   table4
-           PSHS  U,X
-           LDY   1,Y
-           BSR   L634           set up registers
-           os9   F$Fork
-           BCS   L356
-           PSHS  A              Save child's process #
-L636       os9   F$Wait         Wait for child to die
-           CMPA  ,S             Our child?
-           BNE   L636           No, wait for next death
-           LEAS  1,S
-           TSTB
-           BNE   L356
-           PULS  PC,U,X
+SHELL          jsr       table4
+               pshs      U,X
+               ldy       1,Y
+               bsr       L634                set up registers
+               os9       F$Fork
+               bcs       L356
+               pshs      A                   Save child's process #
+L636           os9       F$Wait              Wait for child to die
+               cmpa      ,S                  Our child?
+               bne       L636                No, wait for next death
+               leas      1,S
+               tstb      
+               bne       L356
+               puls      PC,U,X
 
-L638       fcc   /SHELL/
-           fcb   13
+L638           fcc       /SHELL/
+               fcb       13
 
-L634       LDX   exprSP
-           LDA   #$0D
-           STA   -1,X
-           leau  ,y
-           subr  y,x
-           TFR   X,Y
-           LEAX  <L638,PC
-           clrd
-           RTS
+L634           ldx       exprSP
+               lda       #$0D
+               sta       -1,X
+               leau      ,y
+               subr      y,x
+               tfr       X,Y
+               leax      <L638,PC
+               clrd      
+               rts       
 
-ERROR      JSR   table4
-           LDB   2,Y
-L356       STB   errcode
-errman     LDU   WSbase
-           BEQ   L640           not running subroutine
-           TST   <$13,U
-           BEQ   L642           no error trap
-           LDS   5,U
-           LDX   <$11,U
-           LDD   $14,U
-           STD   userSP
-           LBRA  L372           process error
+ERROR          jsr       table4
+               ldb       2,Y
+L356           stb       errcode
+errman         ldu       WSbase
+               beq       L640                not running subroutine
+               tst       <$13,U
+               beq       L642                no error trap
+               lds       5,U
+               ldx       <$11,U
+               ldd       $14,U
+               std       userSP
+               lbra      L372                process error
 
-L642       BSR   L506
-           LBRA  L116           exit
+L642           bsr       L506
+               lbra      L116                exit
 
-L640       LBSR  PRerror
-           LBRA  L116           exit
+L640           lbsr      PRerror
+               lbra      L116                exit
 
-L646       fcb   14,255         Force text mode in VDGINT
-L506       LEAX  <L646,PC
-           LBSR  Sprint
-           LBSR  unlink
-           LDB   errcode
-           os9   F$Exit
-BASE0      CLRB
-           BRA   L648
+L646           fcb       14,255              Force text mode in VDGINT
+L506           leax      <L646,PC
+               lbsr      Sprint
+               lbsr      unlink
+               ldb       errcode
+               os9       F$Exit
+BASE0          clrb      
+               bra       L648
 
-BASE1      LDB   #1
-L648       CLRA
-           STD   ArrBase
-           LEAX  1,X
-           RTS
+BASE1          ldb       #1
+L648           clra      
+               std       ArrBase
+               leax      1,X
+               rts       
 
-L1944      EXG   X,PC
-           RTS
+L1944          exg       X,PC
+               rts       
 
-L1900      LEAY  ,X
-           LBSR  L650           jumptable @ L204
-           LEAX  ,Y
-           RTS
+L1900          leay      ,X
+               lbsr      L650                jumptable @ L204
+               leax      ,Y
+               rts       
 
-errs51     LDB   #$33
-           BRA   L356
+errs51         ldb       #$33
+               bra       L356
 
-DEG        LDA   #1
-           BRA   L652
+DEG            lda       #1
+               bra       L652
 
-RAD        CLRA
-L652       LDU   WSbase
-           STA   1,U
-           LEAX  1,X
-           RTS
+RAD            clra      
+L652           ldu       WSbase
+               sta       1,U
+               leax      1,X
+               rts       
 
-INKEY      leax  2,x
-           ldd   ,x++
-           cmpd  #$4D0E         marker
-           lbne  err56
-           clre  default        path: 0
-           jsr   table4
-           cmpa  #4             = string
-           beq   L383           use default path
-           cmpa  #2
-           lbhs  err56          invalid type
-           ldw   ,u
-           tsta
-           beq   L383           path = byte
-           tfr   f,e
-L383       pshsw
-           bsr   L391
-           cmpa  #4             string ??
-           lbne  err56          wrong type
-           pulsw
-           pshs  x
-           leax  ,u
-           ldf   #$FF
-           stf   ,x             null string
-           ldd   fieldsiz
-           cmpd  #2
-           blo   L385
-           stf   1,x            terminate string
-L385       tfr   e,a            path number
-           ldb   #SS.Ready
-           os9   I$GetStt
-           bcs   L387           no key
-           ldy   #1
-           os9   I$Read
-           bra   L389           returns error status
+INKEY          leax      2,x
+               ldd       ,x++
+               cmpd      #$4D0E              marker
+               lbne      err56
+               clre                          default        path: 0
+               jsr       table4
+               cmpa      #4                  = string
+               beq       L383                use default path
+               cmpa      #2
+               lbhs      err56               invalid type
+               ldw       ,u
+               tsta      
+               beq       L383                path = byte
+               tfr       f,e
+L383           pshsw     
+               bsr       L391
+               cmpa      #4                  string ??
+               lbne      err56               wrong type
+               pulsw     
+               pshs      x
+               leax      ,u
+               ldf       #$FF
+               stf       ,x                  null string
+               ldd       fieldsiz
+               cmpd      #2
+               blo       L385
+               stf       1,x                 terminate string
+L385           tfr       e,a                 path number
+               ldb       #SS.Ready
+               os9       I$GetStt
+               bcs       L387                no key
+               ldy       #1
+               os9       I$Read
+               bra       L389                returns error status
 
-L387       cmpb  #$F6           not ready ??
-           beq   L389           carry = clear
-           coma                 signal an error
-L389       puls  pc,x
+L387           cmpb      #$F6                not ready ??
+               beq       L389                carry = clear
+               coma                          signal an error
+L389           puls      pc,x
 
-L391       ldd   ,x++
-           cmpd  #$4B0E
-           lbne  err56          param missing
-           jsr   table4
-L393       ldb   ,x+
-           cmpb  #$4E
-           bne   L393
-           leax  1,x            -> next instruction
-           rts
+L391           ldd       ,x++
+               cmpd      #$4B0E
+               lbne      err56               param missing
+               jsr       table4
+L393           ldb       ,x+
+               cmpb      #$4E
+               bne       L393
+               leax      1,x                 -> next instruction
+               rts       
 
-SYSCALL    ldd   2,x
-           cmpa  #$4D           marker
-           lbne  err56
-           cmpb  #$0E
-           bne   L401
-           leax  4,x            callcode = variable
-           jsr   table4
-           lda   ,u
-           sta   callcode
-           bra   L403
+SYSCALL        ldd       2,x
+               cmpa      #$4D                marker
+               lbne      err56
+               cmpb      #$0E
+               bne       L401
+               leax      4,x                 callcode = variable
+               jsr       table4
+               lda       ,u
+               sta       callcode
+               bra       L403
 
-L401       lda   5,x            callcode = static
-           sta   callcode
-           leax  6,x
-L403       bsr   L391
-           ldd   fieldsiz
-           cmpd  #10
-           lbne  err56          wrong data structure
-           pshs  x
-           pshs  u
-           ldd   1,u            u -> data
-           ldx   4,u
-           ldy   6,u
-           ldu   8,u
-           jsr   <callex
-           tfr   u,w
-           puls  u
-           leau  8,u
-           pshu  y,x,dp,d,cc    store returns
-           stw   8,u
-           puls  pc,x
+L401           lda       5,x                 callcode = static
+               sta       callcode
+               leax      6,x
+L403           bsr       L391
+               ldd       fieldsiz
+               cmpd      #10
+               lbne      err56               wrong data structure
+               pshs      x
+               pshs      u
+               ldd       1,u                 u -> data
+               ldx       4,u
+               ldy       6,u
+               ldu       8,u
+               jsr       <callex
+               tfr       u,w
+               puls      u
+               leau      8,u
+               pshu      y,x,dp,d,cc         store returns
+               stw       8,u
+               puls      pc,x
 
-RUN        ldd   ,x
-           cmpd  Vsys
-           beq   syscall
-           cmpd  Vinkey
-           lbeq  inkey
-           LBSR  L728           get address of name
-           PSHS  X
-           LDB   <$CF
-           CMPB  #$A0           mod. name ?
-           BEQ   L658           name found
-           LDY   exprSP
-           LDW   fieldsiz
-L662       LDA   ,U+            copy name
-           decw
-           BEQ   L660
-           STA   ,Y+
-           CMPA  #$FF
-           BNE   L662
-           LDA   ,--Y
-L660       ORA   #$80           terminate it
-           STA   ,Y
-           LDY   exprSP
-           LBSR  link
-           BCS   errs43
-           LEAU  ,X
-L658       LDD   ,U
-           BNE   L668           mod. in addr.space
-           LDY   <$D2
-           LEAY  3,Y
-           ldd   Vsys
-           cmpd  #$FFFF
-           bne   L661
-           lbsr  ISsyscal
-L661       ldd   Vinkey
-           cmpd  #$FFFF
-           bne   L663
-           lbsr  ISinkey
-L663       LBSR  link
-           BCS   errs43
-           LDD   ,X
-           STD   ,U
-L668       LDX   ,S
-           STD   ,S
-           LDU   WSbase
-           LDA   <$34
-           STA   ,U
-           LDB   <$43
-           STB   2,U
-           LDD   exprBase
-           LDW   <$40
-           STQ   $0D,U
-           LDD   DATApoin
-           STD   9,U
-           LBSR  L670           prm stack
-           STX   $0B,U          next instruction
-           stw   BUPaddr        clear address
-           PULS  X
-           LDA   6,X            module type??
-           BEQ   B09subr
-           CMPA  #$22
-           BEQ   B09subr
-           CMPA  #$21
-           BEQ   MLsubr
-errs43     LDB   #$2B
-           LBRA  L356
+RUN            ldd       ,x
+               cmpd      Vsys
+               beq       syscall
+               cmpd      Vinkey
+               lbeq      inkey
+               lbsr      L728                get address of name
+               pshs      X
+               ldb       <$CF
+               cmpb      #$A0                mod. name ?
+               beq       L658                name found
+               ldy       exprSP
+               ldw       fieldsiz
+L662           lda       ,U+                 copy name
+               decw      
+               beq       L660
+               sta       ,Y+
+               cmpa      #$FF
+               bne       L662
+               lda       ,--Y
+L660           ora       #$80                terminate it
+               sta       ,Y
+               ldy       exprSP
+               lbsr      link
+               bcs       errs43
+               leau      ,X
+L658           ldd       ,U
+               bne       L668                mod. in addr.space
+               ldy       <$D2
+               leay      3,Y
+               ldd       Vsys
+               cmpd      #$FFFF
+               bne       L661
+               lbsr      ISsyscal
+L661           ldd       Vinkey
+               cmpd      #$FFFF
+               bne       L663
+               lbsr      ISinkey
+L663           lbsr      link
+               bcs       errs43
+               ldd       ,X
+               std       ,U
+L668           ldx       ,S
+               std       ,S
+               ldu       WSbase
+               lda       <$34
+               sta       ,U
+               ldb       <$43
+               stb       2,U
+               ldd       exprBase
+               ldw       <$40
+               stq       $0D,U
+               ldd       DATApoin
+               std       9,U
+               lbsr      L670                prm stack
+               stx       $0B,U               next instruction
+               stw       BUPaddr             clear address
+               puls      X
+               lda       6,X                 module type??
+               beq       B09subr
+               cmpa      #$22
+               beq       B09subr
+               cmpa      #$21
+               beq       MLsubr
+errs43         ldb       #$2B
+               lbra      L356
 
-MLsubr     LDD   5,U
-           PSHS  B,A
-           STS   5,U
-           LEAS  ,Y             -> prmstack
-           LDD   <$40
-           subr  y,d            stacksize
-           lsrd
-           lsrd
-           PSHS  d            number of elements
-           LDD   9,X
-           LEAY  L676,PC
-           JSR   D,X            run ML subroutine
-           LDU   WSbase
-           LDS   5,U
-           PULS  X
-           STX   5,U
-           BCC   L678           no error on exit
-           LBRA  L356
+MLsubr         ldd       5,U
+               pshs      B,A
+               sts       5,U
+               leas      ,Y                  -> prmstack
+               ldd       <$40
+               subr      y,d                 stacksize
+               lsrd      
+               lsrd      
+               pshs      d                   number of elements
+               ldd       9,X
+               leay      L676,PC
+               jsr       D,X                 run ML subroutine
+               ldu       WSbase
+               lds       5,U
+               puls      X
+               stx       5,U
+               bcc       L678                no error on exit
+               lbra      L356
 
 * run Basic09 subroutine *
-B09subr    fcb   2,$7f,$34
+B09subr        fcb       2,$7f,$34
 *          aim   #$7F,<$34
-           ldd   #$FFFF
-           std   Vsys           clear links
-           std   Vinkey
-           LBSR  L676
-           LDA   ,U
-           BITA  #1
-           BEQ   L678           no error on exit
-           LDA   ,U
-           STA   <$34
-L678       LDQ   $0D,U          reset DP pointers
-           STD   exprBase
-           STW   <$40
-           LDD   9,U
-           STD   DATApoin
-           LDB   2,U
-           SEX
-           STD   ArrBase
-           LDX   3,U
-           LBSR  L358
-           LDX   $0B,U
-           LDD   SStop
-           SUBD  exprBase
-           STD   freemem
-           ldd   #$FFFF
-           std   Vinkey
-           std   Vsys
-           RTS
+               ldd       #$FFFF
+               std       Vsys                clear links
+               std       Vinkey
+               lbsr      L676
+               lda       ,U
+               bita      #1
+               beq       L678                no error on exit
+               lda       ,U
+               sta       <$34
+L678           ldq       $0D,U               reset DP pointers
+               std       exprBase
+               stw       <$40
+               ldd       9,U
+               std       DATApoin
+               ldb       2,U
+               sex       
+               std       ArrBase
+               ldx       3,U
+               lbsr      L358
+               ldx       $0B,U
+               ldd       SStop
+               subd      exprBase
+               std       freemem
+               ldd       #$FFFF
+               std       Vinkey
+               std       Vsys
+               rts       
 
-ISinkey    leax  <L613,pc
-           bra   L677
+ISinkey        leax      <L613,pc
+               bra       L677
 
-ISsyscal   leax  <L615,pc
-L677       pshs  y
-L679       lda   ,x+
-           eora  ,y+
-           anda  #$DF
-           bne   L681           = RTS
-           lda   -1,x
-           bpl   L679           next char
-           puls  u,y            clear stack
-           puls  x
-           leax  -2,x
-           ldw   ,x
-           cmpa  #$EC           l ??
-           bne   L683
-           stw   Vsys
-           lbra  syscall
+ISsyscal       leax      <L615,pc
+L677           pshs      y
+L679           lda       ,x+
+               eora      ,y+
+               anda      #$DF
+               bne       L681                = RTS
+               lda       -1,x
+               bpl       L679                next char
+               puls      u,y                 clear stack
+               puls      x
+               leax      -2,x
+               ldw       ,x
+               cmpa      #$EC                l ??
+               bne       L683
+               stw       Vsys
+               lbra      syscall
 
-L683       stw   Vinkey
-           lbra  inkey
+L683           stw       Vinkey
+               lbra      inkey
 
-L681       puls  pc,y           no match
+L681           puls      pc,y                no match
 
-L613       fcs   /inkey/
-L615       fcs   /SysCall/
+L613           fcs       /inkey/
+L615           fcs       /SysCall/
 
-L616       fcb   1,2,5,1
+L616           fcb       1,2,5,1
 
 * assemble parameter stack
-L670       PSHS  U
-           leay  <L616,pc
-           LDB   ,X+
-           CLRA
-           PSHS  Y,X,A
-           CMPB  #$4D
-           BNE   L684           no params
-           LEAY  ,S
-L696       PSHS  Y
-           LDB   ,X
-           CMPB  #$0E
-           BEQ   L686           variable: any type
-           JSR   table4         variable type ?
-           LEAX  -1,X
-           CMPA  #2
-           BEQ   L688           real
-           CMPA  #4
-           BEQ   L690           string
-           LDD   1,Y
-           STD   4,Y            others
-           LDA   ,Y
-L688       LDB   #6
-           LEAU  <L616,PC
-           SUBB  A,U
-           LEAU  B,Y
-           STU   userSP
-           BRA   L692
+L670           pshs      U
+               leay      <L616,pc
+               ldb       ,X+
+               clra      
+               pshs      Y,X,A
+               cmpb      #$4D
+               bne       L684                no params
+               leay      ,S
+L696           pshs      Y
+               ldb       ,X
+               cmpb      #$0E
+               beq       L686                variable: any type
+               jsr       table4              variable type ?
+               leax      -1,X
+               cmpa      #2
+               beq       L688                real
+               cmpa      #4
+               beq       L690                string
+               ldd       1,Y
+               std       4,Y                 others
+               lda       ,Y
+L688           ldb       #6
+               leau      <L616,PC
+               subb      A,U
+               leau      B,Y
+               stu       userSP
+               bra       L692
 
-L690       LDU   1,Y
-           LDD   3,y
-           STD   fieldsiz
-           LDD   exprSP
-           STD   exprBase
-           LDA   #4
-           BRA   L692
+L690           ldu       1,Y
+               ldd       3,y
+               std       fieldsiz
+               ldd       exprSP
+               std       exprBase
+               lda       #4
+               bra       L692
 
-L686       LEAX  1,X
-           JSR   table4         variables
-L692       PULS  Y
-           INC   ,Y             param count
-           CMPA  #4
-           BCS   L693
-           LDD   fieldsiz
-           bra   L694
+L686           leax      1,X
+               jsr       table4              variables
+L692           puls      Y
+               inc       ,Y                  param count
+               cmpa      #4
+               bcs       L693
+               ldd       fieldsiz
+               bra       L694
 
-L693       ldw   3,y            address L616
-           tfr   a,b
-           clra
-           addr  d,w
-           ldb   ,w
-L694       PSHS  U,D            address + size
-           LDB   ,X+
-           CMPB  #$4B
-           BEQ   L696           get next item
-           LEAX  1,X            end of list
-           STX   1,Y            = PSHS X
-           LDU   userSP
-           STU   <$40
-           ldf   ,y
-           clre
-           rolw
-L700       PULS  d
-           STD   ,--U
-           DECW
-           BNE   L700
-           LEAY  ,U             -> stack
-           BRA   L704
+L693           ldw       3,y                 address L616
+               tfr       a,b
+               clra      
+               addr      d,w
+               ldb       ,w
+L694           pshs      U,D                 address + size
+               ldb       ,X+
+               cmpb      #$4B
+               beq       L696                get next item
+               leax      1,X                 end of list
+               stx       1,Y                 = PSHS X
+               ldu       userSP
+               stu       <$40
+               ldf       ,y
+               clre      
+               rolw      
+L700           puls      d
+               std       ,--U
+               decw      
+               bne       L700
+               leay      ,U                  -> stack
+               bra       L704
 
-L684       LDY   userSP
-           STY   <$40
-L704       TFR   Y,D
-           SUBD  exprBase
-           LBCS  err32
-           STD   freemem
-           puls  x,a
-           PULS  PC,U,D
+L684           ldy       userSP
+               sty       <$40
+L704           tfr       Y,D
+               subd      exprBase
+               lbcs      err32
+               std       freemem
+               puls      x,a
+               puls      PC,U,D
 
 *********************************
-           fdb   MID$-L1386
-           fdb   LEFT$-L1386
-           fdb   RIGHT$-L1386
-           fdb   CHR$-L1386
-           fdb   STR$int-L1386
-           fdb   STR$rl-L1386
-           fdb   DATE$-L1386
-           fdb   TAB-L1386
-           fdb   FIX-L1386
-           fdb   fixN1-L1386
-           fdb   fixN2-L1386
-           fdb   FLOAT-L1386
-           fdb   float2-L1386
-           fdb   LNOTB-L1386
-           fdb   NEGint-L1386
-           fdb   NEGrl-L1386
-           fdb   LANDB-L1386
-           fdb   LORB-L1386
-           fdb   LXORB-L1386
-           fdb   Igt-L1386
-           fdb   Rgt-L1386
-           fdb   Sgt-L1386
-           fdb   Ilo-L1386
-           fdb   Rlo-L1386
-           fdb   Slo-L1386
-           fdb   Ine-L1386
-           fdb   Rne-L1386
-           fdb   Sne-L1386
-           fdb   Bne-L1386
-           fdb   Ieq-L1386
-           fdb   Req-L1386
-           fdb   Seq-L1386
-           fdb   Beq-L1386
-           fdb   Ige-L1386
-           fdb   Rge-L1386
-           fdb   Sge-L1386
-           fdb   Ile-L1386
-           fdb   Rle-L1386
-           fdb   Sle-L1386
-           fdb   INTADD-L1386
-           fdb   RLADD-L1386
-           fdb   STRconc-L1386
-           fdb   INTSUB-L1386
-           fdb   RLSUB-L1386
-           fdb   INTMUL-L1386
-           fdb   RLMUL-L1386
-           fdb   INTDIV-L1386
-           fdb   RLDIV-L1386
-           fdb   POWERS-L1386
-           fdb   POWERS-L1386
-           fdb   DIM-L1386
-           fdb   DIM-L1386
-           fdb   DIM-L1386
-           fdb   DIM-L1386
-           fdb   PARAM-L1386
-           fdb   PARAM-L1386
-           fdb   PARAM-L1386
-           fdb   PARAM-L1386
-           fcb   0,0,0,0,0,0,0,0,0,0,0,0
+               fdb       MID$-L1386
+               fdb       LEFT$-L1386
+               fdb       RIGHT$-L1386
+               fdb       CHR$-L1386
+               fdb       STR$int-L1386
+               fdb       STR$rl-L1386
+               fdb       DATE$-L1386
+               fdb       TAB-L1386
+               fdb       FIX-L1386
+               fdb       fixN1-L1386
+               fdb       fixN2-L1386
+               fdb       FLOAT-L1386
+               fdb       float2-L1386
+               fdb       LNOTB-L1386
+               fdb       NEGint-L1386
+               fdb       NEGrl-L1386
+               fdb       LANDB-L1386
+               fdb       LORB-L1386
+               fdb       LXORB-L1386
+               fdb       Igt-L1386
+               fdb       Rgt-L1386
+               fdb       Sgt-L1386
+               fdb       Ilo-L1386
+               fdb       Rlo-L1386
+               fdb       Slo-L1386
+               fdb       Ine-L1386
+               fdb       Rne-L1386
+               fdb       Sne-L1386
+               fdb       Bne-L1386
+               fdb       Ieq-L1386
+               fdb       Req-L1386
+               fdb       Seq-L1386
+               fdb       Beq-L1386
+               fdb       Ige-L1386
+               fdb       Rge-L1386
+               fdb       Sge-L1386
+               fdb       Ile-L1386
+               fdb       Rle-L1386
+               fdb       Sle-L1386
+               fdb       INTADD-L1386
+               fdb       RLADD-L1386
+               fdb       STRconc-L1386
+               fdb       INTSUB-L1386
+               fdb       RLSUB-L1386
+               fdb       INTMUL-L1386
+               fdb       RLMUL-L1386
+               fdb       INTDIV-L1386
+               fdb       RLDIV-L1386
+               fdb       POWERS-L1386
+               fdb       POWERS-L1386
+               fdb       DIM-L1386
+               fdb       DIM-L1386
+               fdb       DIM-L1386
+               fdb       DIM-L1386
+               fdb       PARAM-L1386
+               fdb       PARAM-L1386
+               fdb       PARAM-L1386
+               fdb       PARAM-L1386
+               fcb       0,0,0,0,0,0,0,0,0,0,0,0
 
 *******************************
-L1386      fdb   BCPVAR-L1386
-           fdb   ICPVAR-L1386
-           fdb   L2102-L1386    copy real number
-           fdb   BlCPVAR-L1386
-           fdb   SCPVAR-L1386
-           fdb   L2105-L1386    copy DIM array
-           fdb   L2105-L1386
-           fdb   L2105-L1386
-           fdb   L2105-L1386
-           fdb   L2106-L1386    copy PARAM array
-           fdb   L2106-L1386
-           fdb   L2106-L1386
-           fdb   L2106-L1386
-           fdb   BCPCNST-L1386
-           fdb   ICPCNST-L1386
-           fdb   RCPCNST-L1386
-           fdb   SCPCNST-L1386
-           fdb   ICPCNST-L1386
-           fdb   ADDR-L1386
-           fdb   ADDR-L1386
-           fdb   SIZE-L1386
-           fdb   SIZE-L1386
-           fdb   POS-L1386
-           fdb   ERR-L1386
-           fdb   MODint-L1386
-           fdb   MODrl-L1386
-           fdb   RND-L1386
-           fdb   PI-L1386
-           fdb   SUBSTR-L1386
-           fdb   SGNint-L1386
-           fdb   SGNrl-L1386
-           fdb   L2122-L1386    transc. functions
-           fdb   L2123-L1386
-           fdb   L2124-L1386
-           fdb   L2125-L1386
-           fdb   L2126-L1386
-           fdb   L2127-L1386
-           fdb   EXP-L1386
-           fdb   ABSint-L1386
-           fdb   ABSrl-L1386
-           fdb   LOG-L1386      ln
-           fdb   LOG10-L1386
-           fdb   SQRT-L1386
-           fdb   SQRT-L1386
-           fdb   FLOAT-L1386
-           fdb   INTrl-L1386
-           fdb   L1058-L1386    RTS
-           fdb   FIX-L1386
-           fdb   FLOAT-L1386
-           fdb   L1058-L1386    RTS
-           fdb   SQint-L1386
-           fdb   SQrl-L1386
-           fdb   PEEK-L1386
-           fdb   LNOTI-L1386
-           fdb   VAL-L1386
-           fdb   LEN-L1386
-           fdb   ASC-L1386
-           fdb   LANDI-L1386
-           fdb   LORI-L1386
-           fdb   LXORI-L1386
-           fdb   equTRUE-L1386
-           fdb   equFALSE-L1386
-           fdb   EOF-L1386
-           fdb   TRIM$-L1386
+L1386          fdb       BCPVAR-L1386
+               fdb       ICPVAR-L1386
+               fdb       L2102-L1386         copy real number
+               fdb       BlCPVAR-L1386
+               fdb       SCPVAR-L1386
+               fdb       L2105-L1386         copy DIM array
+               fdb       L2105-L1386
+               fdb       L2105-L1386
+               fdb       L2105-L1386
+               fdb       L2106-L1386         copy PARAM array
+               fdb       L2106-L1386
+               fdb       L2106-L1386
+               fdb       L2106-L1386
+               fdb       BCPCNST-L1386
+               fdb       ICPCNST-L1386
+               fdb       RCPCNST-L1386
+               fdb       SCPCNST-L1386
+               fdb       ICPCNST-L1386
+               fdb       ADDR-L1386
+               fdb       ADDR-L1386
+               fdb       SIZE-L1386
+               fdb       SIZE-L1386
+               fdb       POS-L1386
+               fdb       ERR-L1386
+               fdb       MODint-L1386
+               fdb       MODrl-L1386
+               fdb       RND-L1386
+               fdb       PI-L1386
+               fdb       SUBSTR-L1386
+               fdb       SGNint-L1386
+               fdb       SGNrl-L1386
+               fdb       L2122-L1386         transc. functions
+               fdb       L2123-L1386
+               fdb       L2124-L1386
+               fdb       L2125-L1386
+               fdb       L2126-L1386
+               fdb       L2127-L1386
+               fdb       EXP-L1386
+               fdb       ABSint-L1386
+               fdb       ABSrl-L1386
+               fdb       LOG-L1386           ln
+               fdb       LOG10-L1386
+               fdb       SQRT-L1386
+               fdb       SQRT-L1386
+               fdb       FLOAT-L1386
+               fdb       INTrl-L1386
+               fdb       L1058-L1386         RTS
+               fdb       FIX-L1386
+               fdb       FLOAT-L1386
+               fdb       L1058-L1386         RTS
+               fdb       SQint-L1386
+               fdb       SQrl-L1386
+               fdb       PEEK-L1386
+               fdb       LNOTI-L1386
+               fdb       VAL-L1386
+               fdb       LEN-L1386
+               fdb       ASC-L1386
+               fdb       LANDI-L1386
+               fdb       LORI-L1386
+               fdb       LXORI-L1386
+               fdb       equTRUE-L1386
+               fdb       equFALSE-L1386
+               fdb       EOF-L1386
+               fdb       TRIM$-L1386
 
 *****************************
-L1388      fdb   BtoI-L1388
-           fdb   INTCPY-L1388
-           fdb   RCPVAR-L1388
-           fdb   L13-L1388
-           fdb   L14-L1388
-           fdb   L15-L1388
+L1388          fdb       BtoI-L1388
+               fdb       INTCPY-L1388
+               fdb       RCPVAR-L1388
+               fdb       L13-L1388
+               fdb       L14-L1388
+               fdb       L15-L1388
 
 *****************************
-L1390      LDY   userSP         = table4
-           LDD   exprBase
-           STD   exprSP         clear expr.stack
-           BRA   L724
+L1390          ldy       userSP              = table4
+               ldd       exprBase
+               std       exprSP              clear expr.stack
+               bra       L724
 
-L726       ASLB
-           LDU   table2         -> L1386
-           LDD   B,U
-           JSR   D,U
-L724       LDB   ,X+
-           BMI   L726           next part
-           CLRA  clear          carry
-           LDA   ,Y
-           RTS                  instruction done
+L726           aslb      
+               ldu       table2              -> L1386
+               ldd       B,U
+               jsr       D,U
+L724           ldb       ,X+
+               bmi       L726                next part
+               clra                          clear          carry
+               lda       ,Y
+               rts                           instruction done
 
 * get size of DIM array
-L2105      BSR   L728
-L732       PSHS  PC,U
-           LDU   table3         -> L1388
-           ASLA
-           LDD   A,U
-           LEAU  D,U
-           STU   2,S
-           PULS  PC,U
+L2105          bsr       L728
+L732           pshs      PC,U
+               ldu       table3              -> L1388
+               asla      
+               ldd       A,U
+               leau      D,U
+               stu       2,S
+               puls      PC,U
 
 * get size of PARAM array
-L2106      BSR   L730
-           BRA   L732
+L2106          bsr       L730
+               bra       L732
 
-DIM        LEAS  2,S
-           LDA   #$F2
-           BRA   L734
+DIM            leas      2,S
+               lda       #$F2
+               bra       L734
 
-PARAM      LEAS  2,S
-           LDA   #$F6
-           BRA   L736
+PARAM          leas      2,S
+               lda       #$F6
+               bra       L736
 
-L730       LDA   #$89
-L736       STA   <$A3
-           CLR   <$3B
-           BRA   L738
+L730           lda       #$89
+L736           sta       <$A3
+               clr       <$3B
+               bra       L738
 
-L728       LDA   #$85
-L734       STA   <$A3
-           STA   <$3B
-L738       LDD   ,X++
-           ADDD  VarPtrba
-           STD   <$D2
-           LDU   <$D2           points to var. marker
-           LDA   ,U
-           ANDA  #$E0
-           STA   <$CF
-           EORA  #$80
-           STA   <$CE
-           LDA   ,U
-           ANDA  #7
-           LDB   -3,X
-           SUBB  <$A3
-           PSHS  d
-           LDA   ,U
-           ANDA  #$18
-           LBEQ  L740
-           LDD   1,U
-           ADDD  vectorba
-           TFR   D,U
-           LDD   ,U
-           STD   VarAddr
-           LDA   1,S
-           BNE   L742           first access
-           LDA   #5
-           STA   ,S
-           LDD   2,U
-           STD   fieldsiz
-           clrd
-           BRA   L744
+L728           lda       #$85
+L734           sta       <$A3
+               sta       <$3B
+L738           ldd       ,X++
+               addd      VarPtrba
+               std       <$D2
+               ldu       <$D2                points to var. marker
+               lda       ,U
+               anda      #$E0
+               sta       <$CF
+               eora      #$80
+               sta       <$CE
+               lda       ,U
+               anda      #7
+               ldb       -3,X
+               subb      <$A3
+               pshs      d
+               lda       ,U
+               anda      #$18
+               lbeq      L740
+               ldd       1,U
+               addd      vectorba
+               tfr       D,U
+               ldd       ,U
+               std       VarAddr
+               lda       1,S
+               bne       L742                first access
+               lda       #5
+               sta       ,S
+               ldd       2,U
+               std       fieldsiz
+               clrd      
+               bra       L744
 
-L742       LEAY  -6,Y
-           clrd
-           STD   1,Y
-           LEAU  4,U
-           BRA   L746
+L742           leay      -6,Y
+               clrd      
+               std       1,Y
+               leau      4,U
+               bra       L746
 
-L754       LDD   ,U             should be able to change to raw MULD?
-           STD   1,Y
-           LBSR  INTMUL
-L746       LDD   7,Y
-           SUBD  ArrBase        adjust to base 0
-           CMPD  ,U++
-           BLO   L750
-           LDB   #$37           error 55
-           LBRA  L356
+L754           ldd       ,U                  should be able to change to raw MULD?
+               std       1,Y
+               lbsr      INTMUL
+L746           ldd       7,Y
+               subd      ArrBase             adjust to base 0
+               cmpd      ,U++
+               blo       L750
+               ldb       #$37                error 55
+               lbra      L356
 
-L750       ADDD  1,Y
-           STD   7,Y
-           DEC   1,S
-           BNE   L754           next element
-           LDA   ,S
-           BEQ   L756           bytes
-           CMPA  #2
-           BCS   L758           integers
-           BEQ   L760           real numbers
-           CMPA  #4
-           BCS   L756           boolean
-           LDD   ,U             string
-           STD   fieldsiz
-           BRA   L762
+L750           addd      1,Y
+               std       7,Y
+               dec       1,S
+               bne       L754                next element
+               lda       ,S
+               beq       L756                bytes
+               cmpa      #2
+               bcs       L758                integers
+               beq       L760                real numbers
+               cmpa      #4
+               bcs       L756                boolean
+               ldd       ,U                  string
+               std       fieldsiz
+               bra       L762
 
-L756       LDD   7,Y            number of elements
-           BRA   L764
+L756           ldd       7,Y                 number of elements
+               bra       L764
 
-L758       LDD   7,Y
-           asld  x              2
-L764       LEAY  $0C,Y
-           BRA   L744
+L758           ldd       7,Y
+               asld                          x              2
+L764           leay      $0C,Y
+               bra       L744
 
-L760       LDD   #5
-L762       STD   1,Y
-           LBSR  INTMUL         x 5   (change to internal MULD)
-           LDD   1,Y            array size
-           LEAY  6,Y            Eat temp var
-L744       TST   <$CE
-           BNE   L766
-           LDW   VarAddr
-           ADDW  WSbase
-           CMPW  <$40
-           BCC   err56          too big!
-           TFR   W,U
-           CMPD  2,U
-           BHI   err56          too big!
-           ADDD  ,U
-           BRA   L770
+L760           ldd       #5
+L762           std       1,Y
+               lbsr      INTMUL              x 5   (change to internal MULD)
+               ldd       1,Y                 array size
+               leay      6,Y                 Eat temp var
+L744           tst       <$CE
+               bne       L766
+               ldw       VarAddr
+               addw      WSbase
+               cmpw      <$40
+               bcc       err56               too big!
+               tfr       W,U
+               cmpd      2,U
+               bhi       err56               too big!
+               addd      ,U
+               bra       L770
 
-L766       ADDD  VarAddr
-           TST   <$3B
-           BNE   L772
-L776       ADDD  1,Y
-           LEAY  6,Y
-           BRA   L770
+L766           addd      VarAddr
+               tst       <$3B
+               bne       L772
+L776           addd      1,Y
+               leay      6,Y
+               bra       L770
 
-L740       LDA   ,S
-           CMPA  #4
-           LDD   1,U
-           BCS   L774
-           ADDD  vectorba
-           TFR   D,U
-           LDQ   ,U
-           STW   fieldsiz
-L774       TST   <$3B
-           BEQ   L776           PARAM
-           ADDD  WSbase
-           TFR   D,U
-           TST   <$CE
-           BNE   L778
-           CMPD  <$40
-           BCC   err56          too big!
-           LDD   fieldsiz
-           CMPD  2,U
-           BLO   L780
-           LDD   2,U
-           STD   fieldsiz       reset fieldwidth
-L780       LDU   ,U
-           BRA   L778
+L740           lda       ,S
+               cmpa      #4
+               ldd       1,U
+               bcs       L774
+               addd      vectorba
+               tfr       D,U
+               ldq       ,U
+               stw       fieldsiz
+L774           tst       <$3B
+               beq       L776                PARAM
+               addd      WSbase
+               tfr       D,U
+               tst       <$CE
+               bne       L778
+               cmpd      <$40
+               bcc       err56               too big!
+               ldd       fieldsiz
+               cmpd      2,U
+               blo       L780
+               ldd       2,U
+               std       fieldsiz            reset fieldwidth
+L780           ldu       ,U
+               bra       L778
 
-L772       ADDD  WSbase
-L770       TFR   D,U
-L778       CLRA
-           PULS  PC,d
+L772           addd      WSbase
+L770           tfr       D,U
+L778           clra      
+               puls      PC,d
 
-err56      LDB   #$38
-           LBRA  L356
+err56          ldb       #$38
+               lbra      L356
 
-BCPCNST    LEAU  ,X+
-           BRA   BtoI
+BCPCNST        leau      ,X+
+               bra       BtoI
 
-BCPVAR     LDD   ,X++
-           ADDD  WSbase
-           TFR   D,U
-BtoI       LDB   ,U
-           CLRA
-           LEAY  -6,Y
-           STD   1,Y
-           LDA   #1
-           STA   ,Y
-           RTS
+BCPVAR         ldd       ,X++
+               addd      WSbase
+               tfr       D,U
+BtoI           ldb       ,U
+               clra      
+               leay      -6,Y
+               std       1,Y
+               lda       #1
+               sta       ,Y
+               rts       
 
-ICPCNST    LEAU  ,X++
-           BRA   INTCPY
+ICPCNST        leau      ,X++
+               bra       INTCPY
 
-ICPVAR     LDD   ,X++
-           ADDD  WSbase
-           TFR   D,U
-INTCPY     LDD   ,U
-           LEAY  -6,Y
-           STD   1,Y
-           LDA   #1
-           STA   ,Y
-           RTS
+ICPVAR         ldd       ,X++
+               addd      WSbase
+               tfr       D,U
+INTCPY         ldd       ,U
+               leay      -6,Y
+               std       1,Y
+               lda       #1
+               sta       ,Y
+               rts       
 
-NEGint     clrd
-           SUBD  1,Y
-           STD   1,Y
-           RTS
+NEGint         clrd      
+               subd      1,Y
+               std       1,Y
+               rts       
 
-INTADD     LDD   7,Y
-           ADDD  1,Y
-           LEAY  6,Y
-           STD   1,Y
-           RTS
+INTADD         ldd       7,Y
+               addd      1,Y
+               leay      6,Y
+               std       1,Y
+               rts       
 
-INTSUB     LDD   7,Y
-           SUBD  1,Y
-           LEAY  6,Y
-           STD   1,Y
-           RTS
+INTSUB         ldd       7,Y
+               subd      1,Y
+               leay      6,Y
+               std       1,Y
+               rts       
 
-INTMUL     LDD   7,Y
-           BEQ   L786
-           muld  1,y
-           stw   7,y
-L786       LEAY  6,Y
-           RTS
+INTMUL         ldd       7,Y
+               beq       L786
+               muld      1,y
+               stw       7,y
+L786           leay      6,Y
+               rts       
 
-INTDIV     clre
-           ldd   1,y
-           bne   L801
-           LDB   #$2D           error 45
-           LBRA  L356
+INTDIV         clre      
+               ldd       1,y
+               bne       L801
+               ldb       #$2D                error 45
+               lbra      L356
 
-L801       cmpd  #1
-           beq   L803
-           bpl   L800
-           come
-           negd
-           std   1,y
-L800       cmpd  #2
-           bne   L810
-           LDD   7,Y            divide by 2
-           BEQ   L803
-           bpl   L802
-           negd
-           come
-L802       ste   ,y
-           clrw
-           asrd
-           rolw
-           BRA   L806
+L801           cmpd      #1
+               beq       L803
+               bpl       L800
+               come      
+               negd      
+               std       1,y
+L800           cmpd      #2
+               bne       L810
+               ldd       7,Y                 divide by 2
+               beq       L803
+               bpl       L802
+               negd      
+               come      
+L802           ste       ,y
+               clrw      
+               asrd      
+               rolw      
+               bra       L806
 
-L810       ldd   7,y
-           bne   L812
-L803       clrd                 always 0
-           STD   9,Y
-           LEAY  6,Y
-           RTS
+L810           ldd       7,y
+               bne       L812
+L803           clrd                          always 0
+               std       9,Y
+               leay      6,Y
+               rts       
 
-L812       bpl   L814
-           come
-           negd
-L814       ste   ,y
-           tfr   d,w
-           clrd
-           divq  1,y
-           exg   d,w
-L806       tst   ,y
-           bpl   L820           answer = pos.
-           negd
-           comw
-           incw
-L820       STQ   7,Y
-L822       LEAY  6,Y
-           RTS
+L812           bpl       L814
+               come      
+               negd      
+L814           ste       ,y
+               tfr       d,w
+               clrd      
+               divq      1,y
+               exg       d,w
+L806           tst       ,y
+               bpl       L820                answer = pos.
+               negd      
+               comw      
+               incw      
+L820           stq       7,Y
+L822           leay      6,Y
+               rts       
 
-RCPCNST    LEAY  -6,Y
-           LDB   ,X+
-           LDA   #2
-           STD   ,Y
-           LDQ   ,X
-           STQ   2,Y
-           leax  4,x
-           RTS
+RCPCNST        leay      -6,Y
+               ldb       ,X+
+               lda       #2
+               std       ,Y
+               ldq       ,X
+               stq       2,Y
+               leax      4,x
+               rts       
 
-L2102      LDD   ,X++
-           ADDD  WSbase
-           TFR   D,U
-RCPVAR     LEAY  -6,Y
-           LDA   #2
-           LDB   ,U
-           STD   ,Y
-           LDQ   1,U
-           STQ   2,Y
-           RTS
+L2102          ldd       ,X++
+               addd      WSbase
+               tfr       D,U
+RCPVAR         leay      -6,Y
+               lda       #2
+               ldb       ,U
+               std       ,Y
+               ldq       1,U
+               stq       2,Y
+               rts       
 
 * invert sign of real number
-NEGrl      fcb   $62,1,$25
+NEGrl          fcb       $62,1,$25
 *          eim   #1,5,y
-           rts
+               rts       
 
-RLSUB      fcb   $62,1,$25
+RLSUB          fcb       $62,1,$25
 *          eim   #1,5,y
-RLADD      TST   2,Y
-           BEQ   L824           = +0
-           TST   8,Y
-           BNE   L826
-L830       LDQ   1,Y            = 0+x
-           STQ   7,Y
-           LDA   5,Y
-           STA   $0B,Y
-L824       LEAY  6,Y
-           rts
+RLADD          tst       2,Y
+               beq       L824                = +0
+               tst       8,Y
+               bne       L826
+L830           ldq       1,Y                 = 0+x
+               stq       7,Y
+               lda       5,Y
+               sta       $0B,Y
+L824           leay      6,Y
+               rts       
 
 * compare exponents
-L826       LDA   7,Y
-           SUBA  1,Y
-           BVC   L828
-           BPL   L830
-           BRA   L824
+L826           lda       7,Y
+               suba      1,Y
+               bvc       L828
+               bpl       L830
+               bra       L824
 
-L828       BMI   L832
-           CMPA  #$1F
-           BLE   L834
-           BRA   L824           change insignif.
+L828           bmi       L832
+               cmpa      #$1F
+               ble       L834
+               bra       L824                change insignif.
 
-L832       CMPA  #$E1
-           BLT   L830           change insignif.
-           LDB   1,Y
-           STB   7,Y
+L832           cmpa      #$E1
+               blt       L830                change insignif.
+               ldb       1,Y
+               stb       7,Y
 * calc. sign of answer
-L834       LDB   $0B,Y
-           ANDB  #1
-           STB   ,Y
-           EORB  5,Y
-           ANDB  #1
-           STB   1,Y            sign of answer
+L834           ldb       $0B,Y
+               andb      #1
+               stb       ,Y
+               eorb      5,Y
+               andb      #1
+               stb       1,Y                 sign of answer
 * clear original signs
 *          aim   #$FE,11,y
 *          aim   #$FE,5,y
-           fcb   $62,$fe,$2b
-           fcb   $62,$fe,$25
+               fcb       $62,$fe,$2b
+               fcb       $62,$fe,$25
 * calc. answer
-           TSTA
-           BEQ   L836
-           tfr   y,w
-           BPL   L838
-           NEGA
-           addw  #6
-           BSR   L840
-           TST   1,Y
-           BEQ   L842
+               tsta      
+               beq       L836
+               tfr       y,w
+               bpl       L838
+               nega      
+               addw      #6
+               bsr       L840
+               tst       1,Y
+               beq       L842
 * substract mantissas
-L848       SUBW  4,Y
-           sbcd  2,Y
-           BCC   L844
-           comd
-           comw
-           addw  #1
-           adcd  #0
-L846       DEC   ,Y
-           BRA   L844
+L848           subw      4,Y
+               sbcd      2,Y
+               bcc       L844
+               comd      
+               comw      
+               addw      #1
+               adcd      #0
+L846           dec       ,Y
+               bra       L844
 
-L838       BSR   L840
-           STQ   2,Y
-L836       LDQ   8,Y
-           TST   1,Y
-           BNE   L848
+L838           bsr       L840
+               stq       2,Y
+L836           ldq       8,Y
+               tst       1,Y
+               bne       L848
 * add mantissas
-L842       ADDW  4,Y
-           adcd  2,Y
-           BCC   L844
-           rord
-           rorw
-           INC   7,Y
-L844       TSTA
-           BMI   L850
-           andcc #^Carry        clear carry
-L854       DEC   7,Y            shift to proper form
-           BVS   equ0
-           rolw
-           rold
-           BPL   L854
-L850       addw  #1
-           adcd  #0
-           BCC   L856
-           RORA
-           INC   7,Y
-L856       STD   8,Y
-           TFR   W,D
-           lsrb
-           lslb
-           orb   ,y             add sign
-L858       STD   $0A,Y
-           LEAY  6,Y
-           rts
+L842           addw      4,Y
+               adcd      2,Y
+               bcc       L844
+               rord      
+               rorw      
+               inc       7,Y
+L844           tsta      
+               bmi       L850
+               andcc     #^Carry             clear carry
+L854           dec       7,Y                 shift to proper form
+               bvs       equ0
+               rolw      
+               rold      
+               bpl       L854
+L850           addw      #1
+               adcd      #0
+               bcc       L856
+               rora      
+               inc       7,Y
+L856           std       8,Y
+               tfr       W,D
+               lsrb      
+               lslb      
+               orb       ,y                  add sign
+L858           std       $0A,Y
+               leay      6,Y
+               rts       
 
-L840       SUBA  #$10
-           BCS   L860
-           SUBA  #8
-           BCS   L862
-           PSHS  A
-           CLRA
-           LDB   2,W
-           BRA   L864
+L840           suba      #$10
+               bcs       L860
+               suba      #8
+               bcs       L862
+               pshs      A
+               clra      
+               ldb       2,W
+               bra       L864
 
-L862       ADDA  #8
-           PSHS  A
-           LDD   2,W
-L864       clrw
-           TST   ,S
-           BEQ   L866
-           exg   d,w
-           BRA   L872
-L860       ADDA  #8
-           BCC   L870
-           PSHS  A
-           CLRA
-           LDB   2,W
-           LDW   3,W
-           TST   ,S
-           BNE   L872
-           BRA   L866
+L862           adda      #8
+               pshs      A
+               ldd       2,W
+L864           clrw      
+               tst       ,S
+               beq       L866
+               exg       d,w
+               bra       L872
+L860           adda      #8
+               bcc       L870
+               pshs      A
+               clra      
+               ldb       2,W
+               ldw       3,W
+               tst       ,S
+               bne       L872
+               bra       L866
 
-L870       ADDA  #8
-           PSHS  A
-           LDQ   2,W
-L872       lsrd
-           rorw
-           DEC   ,S
-           BNE   L872
-L866       LEAS  1,S
-           RTS
+L870           adda      #8
+               pshs      A
+               ldq       2,W
+L872           lsrd      
+               rorw      
+               dec       ,S
+               bne       L872
+L866           leas      1,S
+               rts       
 
-RLMUL      LDA   2,Y
-           BPL   equ0
-           LDA   8,Y
-           BMI   L876
-equ0       clrd
-           clrw
-           STQ   7,Y
-           STA   $0B,Y
-           LEAY  6,Y
-           rts
+RLMUL          lda       2,Y
+               bpl       equ0
+               lda       8,Y
+               bmi       L876
+equ0           clrd      
+               clrw      
+               stq       7,Y
+               sta       $0B,Y
+               leay      6,Y
+               rts       
 
-L876       LDA   1,Y
-           ADDA  7,Y
-           BVC   L878
-L916       BPL   equ0
-           LDB   #$32           error 50
-           lbra  L356
+L876           lda       1,Y
+               adda      7,Y
+               bvc       L878
+L916           bpl       equ0
+               ldb       #$32                error 50
+               lbra      L356
 
-L878       STA   7,Y
-           LDB   $0B,Y
-           EORB  5,Y
-           ANDB  #1
-           STB   ,Y
-           LDA   $0B,Y
-           ANDA  #$FE
-           STA   $0B,Y
-           LDB   5,Y
-           ANDB  #$FE
-           STB   5,Y
-           MUL
-           clrw
-           clr   extnum
-           tfr   a,f
-           LDA   $0B,Y
-           LDB   4,Y
-           MUL
-           addr  d,w
-           BCC   L880
-           inc   extnum
-L880       LDA   $0A,Y
-           LDB   5,Y
-           MUL
-           addr  d,w
-           BCC   L882
-           inc   extnum
-L882       tfr   e,f
-           lde   extnum
-           clr   extnum
-           LDA   $0B,Y
-           LDB   3,Y
-           MUL
-           addr  d,w
-           BCC   L884
-           inc   extnum
-L884       LDA   $0A,Y
-           LDB   4,Y
-           MUL
-           addr  d,w
-           BCC   L886
-           inc   extnum
-L886       LDA   9,Y
-           LDB   5,Y
-           MUL
-           addr  d,w
-           BCC   L888
-           inc   extnum
-L888       tfr   e,f
-           lde   extnum
-           clr   extnum
-           LDA   $0B,Y
-           LDB   2,Y
-           MUL
-           addr  d,w
-           BCC   L890
-           inc   extnum
-L890       LDA   $0A,Y
-           LDB   3,Y
-           MUL
-           addr  d,w
-           BCC   L892
-           inc   extnum
-L892       LDA   9,Y
-           LDB   4,Y
-           MUL
-           addr  d,w
-           BCC   L894
-           inc   extnum
-L894       LDA   8,Y
-           LDB   5,Y
-           MUL
-           addr  d,w
-           BCC   L896
-           inc   extnum
-L896       stf   11,y
-           tfr   e,f
-           lde   extnum
-           clr   extnum
-           LDA   $0A,Y
-           LDB   2,Y
-           MUL
-           addr  d,w
-           BCC   L898
-           inc   extnum
-L898       LDA   9,Y
-           LDB   3,Y
-           MUL
-           addr  d,w
-           BCC   L900
-           inc   extnum
-L900       LDA   8,Y
-           LDB   4,Y
-           MUL
-           addr  d,w
-           BCC   L902
-           inc   extnum
-L902       stf   10,y
-           tfr   e,f
-           lde   extnum
-           clr   extnum
-           LDA   9,Y
-           LDB   2,Y
-           MUL
-           addr  d,w
-           BCC   L904
-           inc   extnum
-L904       LDA   8,Y
-           LDB   3,Y
-           MUL
-           addr  d,w
-           BCC   L906
-           inc   extnum
-L906       LDA   8,Y
-           LDB   2,Y
-           MUL
-           tfr   w,u
-           tfr   e,f
-           lde   extnum
-           exg   d,u
-           addr  u,w
-           BMI   L908
-           asl   11,y
-           rol   10,y
-           rolb
-           rolw
-           DEC   7,Y
-           LBVS  L916
-L908       tfr   b,a
-           LDB   $0A,Y
-           exg   d,w
-           ADDW  #1
-           adcd  #0
-           BNE   L914
-           rora
-           INC   7,Y
-L914       exg   d,w
-           lsrb
-           lslb
-           ORB   ,Y
-           STD   $0A,Y
-           stw   8,y
-           LEAY  6,Y
-           rts
+L878           sta       7,Y
+               ldb       $0B,Y
+               eorb      5,Y
+               andb      #1
+               stb       ,Y
+               lda       $0B,Y
+               anda      #$FE
+               sta       $0B,Y
+               ldb       5,Y
+               andb      #$FE
+               stb       5,Y
+               mul       
+               clrw      
+               clr       extnum
+               tfr       a,f
+               lda       $0B,Y
+               ldb       4,Y
+               mul       
+               addr      d,w
+               bcc       L880
+               inc       extnum
+L880           lda       $0A,Y
+               ldb       5,Y
+               mul       
+               addr      d,w
+               bcc       L882
+               inc       extnum
+L882           tfr       e,f
+               lde       extnum
+               clr       extnum
+               lda       $0B,Y
+               ldb       3,Y
+               mul       
+               addr      d,w
+               bcc       L884
+               inc       extnum
+L884           lda       $0A,Y
+               ldb       4,Y
+               mul       
+               addr      d,w
+               bcc       L886
+               inc       extnum
+L886           lda       9,Y
+               ldb       5,Y
+               mul       
+               addr      d,w
+               bcc       L888
+               inc       extnum
+L888           tfr       e,f
+               lde       extnum
+               clr       extnum
+               lda       $0B,Y
+               ldb       2,Y
+               mul       
+               addr      d,w
+               bcc       L890
+               inc       extnum
+L890           lda       $0A,Y
+               ldb       3,Y
+               mul       
+               addr      d,w
+               bcc       L892
+               inc       extnum
+L892           lda       9,Y
+               ldb       4,Y
+               mul       
+               addr      d,w
+               bcc       L894
+               inc       extnum
+L894           lda       8,Y
+               ldb       5,Y
+               mul       
+               addr      d,w
+               bcc       L896
+               inc       extnum
+L896           stf       11,y
+               tfr       e,f
+               lde       extnum
+               clr       extnum
+               lda       $0A,Y
+               ldb       2,Y
+               mul       
+               addr      d,w
+               bcc       L898
+               inc       extnum
+L898           lda       9,Y
+               ldb       3,Y
+               mul       
+               addr      d,w
+               bcc       L900
+               inc       extnum
+L900           lda       8,Y
+               ldb       4,Y
+               mul       
+               addr      d,w
+               bcc       L902
+               inc       extnum
+L902           stf       10,y
+               tfr       e,f
+               lde       extnum
+               clr       extnum
+               lda       9,Y
+               ldb       2,Y
+               mul       
+               addr      d,w
+               bcc       L904
+               inc       extnum
+L904           lda       8,Y
+               ldb       3,Y
+               mul       
+               addr      d,w
+               bcc       L906
+               inc       extnum
+L906           lda       8,Y
+               ldb       2,Y
+               mul       
+               tfr       w,u
+               tfr       e,f
+               lde       extnum
+               exg       d,u
+               addr      u,w
+               bmi       L908
+               asl       11,y
+               rol       10,y
+               rolb      
+               rolw      
+               dec       7,Y
+               lbvs      L916
+L908           tfr       b,a
+               ldb       $0A,Y
+               exg       d,w
+               addw      #1
+               adcd      #0
+               bne       L914
+               rora      
+               inc       7,Y
+L914           exg       d,w
+               lsrb      
+               lslb      
+               orb       ,Y
+               std       $0A,Y
+               stw       8,y
+               leay      6,Y
+               rts       
 
-RLDIV      TST   2,Y
-           BNE   L920
-           LDB   #$2D           error 45
-           lbra  L356
+RLDIV          tst       2,Y
+               bne       L920
+               ldb       #$2D                error 45
+               lbra      L356
 
-L920       TST   8,Y
-           LBEQ  equ0
-           LDA   7,Y
-           SUBA  1,Y
-           LBVS  L916
-           STA   7,Y
-           LDA   #$21
-           LDB   5,Y
-           EORB  $0B,Y
-           ANDB  #1
-           STD   ,Y
-           ldq   2,y
-           lsrd
-           rorw
-           stq   2,y
-           LDQ   8,Y
-           lsrd
-           rorw
-           CLR   $0B,Y
-L932       SUBW  4,Y
-           sbcd  2,y
-           BEQ   L926
-           BMI   L928
-L936       ORCC  #1
-L938       DEC   ,Y
-           BEQ   L930
-           ROL   $0B,Y
-           ROL   $0A,Y
-           ROL   9,Y
-           ROL   8,Y
-           andcc #^Carry
-           rolw
-           rold
-           BCC   L932
-           ADDW  4,Y
-           adcd  2,y
-           BEQ   L926
-           BPL   L936
-L928       ANDCC #$FE
-           BRA   L938
+L920           tst       8,Y
+               lbeq      equ0
+               lda       7,Y
+               suba      1,Y
+               lbvs      L916
+               sta       7,Y
+               lda       #$21
+               ldb       5,Y
+               eorb      $0B,Y
+               andb      #1
+               std       ,Y
+               ldq       2,y
+               lsrd      
+               rorw      
+               stq       2,y
+               ldq       8,Y
+               lsrd      
+               rorw      
+               clr       $0B,Y
+L932           subw      4,Y
+               sbcd      2,y
+               beq       L926
+               bmi       L928
+L936           orcc      #1
+L938           dec       ,Y
+               beq       L930
+               rol       $0B,Y
+               rol       $0A,Y
+               rol       9,Y
+               rol       8,Y
+               andcc     #^Carry
+               rolw      
+               rold      
+               bcc       L932
+               addw      4,Y
+               adcd      2,y
+               beq       L926
+               bpl       L936
+L928           andcc     #$FE
+               bra       L938
 
-L926       tstw
-           BNE   L936
-           LDB   ,Y
-           DECB
-           SUBB  #$10
-           BLT   L940
-           SUBB  #8
-           BLT   L942
-           STB   ,Y
-           LDA   $0B,Y
-           LDB   #$80
-           andcc #^Carry
-           BRA   L946
+L926           tstw      
+               bne       L936
+               ldb       ,Y
+               decb      
+               subb      #$10
+               blt       L940
+               subb      #8
+               blt       L942
+               stb       ,Y
+               lda       $0B,Y
+               ldb       #$80
+               andcc     #^Carry
+               bra       L946
 
-L942       ADDB  #8
-           STB   ,Y
-           LDW   #$8000
-           LDD   $0A,Y
-           andcc #^Carry
-           BRA   L946
+L942           addb      #8
+               stb       ,Y
+               ldw       #$8000
+               ldd       $0A,Y
+               andcc     #^Carry
+               bra       L946
 
-L940       ADDB  #8
-           BLT   L948
-           STB   ,Y
-           LDQ   9,Y
-           LDF   #$80
-           andcc #^Carry
-           BRA   L946
+L940           addb      #8
+               blt       L948
+               stb       ,Y
+               ldq       9,Y
+               ldf       #$80
+               andcc     #^Carry
+               bra       L946
 
-L948       ADDB  #7
-           STB   ,Y
-           LDQ   8,Y
-           ORCC  #1
-L950       rolw
-           rold
-L946       DEC   ,Y
-           BPL   L950
-           TSTA
-           BRA   L952
+L948           addb      #7
+               stb       ,Y
+               ldq       8,Y
+               orcc      #1
+L950           rolw      
+               rold      
+L946           dec       ,Y
+               bpl       L950
+               tsta      
+               bra       L952
 
-L930       LDQ   8,Y
-L952       BMI   L954
-           rolw
-           rold
-           DEC   7,Y
-           LBVS  equ0
-L954       addw  #1
-           adcd  #0
-           BCC   L956
-           RORA
-           INC   7,Y
-           LBVS  equ0
-L956       STD   8,Y
-           TFR   W,D
-           lsrb
-           lslb
-           ORB   1,Y
-           STD   $0A,Y
-           INC   7,Y
-           LBVS  L916
-L958       LEAY  6,Y
-           rts
+L930           ldq       8,Y
+L952           bmi       L954
+               rolw      
+               rold      
+               dec       7,Y
+               lbvs      equ0
+L954           addw      #1
+               adcd      #0
+               bcc       L956
+               rora      
+               inc       7,Y
+               lbvs      equ0
+L956           std       8,Y
+               tfr       W,D
+               lsrb      
+               lslb      
+               orb       1,Y
+               std       $0A,Y
+               inc       7,Y
+               lbvs      L916
+L958           leay      6,Y
+               rts       
 
-POWERS     LDD   7,Y
-           BEQ   L958
-           LDW   1,Y
-           BNE   L960
-           LEAY  6,Y
-L1152      LDD   #$0180
-           clrw
-           STQ   1,Y
-           ste   5,y
-           rts
+POWERS         ldd       7,Y
+               beq       L958
+               ldw       1,Y
+               bne       L960
+               leay      6,Y
+L1152          ldd       #$0180
+               clrw      
+               stq       1,Y
+               ste       5,y
+               rts       
 
-L960       STD   1,Y
-           STW   7,Y
-           LDD   9,Y
-           LDW   3,Y
-           STD   3,Y
-           STW   9,Y
-           LDA   $0B,Y
-           LDB   5,Y
-           STA   5,Y
-           STB   $0B,Y
-           LBSR  LOG            = ln
-           LBSR  RLMUL
-           LBRA  EXP
+L960           std       1,Y
+               stw       7,Y
+               ldd       9,Y
+               ldw       3,Y
+               std       3,Y
+               stw       9,Y
+               lda       $0B,Y
+               ldb       5,Y
+               sta       5,Y
+               stb       $0B,Y
+               lbsr      LOG                 = ln
+               lbsr      RLMUL
+               lbra      EXP
 
-BlCPVAR    LDD   ,X++
-           ADDD  WSbase
-           TFR   D,U
-L13        LDB   ,U
-           CLRA
-           LEAY  -6,Y
-           STD   1,Y
-           LDA   #3
-           STA   ,Y
-           RTS
+BlCPVAR        ldd       ,X++
+               addd      WSbase
+               tfr       D,U
+L13            ldb       ,U
+               clra      
+               leay      -6,Y
+               std       1,Y
+               lda       #3
+               sta       ,Y
+               rts       
 
-LANDB      LDB   8,Y
-           ANDB  2,Y
-           BRA   L968
+LANDB          ldb       8,Y
+               andb      2,Y
+               bra       L968
 
-LORB       LDB   8,Y
-           ORB   2,Y
-           BRA   L968
+LORB           ldb       8,Y
+               orb       2,Y
+               bra       L968
 
-LXORB      LDB   8,Y
-           EORB  2,Y
-L968       LEAY  6,Y
-           STD   1,Y
-           RTS
+LXORB          ldb       8,Y
+               eorb      2,Y
+L968           leay      6,Y
+               std       1,Y
+               rts       
 
-LNOTB      COM   2,Y
-           RTS
+LNOTB          com       2,Y
+               rts       
 
-StrCMP     PSHS  Y,X
-           LDX   1,Y
-           LDY   7,Y
-           STY   exprSP
-L972       LDA   ,Y+
-           CMPA  ,X+
-           BNE   L970
-           CMPA  #$FF
-           BNE   L972
-L970       INCA
-           INC   -1,X
-           CMPA  -1,X
-           PULS  PC,Y,X
+StrCMP         pshs      Y,X
+               ldx       1,Y
+               ldy       7,Y
+               sty       exprSP
+L972           lda       ,Y+
+               cmpa      ,X+
+               bne       L970
+               cmpa      #$FF
+               bne       L972
+L970           inca      
+               inc       -1,X
+               cmpa      -1,X
+               puls      PC,Y,X
 
-Slo        BSR   StrCMP
-           BLO   L976
-           BRA   L978
+Slo            bsr       StrCMP
+               blo       L976
+               bra       L978
 
-Sle        BSR   StrCMP
-           BLS   L976
-           BRA   L978
+Sle            bsr       StrCMP
+               bls       L976
+               bra       L978
 
-Seq        BSR   StrCMP
-           BEQ   L976
-           BRA   L978
+Seq            bsr       StrCMP
+               beq       L976
+               bra       L978
 
-Sne        BSR   StrCMP
-           BNE   L976
-           BRA   L978
+Sne            bsr       StrCMP
+               bne       L976
+               bra       L978
 
-Sge        BSR   StrCMP
-           BHS   L976
-           BRA   L978
+Sge            bsr       StrCMP
+               bhs       L976
+               bra       L978
 
-Sgt        BSR   StrCMP
-           BHI   L976
-           BRA   L978
+Sgt            bsr       StrCMP
+               bhi       L976
+               bra       L978
 
-Ilo        LDD   7,Y
-           SUBD  1,Y
-           BLT   L976
-           BRA   L978
+Ilo            ldd       7,Y
+               subd      1,Y
+               blt       L976
+               bra       L978
 
-Ile        LDD   7,Y
-           SUBD  1,Y
-           BLE   L976
-           BRA   L978
+Ile            ldd       7,Y
+               subd      1,Y
+               ble       L976
+               bra       L978
 
-Ine        LDD   7,Y
-           SUBD  1,Y
-           BNE   L976
-           BRA   L978
+Ine            ldd       7,Y
+               subd      1,Y
+               bne       L976
+               bra       L978
 
-Ieq        LDD   7,Y
-           SUBD  1,Y
-           BEQ   L976
-           BRA   L978
+Ieq            ldd       7,Y
+               subd      1,Y
+               beq       L976
+               bra       L978
 
-Ige        LDD   7,Y
-           SUBD  1,Y
-           BGE   L976
-           BRA   L978
+Ige            ldd       7,Y
+               subd      1,Y
+               bge       L976
+               bra       L978
 
-Igt        LDD   7,Y
-           SUBD  1,Y
-           BLE   L978
-L976       LDB   #$FF
-           BRA   L980
+Igt            ldd       7,Y
+               subd      1,Y
+               ble       L978
+L976           ldb       #$FF
+               bra       L980
 
-L978       clrb
-L980       CLRA
-           LEAY  6,Y
-           STD   1,Y
-           LDA   #3
-           STA   ,Y
-           RTS
+L978           clrb      
+L980           clra      
+               leay      6,Y
+               std       1,Y
+               lda       #3
+               sta       ,Y
+               rts       
 
-Beq        LDB   8,Y
-           CMPB  2,Y
-           BEQ   L976
-           BRA   L978
+Beq            ldb       8,Y
+               cmpb      2,Y
+               beq       L976
+               bra       L978
 
-Bne        LDB   8,Y
-           CMPB  2,Y
-           BNE   L976
-           BRA   L978
+Bne            ldb       8,Y
+               cmpb      2,Y
+               bne       L976
+               bra       L978
 
-Rlo        BSR   RLCMP
-           BLO   L976
-           BRA   L978
+Rlo            bsr       RLCMP
+               blo       L976
+               bra       L978
 
-Rle        BSR   RLCMP
-           BLS   L976
-           BRA   L978
+Rle            bsr       RLCMP
+               bls       L976
+               bra       L978
 
-Rne        BSR   RLCMP
-           BNE   L976
-           BRA   L978
+Rne            bsr       RLCMP
+               bne       L976
+               bra       L978
 
-Req        BSR   RLCMP
-           BEQ   L976
-           BRA   L978
+Req            bsr       RLCMP
+               beq       L976
+               bra       L978
 
-Rge        BSR   RLCMP
-           BHS   L976
-           BRA   L978
+Rge            bsr       RLCMP
+               bhs       L976
+               bra       L978
 
-Rgt        BSR   RLCMP
-           BHI   L976
-           BRA   L978
+Rgt            bsr       RLCMP
+               bhi       L976
+               bra       L978
 
-RLCMP      PSHS  Y
-           LDA   $0B,Y          Get sign of 2nd #
-           ANDA  #1
-           ldb   5,y            Get sign of 1st #
-           andb  #1
-           cmpr  a,b            Same sign?
-           bne   L996           No, skip ahead
-L988       LEAU  6,Y            signs are the same
-           tsta
-           BEQ   L994           positive numbers
-           EXG   U,Y            invert them
-L994       LDQ   1,U
-           CMPD  1,Y
-           bne   L993
-           CMPW  3,Y
-           BNE   L996
-           LDA   5,U
-           CMPA  5,Y
-L996       PULS  PC,Y
+RLCMP          pshs      Y
+               lda       $0B,Y               Get sign of 2nd #
+               anda      #1
+               ldb       5,y                 Get sign of 1st #
+               andb      #1
+               cmpr      a,b                 Same sign?
+               bne       L996                No, skip ahead
+L988           leau      6,Y                 signs are the same
+               tsta      
+               beq       L994                positive numbers
+               exg       U,Y                 invert them
+L994           ldq       1,U
+               cmpd      1,Y
+               bne       L993
+               cmpw      3,Y
+               bne       L996
+               lda       5,U
+               cmpa      5,Y
+L996           puls      PC,Y
 
-L993       pshs  cc
-           eora  1,y
-           bpl   L992           no/both fractions
-           tstb
-           beq   L992           n1 = 0
-           tst   2,y
-           beq   L992           n2 = 0
+L993           pshs      cc
+               eora      1,y
+               bpl       L992                no/both fractions
+               tstb      
+               beq       L992                n1 = 0
+               tst       2,y
+               beq       L992                n2 = 0
 *          eim   #1,0,s
-           fcb   $65,1,$60
-L992       puls  pc,y,cc
+               fcb       $65,1,$60
+L992           puls      pc,y,cc
 
 * copy string
-SCPCNST    CLRB
-           LDU   exprSP
-           LEAY  -6,Y
-           STU   1,Y            starting address
-           STY   SStop
-L1004      cmpr  y,u
-           BCC   err47
-           LDA   ,X+
-           STA   ,U+
-           CMPA  #$FF
-           BEQ   L1001
-           INCB
-           BNE   L1004
-           LDA   #$FF
-           STA   ,U+
-L1001      clra
-           std   3,y            size of string
-L1002      STU   exprSP
-           LDA   #4
-           STA   ,Y             type: string
-           RTS
+SCPCNST        clrb      
+               ldu       exprSP
+               leay      -6,Y
+               stu       1,Y                 starting address
+               sty       SStop
+L1004          cmpr      y,u
+               bcc       err47
+               lda       ,X+
+               sta       ,U+
+               cmpa      #$FF
+               beq       L1001
+               incb      
+               bne       L1004
+               lda       #$FF
+               sta       ,U+
+L1001          clra      
+               std       3,y                 size of string
+L1002          stu       exprSP
+               lda       #4
+               sta       ,Y                  type: string
+               rts       
 
-err47      LDB   #$2F
-           LBRA  L356
+err47          ldb       #$2F
+               lbra      L356
 
-L14        tfr   u,d
-           ldw   fieldsiz
-           bra   L1007
+L14            tfr       u,d
+               ldw       fieldsiz
+               bra       L1007
 * copy string to expression stack
-SCPVAR     LDD   ,X++
-           ADDD  vectorba
-           TFR   D,U            array vector
-           LDQ   ,U             address,size target
-           ADDD  WSbase
-           stw   fieldsiz
-L1007      ldu   exprSP
-           leay  -6,y
-           stu   1,y            starting address
-           sty   SStop
-           cmpd  BUPaddr
-           beq   L1009
-           addr  w,u
-           cmpr  y,u
-           bhs   err47          too big
-           ldu   1,y
-           pshs  x
-           tfr   d,x            origin
-           stx   BUPaddr
-L1003      lda   ,x+
-           sta   ,u+
-           cmpa  #$FF
-           beq   L1005
-           decw
-           bne   L1003
-           lda   #$FF
-           sta   ,u+
-L1005      comw  negate         left-over
-           incw
-           addw  fieldsiz
-           stw   3,y            size of string
-           stw   BUPsize
-           puls  x
-           bra   L1002
+SCPVAR         ldd       ,X++
+               addd      vectorba
+               tfr       D,U                 array vector
+               ldq       ,U                  address,size target
+               addd      WSbase
+               stw       fieldsiz
+L1007          ldu       exprSP
+               leay      -6,y
+               stu       1,y                 starting address
+               sty       SStop
+               cmpd      BUPaddr
+               beq       L1009
+               addr      w,u
+               cmpr      y,u
+               bhs       err47               too big
+               ldu       1,y
+               pshs      x
+               tfr       d,x                 origin
+               stx       BUPaddr
+L1003          lda       ,x+
+               sta       ,u+
+               cmpa      #$FF
+               beq       L1005
+               decw      
+               bne       L1003
+               lda       #$FF
+               sta       ,u+
+L1005          comw                          negate         left-over
+               incw      
+               addw      fieldsiz
+               stw       3,y                 size of string
+               stw       BUPsize
+               puls      x
+               bra       L1002
 
-L1009      ldw   BUPsize
-           stw   3,y
-           tfm   d+,u+
-           lda   #$FF
-           sta   ,u+
-           bra   L1002
+L1009          ldw       BUPsize
+               stw       3,y
+               tfm       d+,u+
+               lda       #$FF
+               sta       ,u+
+               bra       L1002
 
-STRconc    LDU   1,Y
-           ldw   3,y
-           incw
-           tfr   u,d
-           decd
-           tfm   u+,d+
-           STD   exprSP
-           ldd   3,y
-           leay  6,y
-           addd  3,y
-           std   3,y            length new string
-           RTS
+STRconc        ldu       1,Y
+               ldw       3,y
+               incw      
+               tfr       u,d
+               decd      
+               tfm       u+,d+
+               std       exprSP
+               ldd       3,y
+               leay      6,y
+               addd      3,y
+               std       3,y                 length new string
+               rts       
 
-L15        LDD   fieldsiz
-           LEAY  -6,Y
-           STD   3,Y
-           STU   1,Y
-           LDA   #5
-           STA   ,Y
-           RTS
+L15            ldd       fieldsiz
+               leay      -6,Y
+               std       3,Y
+               stu       1,Y
+               lda       #5
+               sta       ,Y
+               rts       
 
-FLOAT      clrd
-           STD   4,Y
-           LDD   1,Y
-           BNE   L1012
-           STB   3,Y
-           LDA   #2
-           STA   ,Y
-           RTS
+FLOAT          clrd      
+               std       4,Y
+               ldd       1,Y
+               bne       L1012
+               stb       3,Y
+               lda       #2
+               sta       ,Y
+               rts       
 
-L1012      LDW   #$0210
-           TSTA
-           BPL   L1014
-           negd
-           INC   5,Y
-L1014      TSTA
-           BNE   L1016
-           LDW   #$0208
-           EXG   A,B
-L1016      TSTA
-           BMI   L1018
-L1020      decw
-           asld
-           BPL   L1020
-L1018      STD   2,Y
-           STW   ,Y
-           RTS
+L1012          ldw       #$0210
+               tsta      
+               bpl       L1014
+               negd      
+               inc       5,Y
+L1014          tsta      
+               bne       L1016
+               ldw       #$0208
+               exg       A,B
+L1016          tsta      
+               bmi       L1018
+L1020          decw      
+               asld      
+               bpl       L1020
+L1018          std       2,Y
+               stw       ,Y
+               rts       
 
-float2     LEAY  6,Y
-           BSR   FLOAT
-           LEAY  -6,Y
-           RTS
+float2         leay      6,Y
+               bsr       FLOAT
+               leay      -6,Y
+               rts       
 
-FIX        ldw   1,y
-           ldd   4,y
-           tste
-           BGT   L1024
-           BMI   L1026
-           tstf
-           BPL   L1026
-           LDW   #1
-           BRA   L1028
+FIX            ldw       1,y
+               ldd       4,y
+               tste      
+               bgt       L1024
+               bmi       L1026
+               tstf      
+               bpl       L1026
+               ldw       #1
+               bra       L1028
 
-L1026      clrw
-           BRA   L1030
+L1026          clrw      
+               bra       L1030
 
-L1024      SUBE  #$10
-           BHI   err52
-           BNE   L1034
-           LDW   2,Y
-           rorb
-           BCC   L1030
-           CMPW  #$8000
-           BNE   err52
-           tsta
-           BPL   L1030
-           BRA   err52
+L1024          sube      #$10
+               bhi       err52
+               bne       L1034
+               ldw       2,Y
+               rorb      
+               bcc       L1030
+               cmpw      #$8000
+               bne       err52
+               tsta      
+               bpl       L1030
+               bra       err52
 
-L1034      pshs  b
-           tfr   e,b
-           ldw   2,y
-           cmpb  #$F8
-           BHI   L1036
-           tfr   f,a
-           tfr   e,f
-           clre
-           ADDB  #8
-           BEQ   L1038
-L1036      lsrw
-           rora
-           INCB
-           BNE   L1036
-L1038      puls  b
-           tsta
-           BPL   L1028
-           incw
-           BVC   L1028
-err52      LDB   #$34
-           LBRA  L356
+L1034          pshs      b
+               tfr       e,b
+               ldw       2,y
+               cmpb      #$F8
+               bhi       L1036
+               tfr       f,a
+               tfr       e,f
+               clre      
+               addb      #8
+               beq       L1038
+L1036          lsrw      
+               rora      
+               incb      
+               bne       L1036
+L1038          puls      b
+               tsta      
+               bpl       L1028
+               incw      
+               bvc       L1028
+err52          ldb       #$34
+               lbra      L356
 
-L1028      RORB
-           BCC   L1030
-           comw
-           incw
-L1030      STW   1,Y
-           std   4,y
-           LDA   #1
-           STA   ,Y
-           RTS
+L1028          rorb      
+               bcc       L1030
+               comw      
+               incw      
+L1030          stw       1,Y
+               std       4,y
+               lda       #1
+               sta       ,Y
+               rts       
 
-fixN1      LEAY  6,Y
-           BSR   FIX
-           LEAY  -6,Y
-           RTS
+fixN1          leay      6,Y
+               bsr       FIX
+               leay      -6,Y
+               rts       
 
-fixN2      LEAY  $0C,Y
-           BSR   FIX
-           LEAY  -$0C,Y
-           RTS
+fixN2          leay      $0C,Y
+               bsr       FIX
+               leay      -$0C,Y
+               rts       
 
-ABSrl      fcb   $62,$fe,$25
+ABSrl          fcb       $62,$fe,$25
 *          AIM   #$FE,5,y
-           RTS
+               rts       
 
-ABSint     LDD   1,Y
-           BPL   L1042
-           NEGD
-           STD   1,Y
-L1042      RTS
+ABSint         ldd       1,Y
+               bpl       L1042
+               negd      
+               std       1,Y
+L1042          rts       
 
-PEEK       CLRA
-           LDB   [1,Y]
-           STD   1,Y
-           RTS
+PEEK           clra      
+               ldb       [1,Y]
+               std       1,Y
+               rts       
 
-SGNrl      LDA   2,Y
-           BEQ   L1044
-           LDA   5,Y
-           ANDA  #1
-           BNE   L1046
-L1050      LDB   #1
-           BRA   L1048
+SGNrl          lda       2,Y
+               beq       L1044
+               lda       5,Y
+               anda      #1
+               bne       L1046
+L1050          ldb       #1
+               bra       L1048
 
-SGNint     LDD   1,Y
-           BMI   L1046
-           BNE   L1050
-L1044      CLRB
-           BRA   L1048
+SGNint         ldd       1,Y
+               bmi       L1046
+               bne       L1050
+L1044          clrb      
+               bra       L1048
 
-L1046      LDB   #$FF
-L1048      SEX
-           BRA   L1052
+L1046          ldb       #$FF
+L1048          sex       
+               bra       L1052
 
-ERR        LDB   errcode
-           CLR   errcode
-L1054      CLRA
-           LEAY  -6,Y
-L1052      STD   1,Y
-           LDA   #1
-           STA   ,Y
-L1058      RTS
+ERR            ldb       errcode
+               clr       errcode
+L1054          clra      
+               leay      -6,Y
+L1052          std       1,Y
+               lda       #1
+               sta       ,Y
+L1058          rts       
 
-POS        LDB   charcoun
-           BRA   L1054
+POS            ldb       charcoun
+               bra       L1054
 
-SQRT       LDB   5,Y
-           ASRB
-           LBCS  err67
-           LDB   #$1F
-           STB   <$6E
-           LDD   1,Y
-           BEQ   L1058
-           INCA
-           ASRA
-           STA   1,Y
-           LDQ   2,Y
-           BCS   L1060
-           lsrd
-           rorw
-L1060      STQ   -4,Y
-           clrd
-           clrw
-           STQ   2,Y
-           STQ   -8,Y
-           BRA   L1064
+SQRT           ldb       5,Y
+               asrb      
+               lbcs      err67
+               ldb       #$1F
+               stb       <$6E
+               ldd       1,Y
+               beq       L1058
+               inca      
+               asra      
+               sta       1,Y
+               ldq       2,Y
+               bcs       L1060
+               lsrd      
+               rorw      
+L1060          stq       -4,Y
+               clrd      
+               clrw      
+               stq       2,Y
+               stq       -8,Y
+               bra       L1064
 
-L1070      ORCC  #1
-           ldq   2,y
-           rolw
-           rold
-           DEC   <$6E
-           BEQ   L1066
-           stq   2,y
-           BSR   L1068
-L1064      LDB   -4,Y
-           SUBB  #$40
-           STB   -4,Y
-           LDD   -6,Y
-           sbcd  4,Y
-           STD   -6,Y
-           LDD   -8,Y
-           sbcd  2,Y
-           STD   -8,Y
-           BPL   L1070
-L1072      ANDCC #$FE
-           ldq   2,y
-           rolw
-           rold
-           DEC   <$6E
-           BEQ   L1066
-           stq   2,y
-           BSR   L1068
-           LDB   -4,Y
-           ADDB  #$C0
-           STB   -4,Y
-           LDD   -6,Y
-           adcd  4,Y
-           STD   -6,Y
-           LDD   -8,Y
-           adcd  2,Y
-           STD   -8,Y
-           BMI   L1072
-           BRA   L1070
+L1070          orcc      #1
+               ldq       2,y
+               rolw      
+               rold      
+               dec       <$6E
+               beq       L1066
+               stq       2,y
+               bsr       L1068
+L1064          ldb       -4,Y
+               subb      #$40
+               stb       -4,Y
+               ldd       -6,Y
+               sbcd      4,Y
+               std       -6,Y
+               ldd       -8,Y
+               sbcd      2,Y
+               std       -8,Y
+               bpl       L1070
+L1072          andcc     #$FE
+               ldq       2,y
+               rolw      
+               rold      
+               dec       <$6E
+               beq       L1066
+               stq       2,y
+               bsr       L1068
+               ldb       -4,Y
+               addb      #$C0
+               stb       -4,Y
+               ldd       -6,Y
+               adcd      4,Y
+               std       -6,Y
+               ldd       -8,Y
+               adcd      2,Y
+               std       -8,Y
+               bmi       L1072
+               bra       L1070
 
-L1066      andcc #^Carry
-           BRA   L1074
+L1066          andcc     #^Carry
+               bra       L1074
 
-L1076      DEC   1,Y
-           LBVS  equ0
-L1074      rolw
-           rold
-           BPL   L1076
-           STQ   2,Y
-           RTS
+L1076          dec       1,Y
+               lbvs      equ0
+L1074          rolw      
+               rold      
+               bpl       L1076
+               stq       2,Y
+               rts       
 
-L1068      ldq   -8,y
-           ASL   -1,Y
-           ROL   -2,Y
-           ROL   -3,Y
-           ROL   -4,Y
-           rolw
-           rold
-           asl   -1,y
-           rol   -2,y
-           rol   -3,y
-           rol   -4,y
-           rolw
-           rold
-           stq   -8,y
-           RTS
+L1068          ldq       -8,y
+               asl       -1,Y
+               rol       -2,Y
+               rol       -3,Y
+               rol       -4,Y
+               rolw      
+               rold      
+               asl       -1,y
+               rol       -2,y
+               rol       -3,y
+               rol       -4,y
+               rolw      
+               rold      
+               stq       -8,y
+               rts       
 
-MODint     LBSR  INTDIV
-           LDD   3,Y
-           STD   1,Y
-           RTS
+MODint         lbsr      INTDIV
+               ldd       3,Y
+               std       1,Y
+               rts       
 
-MODrl      LEAU  -$0C,Y
-           ldw   #12
-           tfm   y+,u+
-           LEAY  -$0C,U
-           LBSR  RLDIV
-           BSR   INTrl
-           LBSR  RLMUL
-           LBRA  RLSUB
+MODrl          leau      -$0C,Y
+               ldw       #12
+               tfm       y+,u+
+               leay      -$0C,U
+               lbsr      RLDIV
+               bsr       INTrl
+               lbsr      RLMUL
+               lbra      RLSUB
 
-INTrl      LDA   1,Y
-           BGT   L1090
-           clrd
-           clrw
-           STQ   1,Y
-           STB   5,Y
-L1092      RTS
+INTrl          lda       1,Y
+               bgt       L1090
+               clrd      
+               clrw      
+               stq       1,Y
+               stb       5,Y
+L1092          rts       
 
-L1090      CMPA  #$1F
-           BCC   L1092
-           LEAU  6,Y
-           LDB   -1,U
-           ANDB  #1
-           PSHS  U,B
-           LEAU  1,Y
-L1094      LEAU  1,U
-           SUBA  #8
-           BCC   L1094
-           BEQ   L1096
-           LDB   #$FF
-L1098      ASLB
-           INCA
-           BNE   L1098
-           ANDB  ,U
-           STB   ,U+
-           BRA   L1100
+L1090          cmpa      #$1F
+               bcc       L1092
+               leau      6,Y
+               ldb       -1,U
+               andb      #1
+               pshs      U,B
+               leau      1,Y
+L1094          leau      1,U
+               suba      #8
+               bcc       L1094
+               beq       L1096
+               ldb       #$FF
+L1098          aslb      
+               inca      
+               bne       L1098
+               andb      ,U
+               stb       ,U+
+               bra       L1100
 
-L1096      LEAU  1,U
-L1102      STA   ,U+
-L1100      CMPU  1,S
-           BNE   L1102
-           PULS  U,B
-           ORB   5,Y
-           STB   5,Y
-           RTS
+L1096          leau      1,U
+L1102          sta       ,U+
+L1100          cmpu      1,S
+               bne       L1102
+               puls      U,B
+               orb       5,Y
+               stb       5,Y
+               rts       
 
-SQint      LEAY  -6,Y       If embedding, skip LEAY -6,y
-           LDD   7,Y        Get # to square
-           STD   1,Y        Multiply it by itself (could embed MULD)
-           LBRA  INTMUL
+SQint          leay      -6,Y                If embedding, skip LEAY -6,y
+               ldd       7,Y                 Get # to square
+               std       1,Y                 Multiply it by itself (could embed MULD)
+               lbra      INTMUL
 
-SQrl       LEAY  -6,Y
-           LDQ   8,Y
-           STQ   2,Y
-           LDD   6,Y
-           STD   ,Y
-           LBRA  RLMUL
+SQrl           leay      -6,Y
+               ldq       8,Y
+               stq       2,Y
+               ldd       6,Y
+               std       ,Y
+               lbra      RLMUL
 
-VAL        LDD   Sstack
-           LDU   Spointer
-           PSHS  U,D
-           LDD   1,Y
-           STD   Sstack
-           STD   Spointer
-           STD   exprSP
-           LEAY  6,Y
-           LBSR  L2008
-           PULS  U,D
-           STD   Sstack
-           STU   Spointer
-           LBCS  err67
-           RTS
+VAL            ldd       Sstack
+               ldu       Spointer
+               pshs      U,D
+               ldd       1,Y
+               std       Sstack
+               std       Spointer
+               std       exprSP
+               leay      6,Y
+               lbsr      L2008
+               puls      U,D
+               std       Sstack
+               stu       Spointer
+               lbcs      err67
+               rts       
 
-ADDR       LBSR  L724
-           LEAY  -6,Y
-           STU   1,Y
-L1112      LDA   #1
-           STA   ,Y
-           LEAX  1,X
-           RTS
+ADDR           lbsr      L724
+               leay      -6,Y
+               stu       1,Y
+L1112          lda       #1
+               sta       ,Y
+               leax      1,X
+               rts       
 
 * Table of var type sizes
-L1108      fcb   1,2,5,1
+L1108          fcb       1,2,5,1
 
-SIZE       LBSR  L724
-           leay  -6,y
-           CMPA  #4
-           BCC   L1106
-           LEAU  <L1108,PC
-           LDB   A,U
-           CLRA
-           BRA   L1110
+SIZE           lbsr      L724
+               leay      -6,y
+               cmpa      #4
+               bcc       L1106
+               leau      <L1108,PC
+               ldb       A,U
+               clra      
+               bra       L1110
 
-L1106      LDD   fieldsiz
-L1110      STD   1,Y
-           BRA   L1112
+L1106          ldd       fieldsiz
+L1110          std       1,Y
+               bra       L1112
 
-equTRUE    LDD   #$FF
-           BRA   L1114
+equTRUE        ldd       #$FF
+               bra       L1114
 
-equFALSE   clrd
-L1114      LEAY  -6,Y
-           STD   1,Y
-           LDA   #3
-           STA   ,Y
-           RTS
+equFALSE       clrd      
+L1114          leay      -6,Y
+               std       1,Y
+               lda       #3
+               sta       ,Y
+               rts       
 
-LNOTI      COM   1,Y
-           COM   2,Y
-           RTS
+LNOTI          com       1,Y
+               com       2,Y
+               rts       
 
-LANDI      LDD   1,Y
-           ANDD  7,Y
-           BRA   L1116
+LANDI          ldd       1,Y
+               andd      7,Y
+               bra       L1116
 
-LXORI      LDD   1,Y
-           EORD  7,Y
-           BRA   L1116
+LXORI          ldd       1,Y
+               eord      7,Y
+               bra       L1116
 
-LORI       LDD   1,Y
-           ORD   7,Y
-L1116      STD   7,Y
-           LEAY  6,Y
-           RTS
+LORI           ldd       1,Y
+               ord       7,Y
+L1116          std       7,Y
+               leay      6,Y
+               rts       
 
-L1118      fcb   255,222,91,216,170
-LOG10      BSR   LOG
-           LEAU  <L1118,PC
-           LBSR  RCPVAR
-           LBRA  RLMUL
+L1118          fcb       255,222,91,216,170
+LOG10          bsr       LOG
+               leau      <L1118,PC
+               lbsr      RCPVAR
+               lbra      RLMUL
 
-LOG        PSHS  X
-           LDB   5,Y
-           ASRB
-           LBCS  err67
-           LDD   1,Y
-           LBEQ  err67
-           PSHS  A
-           LDB   #1
-           STB   1,Y
-           LEAY  <-$1A,Y
-           LEAX  <$1B,Y
-           LEAU  ,Y
-           LBSR  cprXU
-           LBSR  L1124
-           clrd
-           clrw
-           STQ   <$14,Y
-           STA   <$18,Y
-           LEAX  L1126,PC
-           STX   <$19,Y
-           LBSR  L1128
-           LEAX  <$14,Y
-           LEAU  <$1B,Y
-           LBSR  cprXU
-           LBSR  L1130
-           LEAY  <$1A,Y
-           LDB   #2
-           STB   ,Y
+LOG            pshs      X
+               ldb       5,Y
+               asrb      
+               lbcs      err67
+               ldd       1,Y
+               lbeq      err67
+               pshs      A
+               ldb       #1
+               stb       1,Y
+               leay      <-$1A,Y
+               leax      <$1B,Y
+               leau      ,Y
+               lbsr      cprXU
+               lbsr      L1124
+               clrd      
+               clrw      
+               stq       <$14,Y
+               sta       <$18,Y
+               leax      L1126,PC
+               stx       <$19,Y
+               lbsr      L1128
+               leax      <$14,Y
+               leau      <$1B,Y
+               lbsr      cprXU
+               lbsr      L1130
+               leay      <$1A,Y
+               ldb       #2
+               stb       ,Y
 *          oim   #1,5,y
-           fcb   $61,1,$25
-           PULS  B
-           BSR   L1132
-           PULS  X
-           LBRA  RLADD
+               fcb       $61,1,$25
+               puls      B
+               bsr       L1132
+               puls      X
+               lbra      RLADD
 
-L1138      fcb   0,177,114,23,248
+L1138          fcb       0,177,114,23,248
 
-L1132      SEX
-           BPL   L1136
-           NEGB
-L1136      ANDA  #1
-           PSHS  D
-           LEAU  <L1138,PC
-           LBSR  RCPVAR
-           LDB   5,Y
-           LDA   1,S
-           CMPA  #1
-           BEQ   L1140
-           MUL
-           STB   5,Y
-           LDB   4,Y
-           STA   4,Y
-           LDA   1,S
-           MUL
-           ADDB  4,Y
-           ADCA  #0
-           STB   4,Y
-           LDB   3,Y
-           STA   3,Y
-           LDA   1,S
-           MUL
-           ADDB  3,Y
-           ADCA  #0
-           STB   3,Y
-           LDB   2,Y
-           STA   2,Y
-           LDA   1,S
-           MUL
-           ADDB  2,Y
-           ADCA  #0
-           BEQ   L1142
-           ldw   3,y
-L1144      INC   1,Y
-           lsrd
-           rorw
-           ROR   5,Y
-           TSTA
-           BNE   L1144
-           stw   3,y
-L1142      STB   2,Y
-           LDB   5,Y
-L1140      ANDB  #$FE
-           ORB   ,S
-           STB   5,Y
-           PULS  PC,D
+L1132          sex       
+               bpl       L1136
+               negb      
+L1136          anda      #1
+               pshs      D
+               leau      <L1138,PC
+               lbsr      RCPVAR
+               ldb       5,Y
+               lda       1,S
+               cmpa      #1
+               beq       L1140
+               mul       
+               stb       5,Y
+               ldb       4,Y
+               sta       4,Y
+               lda       1,S
+               mul       
+               addb      4,Y
+               adca      #0
+               stb       4,Y
+               ldb       3,Y
+               sta       3,Y
+               lda       1,S
+               mul       
+               addb      3,Y
+               adca      #0
+               stb       3,Y
+               ldb       2,Y
+               sta       2,Y
+               lda       1,S
+               mul       
+               addb      2,Y
+               adca      #0
+               beq       L1142
+               ldw       3,y
+L1144          inc       1,Y
+               lsrd      
+               rorw      
+               ror       5,Y
+               tsta      
+               bne       L1144
+               stw       3,y
+L1142          stb       2,Y
+               ldb       5,Y
+L1140          andb      #$FE
+               orb       ,S
+               stb       5,Y
+               puls      PC,D
 
-EXP        PSHS  X
-           LDB   1,Y
-           BEQ   L1146
-           CMPB  #7
-           BLE   L1148
-           LDB   5,Y
-           RORB
-           RORB
-           EORB  #$80
-           LBRA  L1150
+EXP            pshs      X
+               ldb       1,Y
+               beq       L1146
+               cmpb      #7
+               ble       L1148
+               ldb       5,Y
+               rorb      
+               rorb      
+               eorb      #$80
+               lbra      L1150
 
-L1148      CMPB  #$E4
-           LBLE  L1152
-           TSTB
-           BPL   L1154
-L1146      CLR   ,-S
-           LDB   5,Y
-           ANDB  #1
-           BEQ   L1156
-           BRA   L1158
+L1148          cmpb      #$E4
+               lble      L1152
+               tstb      
+               bpl       L1154
+L1146          clr       ,-S
+               ldb       5,Y
+               andb      #1
+               beq       L1156
+               bra       L1158
 
-L1154      LDA   #$71
-           MUL
-           ADDA  1,Y
-           LDB   5,Y
-           ANDB  #1
-           PSHS  B,A
-           EORB  5,Y
-           STB   5,Y
-           LDB   ,S
-L1162      LBSR  L1132
-           LBSR  RLSUB
-           LDB   1,Y
-           BLE   L1160
-           ADDB  ,S
-           STB   ,S
-           LDB   1,Y
-           BRA   L1162
+L1154          lda       #$71
+               mul       
+               adda      1,Y
+               ldb       5,Y
+               andb      #1
+               pshs      B,A
+               eorb      5,Y
+               stb       5,Y
+               ldb       ,S
+L1162          lbsr      L1132
+               lbsr      RLSUB
+               ldb       1,Y
+               ble       L1160
+               addb      ,S
+               stb       ,S
+               ldb       1,Y
+               bra       L1162
 
-L1160      PULS  D
-           PSHS  A
-           TSTB
-           BEQ   L1156
-           NEGA
-           STA   ,S
-           ORB   5,Y
-           STB   5,Y
-L1158      LEAU  L1138,PC
-           LBSR  RCPVAR
-           LBSR  RLADD
-           DEC   ,S
-           LDB   5,Y
-           ANDB  #1
-           BNE   L1158
-L1156      LEAY  <-$1A,Y
-           LEAX  <$1B,Y
-           LEAU  <$14,Y
-           LBSR  cprXU
-           LBSR  L1124
-           LDD   #$1000
-           clrw
-           STQ   ,Y
-           STB   4,Y
-           LEAX  L1164,PC
-           STX   <$19,Y
-           BSR   L1128
-           LEAX  ,Y
-           LEAU  <$1B,Y
-           LBSR  cprXU
-           LBSR  L1130
-           LEAY  <$1A,Y
-           PULS  B
-           ADDB  1,Y
-           BVS   L1150
-           LDA   #2
-           STD   ,Y
-           PULS  PC,X
+L1160          puls      D
+               pshs      A
+               tstb      
+               beq       L1156
+               nega      
+               sta       ,S
+               orb       5,Y
+               stb       5,Y
+L1158          leau      L1138,PC
+               lbsr      RCPVAR
+               lbsr      RLADD
+               dec       ,S
+               ldb       5,Y
+               andb      #1
+               bne       L1158
+L1156          leay      <-$1A,Y
+               leax      <$1B,Y
+               leau      <$14,Y
+               lbsr      cprXU
+               lbsr      L1124
+               ldd       #$1000
+               clrw      
+               stq       ,Y
+               stb       4,Y
+               leax      L1164,PC
+               stx       <$19,Y
+               bsr       L1128
+               leax      ,Y
+               leau      <$1B,Y
+               lbsr      cprXU
+               lbsr      L1130
+               leay      <$1A,Y
+               puls      B
+               addb      1,Y
+               bvs       L1150
+               lda       #2
+               std       ,Y
+               puls      PC,X
 
-L1128      LDA   #1
-           STA   <$9A
-           LEAX  L1166,PC
-           STX   <$95
-           LEAX  <$5F,X
-           STX   <$97
-           LBRA  L1168
+L1128          lda       #1
+               sta       <$9A
+               leax      L1166,PC
+               stx       <$95
+               leax      <$5F,X
+               stx       <$97
+               lbra      L1168
 
-L1150      LEAY  -6,Y
-           puls  x
-           lbra  L916           0 or ovf
+L1150          leay      -6,Y
+               puls      x
+               lbra      L916                0 or ovf
 
-L2125      PSHS  X
-           BSR   L1170
-           LDD   1,Y
-           LBEQ  L1172
-           CMPD  #$0180
-           BGT   L1174          error 67
-           BNE   L1176
-           LDD   3,Y
-           BNE   L1174          error 67
-           LDA   5,Y
-           LBEQ  L1178
-L1174      LBRA  err67
+L2125          pshs      X
+               bsr       L1170
+               ldd       1,Y
+               lbeq      L1172
+               cmpd      #$0180
+               bgt       L1174               error 67
+               bne       L1176
+               ldd       3,Y
+               bne       L1174               error 67
+               lda       5,Y
+               lbeq      L1178
+L1174          lbra      err67
 
-L1176      LBSR  L1180
-           LEAY  <-$14,Y
-           LEAX  <$15,Y
-           LEAU  ,Y
-           LBSR  cprXU
-           LBSR  L1124
-           LEAX  <$1B,Y
-           LBRA  L1182
+L1176          lbsr      L1180
+               leay      <-$14,Y
+               leax      <$15,Y
+               leau      ,Y
+               lbsr      cprXU
+               lbsr      L1124
+               leax      <$1B,Y
+               lbra      L1182
 
-L1170      LDB   5,Y
-           ANDB  #1
-           STB   <$6D
-           EORB  5,Y
-           STB   5,Y
-           RTS
+L1170          ldb       5,Y
+               andb      #1
+               stb       <$6D
+               eorb      5,Y
+               stb       5,Y
+               rts       
 
-L2126      LEAU  <L1184,PC
-           PSHS  U,X
-           BSR   L1170
-           LDD   1,Y
-           LBEQ  L1178
-           CMPD  #$0180
-           BGT   L1174          error 67
-           BNE   L1186
-           LDD   3,Y
-           BNE   L1174          error 67
-           LDA   5,Y
-           BNE   L1174          error 67
-           LDA   <$6D
-           BNE   L1188
-           CLRB
-           STD   1,Y
-           PULS  PC,U,X
+L2126          leau      <L1184,PC
+               pshs      U,X
+               bsr       L1170
+               ldd       1,Y
+               lbeq      L1178
+               cmpd      #$0180
+               bgt       L1174               error 67
+               bne       L1186
+               ldd       3,Y
+               bne       L1174               error 67
+               lda       5,Y
+               bne       L1174               error 67
+               lda       <$6D
+               bne       L1188
+               clrb      
+               std       1,Y
+               puls      PC,U,X
 
-L1188      LEAY  6,Y
-           PULS  U,X
-           LBRA  PI
+L1188          leay      6,Y
+               puls      U,X
+               lbra      PI
 
-L1186      BSR   L1180
-           LEAY  <-$14,Y
-           LEAX  <$1B,Y
-           LEAU  ,Y
-           LBSR  cprXU
-           LBSR  L1124
-           LEAX  <$15,Y
-           LBRA  L1182
+L1186          bsr       L1180
+               leay      <-$14,Y
+               leax      <$1B,Y
+               leau      ,Y
+               lbsr      cprXU
+               lbsr      L1124
+               leax      <$15,Y
+               lbra      L1182
 
-L1184      LDA   5,Y
-           BITA  #1
-           BEQ   L1192
-           LDU   WSbase
-           TST   1,U
-           BEQ   L1194
-           LEAU  <L1196,PC
-           LBSR  RCPVAR
-           BRA   L1198
+L1184          lda       5,Y
+               bita      #1
+               beq       L1192
+               ldu       WSbase
+               tst       1,U
+               beq       L1194
+               leau      <L1196,PC
+               lbsr      RCPVAR
+               bra       L1198
 
-L1194      LBSR  PI
-L1198      LBRA  RLADD
+L1194          lbsr      PI
+L1198          lbra      RLADD
 
-L1192      RTS
+L1192          rts       
 
-L1196      fcb   8,180,0,0,0
+L1196          fcb       8,180,0,0,0
 
-L1180      LDA   <$6D
-           PSHS  A
-           LEAY  -18,Y
-           LDD   #$0201
-           STD   $0C,Y
-           LDA   #$80
-           CLRB
-           STD   $0E,Y
-           CLRA
-           STD   $10,Y
-           LDQ   <$12,Y
-           STQ   ,Y
-           STQ   6,Y
-           LDD   <$16,Y
-           STD   4,Y
-           STD   $0A,Y
-           LBSR  RLMUL
-           LBSR  RLSUB
-           LBSR  SQRT
-           PULS  A
-           STA   <$6D
-           RTS
+L1180          lda       <$6D
+               pshs      A
+               leay      -18,Y
+               ldd       #$0201
+               std       $0C,Y
+               lda       #$80
+               clrb      
+               std       $0E,Y
+               clra      
+               std       $10,Y
+               ldq       <$12,Y
+               stq       ,Y
+               stq       6,Y
+               ldd       <$16,Y
+               std       4,Y
+               std       $0A,Y
+               lbsr      RLMUL
+               lbsr      RLSUB
+               lbsr      SQRT
+               puls      A
+               sta       <$6D
+               rts       
 
-L2127      PSHS  X
-           LBSR  L1170
-           LDB   1,Y
-           CMPB  #$18
-           BLT   L1204
-L1178      LEAY  6,Y
-           LBSR  PI
-           DEC   1,Y
-           BRA   L1206
+L2127          pshs      X
+               lbsr      L1170
+               ldb       1,Y
+               cmpb      #$18
+               blt       L1204
+L1178          leay      6,Y
+               lbsr      PI
+               dec       1,Y
+               bra       L1206
 
-L1204      LEAY  <-$1A,Y
-           LDD   #$1000
-           clrw
-           STQ   ,Y
-           STB   4,Y
-           lda   ,y
-           LDB   <$1B,Y
-           ldw   1,y
-           BRA   L1208
+L1204          leay      <-$1A,Y
+               ldd       #$1000
+               clrw      
+               stq       ,Y
+               stb       4,Y
+               lda       ,y
+               ldb       <$1B,Y
+               ldw       1,y
+               bra       L1208
 
-L1210      ASRA
-           rorw
-           ROR   3,Y
-           ROR   4,Y
-           DECB
-L1208      CMPB  #2
-           BGT   L1210
-           sta   ,y
-           stw   1,y
-           STB   <$1B,Y
-           LEAX  <$1B,Y
-L1182      LEAU  $0A,Y
-           LBSR  cprXU
-           LBSR  L1124
-           clrd
-           clrw
-           STQ   <$14,Y
-           STA   <$18,Y
-           LEAX  L1212,PC
-           STX   <$19,Y
-           LBSR  L1214
-           LEAX  <$14,Y
-           LEAU  <$1B,Y
-           LBSR  cprXU
-           LBSR  L1130
-           LEAY  <$1A,Y
-L1206      LDA   5,Y
-           ORA   <$6D
-           STA   5,Y
-           LDU   WSbase
-           TST   1,U
-           BEQ   L1172
-           LEAU  L1216,PC
-           LBSR  RCPVAR
-           LBSR  RLMUL
-           BRA   L1172
+L1210          asra      
+               rorw      
+               ror       3,Y
+               ror       4,Y
+               decb      
+L1208          cmpb      #2
+               bgt       L1210
+               sta       ,y
+               stw       1,y
+               stb       <$1B,Y
+               leax      <$1B,Y
+L1182          leau      $0A,Y
+               lbsr      cprXU
+               lbsr      L1124
+               clrd      
+               clrw      
+               stq       <$14,Y
+               sta       <$18,Y
+               leax      L1212,PC
+               stx       <$19,Y
+               lbsr      L1214
+               leax      <$14,Y
+               leau      <$1B,Y
+               lbsr      cprXU
+               lbsr      L1130
+               leay      <$1A,Y
+L1206          lda       5,Y
+               ora       <$6D
+               sta       5,Y
+               ldu       WSbase
+               tst       1,U
+               beq       L1172
+               leau      L1216,PC
+               lbsr      RCPVAR
+               lbsr      RLMUL
+               bra       L1172
 
-L2122      PSHS  X
-           LBSR  L1218
-           LEAX  $0A,Y
-           BSR   L1220
-           LDA   5,Y
-L1230      EORA  <$9C
-L1224      STA   5,Y
-L1172      LDA   #2
-           STA   ,Y
-           PULS  PC,X
+L2122          pshs      X
+               lbsr      L1218
+               leax      $0A,Y
+               bsr       L1220
+               lda       5,Y
+L1230          eora      <$9C
+L1224          sta       5,Y
+L1172          lda       #2
+               sta       ,Y
+               puls      PC,X
 
-L1220      LEAU  <$1B,Y
-           LBSR  cprXU
-           LBSR  L1130
-           LEAY  <$14,Y
-           LEAX  L1222,PC
-           LEAU  1,Y
-           LBSR  cprXU
-           LBRA  RLMUL
+L1220          leau      <$1B,Y
+               lbsr      cprXU
+               lbsr      L1130
+               leay      <$14,Y
+               leax      L1222,PC
+               leau      1,Y
+               lbsr      cprXU
+               lbra      RLMUL
 
-L2123      PSHS  X
-           BSR   L1218
-           LEAX  ,Y
-           BSR   L1220
-           LDA   5,Y
-           EORA  <$9B
-           BRA   L1224
+L2123          pshs      X
+               bsr       L1218
+               leax      ,Y
+               bsr       L1220
+               lda       5,Y
+               eora      <$9B
+               bra       L1224
 
-L2124      PSHS  X
-           BSR   L1218
-           LEAX  $0A,Y
-           LEAU  <$1B,Y
-           LBSR  cprXU
-           LBSR  L1130
-           LEAX  ,Y
-           LEAY  <$14,Y
-           LEAU  1,Y
-           LBSR  cprXU
-           LBSR  L1130
-           LDD   1,Y
-           BNE   L1226
-           LEAY  6,Y
-           LDD   #$7FFF
-L1232      STD   1,Y
-           LDA   #$FF
-           STD   3,Y
-           DECA
-           BRA   L1228
+L2124          pshs      X
+               bsr       L1218
+               leax      $0A,Y
+               leau      <$1B,Y
+               lbsr      cprXU
+               lbsr      L1130
+               leax      ,Y
+               leay      <$14,Y
+               leau      1,Y
+               lbsr      cprXU
+               lbsr      L1130
+               ldd       1,Y
+               bne       L1226
+               leay      6,Y
+               ldd       #$7FFF
+L1232          std       1,Y
+               lda       #$FF
+               std       3,Y
+               deca      
+               bra       L1228
 
-L1226      LBSR  RLDIV
-           LDA   5,Y
-L1228      EORA  <$9B
-           BRA   L1230
+L1226          lbsr      RLDIV
+               lda       5,Y
+L1228          eora      <$9B
+               bra       L1230
 
-L1231      fcb   2,201,15,218,162
+L1231          fcb       2,201,15,218,162
 
-L1238      fcb   251,142,250,53,18
+L1238          fcb       251,142,250,53,18
 
-L1216      fcb   6,229,46,224,212
+L1216          fcb       6,229,46,224,212
 
-PI         LEAU  <L1231,PC
-           LBRA  RCPVAR
+PI             leau      <L1231,PC
+               lbra      RCPVAR
 
-L1218      LDU   WSbase
-           TST   1,U
-           BEQ   L1236          radians
-           LEAU  <L1238,PC
-           LBSR  RCPVAR
-           LBSR  RLMUL          -> degrees
-L1236      CLR   <$9B
-           LDB   5,Y
-           ANDB  #1
-           STB   <$9C
-           EORB  5,Y
-           STB   5,Y
-           BSR   PI
-           INC   1,Y
-           LBSR  RLCMP
-           BLT   L1240
-           LBSR  MODrl
-           BSR   PI
-           BRA   L1244
+L1218          ldu       WSbase
+               tst       1,U
+               beq       L1236               radians
+               leau      <L1238,PC
+               lbsr      RCPVAR
+               lbsr      RLMUL               -> degrees
+L1236          clr       <$9B
+               ldb       5,Y
+               andb      #1
+               stb       <$9C
+               eorb      5,Y
+               stb       5,Y
+               bsr       PI
+               inc       1,Y
+               lbsr      RLCMP
+               blt       L1240
+               lbsr      MODrl
+               bsr       PI
+               bra       L1244
 
-L1240      DEC   1,Y
-L1244      LBSR  RLCMP
-           BLT   L1246
-           INC   <$9B
+L1240          dec       1,Y
+L1244          lbsr      RLCMP
+               blt       L1246
+               inc       <$9B
 *           eim   #1,$9C
-           fcb    5,1,$9c
-           LBSR  RLSUB
-           BSR   PI
-L1246      DEC   1,Y
-           LBSR  RLCMP
-           BLE   L1248
+               fcb       5,1,$9c
+               lbsr      RLSUB
+               bsr       PI
+L1246          dec       1,Y
+               lbsr      RLCMP
+               ble       L1248
 *           eim   #1,$9B
-           fcb    5,1,$9c
-           INC   1,Y
+               fcb       5,1,$9c
+               inc       1,Y
 *           oim   #1,11,y
-           fcb    $61,1,$2b
-           LBSR  RLADD
-           LEAY  -6,Y
-L1248      LEAY  -$14,Y
-           LEAX  L1250,PC
-           STX   <$19,Y
-           LEAX  <$1B,Y
-           LEAU  <$14,Y
-           BSR   cprXU
-           LBSR  L1124
-           LDD   #$1000
-           clrw
-           STQ   ,Y
-           CLRA
-           STA   4,Y
-           STQ   $0A,Y
-           STA   $0E,Y
-L1214      LEAX  L1252,PC
-           STX   <$95
-           LEAX  <$41,X
-           STX   <$97
-           CLR   <$9A
-L1168      LDB   #$25
-           STB   <$99
-           CLR   <$9D
-L1264      LEAU  <$1B,Y
-           LDX   <$95
-           CMPX  <$97
-           BCC   L1254
-           BSR   cprXU
-           LEAX  5,X
-           STX   <$95
-           BRA   L1256
+               fcb       $61,1,$2b
+               lbsr      RLADD
+               leay      -6,Y
+L1248          leay      -$14,Y
+               leax      L1250,PC
+               stx       <$19,Y
+               leax      <$1B,Y
+               leau      <$14,Y
+               bsr       cprXU
+               lbsr      L1124
+               ldd       #$1000
+               clrw      
+               stq       ,Y
+               clra      
+               sta       4,Y
+               stq       $0A,Y
+               sta       $0E,Y
+L1214          leax      L1252,PC
+               stx       <$95
+               leax      <$41,X
+               stx       <$97
+               clr       <$9A
+L1168          ldb       #$25
+               stb       <$99
+               clr       <$9D
+L1264          leau      <$1B,Y
+               ldx       <$95
+               cmpx      <$97
+               bcc       L1254
+               bsr       cprXU
+               leax      5,X
+               stx       <$95
+               bra       L1256
 
-L1254      ldq   ,u
-           asrd
-           rorw
-           stq   ,u
-           ror   4,u
-L1256      LEAX  ,Y
-           LEAU  5,Y
-           BSR   L1260
-           TST   <$9A
-           BNE   L1262
-           LEAX  $0A,Y
-           LEAU  $0F,Y
-           BSR   L1260
-L1262      JSR   [$19,Y]
-           INC   <$9D
-           DEC   <$99
-           BNE   L1264
-           RTS
+L1254          ldq       ,u
+               asrd      
+               rorw      
+               stq       ,u
+               ror       4,u
+L1256          leax      ,Y
+               leau      5,Y
+               bsr       L1260
+               tst       <$9A
+               bne       L1262
+               leax      $0A,Y
+               leau      $0F,Y
+               bsr       L1260
+L1262          jsr       [$19,Y]
+               inc       <$9D
+               dec       <$99
+               bne       L1264
+               rts       
 
-cprXU      LDQ   1,X
-           STQ   1,U
-           LDA   ,X
-           STA   ,U
-           rts
+cprXU          ldq       1,X
+               stq       1,U
+               lda       ,X
+               sta       ,U
+               rts       
 
-L1260      LDB   ,X
-           SEX
-           LDB   <$9D
-           LSRB
-           LSRB
-           LSRB
-           BCC   L1266
-           INCB
-L1266      PSHS  B
-           BEQ   L1268
-L1270      STA   ,U+
-           DECB
-           BNE   L1270
-L1268      LDB   #5
-           SUBB  ,S+
-           BEQ   L1272
-L1274      LDA   ,X+
-           STA   ,U+
-           DECB
-           BNE   L1274
-L1272      LEAU  -5,U
-           LDB   <$9D
-           ANDB  #7
-           BEQ   L1276
-           ldw   1,u
-           CMPB  #4
-           BCS   L1258
-           SUBB  #8
-           LDA   ,X
-L1278      ASLA
-           ROL   4,U
-           ROL   3,U
-           rolw
-           ROL   ,U
-           INCB
-           BNE   L1278
-           stw   1,u
-           RTS
+L1260          ldb       ,X
+               sex       
+               ldb       <$9D
+               lsrb      
+               lsrb      
+               lsrb      
+               bcc       L1266
+               incb      
+L1266          pshs      B
+               beq       L1268
+L1270          sta       ,U+
+               decb      
+               bne       L1270
+L1268          ldb       #5
+               subb      ,S+
+               beq       L1272
+L1274          lda       ,X+
+               sta       ,U+
+               decb      
+               bne       L1274
+L1272          leau      -5,U
+               ldb       <$9D
+               andb      #7
+               beq       L1276
+               ldw       1,u
+               cmpb      #4
+               bcs       L1258
+               subb      #8
+               lda       ,X
+L1278          asla      
+               rol       4,U
+               rol       3,U
+               rolw      
+               rol       ,U
+               incb      
+               bne       L1278
+               stw       1,u
+               rts       
 
-L1258      ASR   ,U
-           rorw
-           ROR   3,U
-           ROR   4,U
-           DECB
-           BNE   L1258
-           stw   1,u
-L1276      RTS
+L1258          asr       ,U
+               rorw      
+               ror       3,U
+               ror       4,U
+               decb      
+               bne       L1258
+               stw       1,u
+L1276          rts       
 
-L1212      LDA   $0A,Y
-           EORA  ,Y
-           COMA
-           BRA   L1280
+L1212          lda       $0A,Y
+               eora      ,Y
+               coma      
+               bra       L1280
 
-L1250      LDA   <$14,Y
-L1280      TSTA
-           BPL   L1282
-           LEAX  ,Y
-           LEAU  $0F,Y
-           BSR   L1284
-           LEAX  $0A,Y
-           LEAU  5,Y
-           BSR   L1286
-           LEAX  <$14,Y
-           LEAU  <$1B,Y
-           BRA   L1284
+L1250          lda       <$14,Y
+L1280          tsta      
+               bpl       L1282
+               leax      ,Y
+               leau      $0F,Y
+               bsr       L1284
+               leax      $0A,Y
+               leau      5,Y
+               bsr       L1286
+               leax      <$14,Y
+               leau      <$1B,Y
+               bra       L1284
 
-L1282      LEAX  ,Y
-           LEAU  $0F,Y
-           BSR   L1286
-           LEAX  $0A,Y
-           LEAU  5,Y
-           BSR   L1284
-           LEAX  <$14,Y
-           LEAU  <$1B,Y
-           BRA   L1286
+L1282          leax      ,Y
+               leau      $0F,Y
+               bsr       L1286
+               leax      $0A,Y
+               leau      5,Y
+               bsr       L1284
+               leax      <$14,Y
+               leau      <$1B,Y
+               bra       L1286
 
-L1164      LEAX  <$14,Y
-           LEAU  <$1B,Y
-           BSR   L1286
-           BMI   L1284
-           BNE   L1288
-           LDD   1,X
-           BNE   L1288
-           LDD   3,X
-           BNE   L1288
-           LDB   #1
-           STB   <$99
-L1288      LEAX  ,Y
-           LEAU  5,Y
-           BRA   L1284
+L1164          leax      <$14,Y
+               leau      <$1B,Y
+               bsr       L1286
+               bmi       L1284
+               bne       L1288
+               ldd       1,X
+               bne       L1288
+               ldd       3,X
+               bne       L1288
+               ldb       #1
+               stb       <$99
+L1288          leax      ,Y
+               leau      5,Y
+               bra       L1284
 
-L1126      LEAX  ,Y
-           LEAU  5,Y
-           BSR   L1284
-           CMPA  #$20
-           BCC   L1286
-           LEAX  <$14,Y
-           LEAU  <$1B,Y
-L1284      ldq   1,x
-           addw  3,u
-           adcd  1,u
-           STQ   1,X
-           LDA   ,X
-           ADCA  ,U
-           STA   ,X
-           RTS
+L1126          leax      ,Y
+               leau      5,Y
+               bsr       L1284
+               cmpa      #$20
+               bcc       L1286
+               leax      <$14,Y
+               leau      <$1B,Y
+L1284          ldq       1,x
+               addw      3,u
+               adcd      1,u
+               stq       1,X
+               lda       ,X
+               adca      ,U
+               sta       ,X
+               rts       
 
-L1286      ldq   1,x
-           subw  3,u
-           sbcd  1,u
-           STQ   1,X
-           LDA   ,X
-           SBCA  ,U
-           STA   ,X
-           RTS
+L1286          ldq       1,x
+               subw      3,u
+               sbcd      1,u
+               stq       1,X
+               lda       ,X
+               sbca      ,U
+               sta       ,X
+               rts       
 
-L1124      LDB   ,U
-           CLR   ,U
-           clra
-           ldw   1,u
-           ADDB  #4
-           BGE   L1294
-           NEGB
-           LBRA  L1258
+L1124          ldb       ,U
+               clr       ,U
+               clra      
+               ldw       1,u
+               addb      #4
+               bge       L1294
+               negb      
+               lbra      L1258
 
-L1296      ASL   4,U
-           ROL   3,U
-           rolw
-           rola
-           DECB
-L1294      BNE   L1296
-           sta   ,u
-           stw   1,u
-           RTS
+L1296          asl       4,U
+               rol       3,U
+               rolw      
+               rola      
+               decb      
+L1294          bne       L1296
+               sta       ,u
+               stw       1,u
+               rts       
 
-L1130      LDA   ,U
-           BPL   L1298
-           clrd
-           clrw
-           STQ   ,U
-           STA   4,U
-           RTS
+L1130          lda       ,U
+               bpl       L1298
+               clrd      
+               clrw      
+               stq       ,U
+               sta       4,U
+               rts       
 
-L1298      ldq   ,u
-           beq   L1304
-           pshs  x
-           ldx   #4
-L1302      leax  -1,x
-           asl   4,u
-           rolw
-           rold
-           BPL   L1302
-L1300      std   1,u
-           exg   d,w
-           tfr   x,w
-           stf   ,u
-           puls  x
-           addd  #1
-           ANDB  #$FE
-           STD   3,U
-           BCC   L1304
-           INC   2,U
-           BNE   L1304
-           INC   1,U
-           BNE   L1304
-           ROR   1,U
-           INC   ,U
-L1304      RTS
+L1298          ldq       ,u
+               beq       L1304
+               pshs      x
+               ldx       #4
+L1302          leax      -1,x
+               asl       4,u
+               rolw      
+               rold      
+               bpl       L1302
+L1300          std       1,u
+               exg       d,w
+               tfr       x,w
+               stf       ,u
+               puls      x
+               addd      #1
+               andb      #$FE
+               std       3,U
+               bcc       L1304
+               inc       2,U
+               bne       L1304
+               inc       1,U
+               bne       L1304
+               ror       1,U
+               inc       ,U
+L1304          rts       
 
-L1252      fcb   12,144,253,170,34
-           fcb   7,107,25,193,88
-           fcb   3,235,110,191,38
-           fcb   1,253,91,169,171
-           fcb   0,255,170,221,185
-           fcb   0,127,245,86,239
-           fcb   0,63,254,170,183
-           fcb   0,31,255,213,86
-           fcb   0,15,255,250,171
-           fcb   0,7,255,255,85
-           fcb   0,3,255,255,235
-           fcb   0,1,255,255,253
-           fcb   0,1,0,0,0
-L1222      fcb   0,155,116,237,168
-L1166      fcb   11,23,33,127,126
-           fcb   6,124,200,251,48
-           fcb   3,145,254,248,243
-           fcb   1,226,112,118,227
-           fcb   0,248,81,134,1
-           fcb   0,126,10,108,58
-           fcb   0,63,129,81,98
-           fcb   0,31,224,42,107
-           fcb   0,15,248,5,81
-           fcb   0,7,254,0,170
-           fcb   0,3,255,128,21
-           fcb   0,1,255,224,3
-           fcb   0,0,255,248,0
-           fcb   0,0,127,254,0
-           fcb   0,0,63,255,128
-           fcb   0,0,31,255,224
-           fcb   0,0,15,255,248
-           fcb   0,0,7,255,254
-           fcb   0,0,4,0,0
-L1382      fcb   14,18,20,162,187,64
-           fcb   230,45,54,25,98,233
-           fcb   0,16,63,0,57
+L1252          fcb       12,144,253,170,34
+               fcb       7,107,25,193,88
+               fcb       3,235,110,191,38
+               fcb       1,253,91,169,171
+               fcb       0,255,170,221,185
+               fcb       0,127,245,86,239
+               fcb       0,63,254,170,183
+               fcb       0,31,255,213,86
+               fcb       0,15,255,250,171
+               fcb       0,7,255,255,85
+               fcb       0,3,255,255,235
+               fcb       0,1,255,255,253
+               fcb       0,1,0,0,0
+L1222          fcb       0,155,116,237,168
+L1166          fcb       11,23,33,127,126
+               fcb       6,124,200,251,48
+               fcb       3,145,254,248,243
+               fcb       1,226,112,118,227
+               fcb       0,248,81,134,1
+               fcb       0,126,10,108,58
+               fcb       0,63,129,81,98
+               fcb       0,31,224,42,107
+               fcb       0,15,248,5,81
+               fcb       0,7,254,0,170
+               fcb       0,3,255,128,21
+               fcb       0,1,255,224,3
+               fcb       0,0,255,248,0
+               fcb       0,0,127,254,0
+               fcb       0,0,63,255,128
+               fcb       0,0,31,255,224
+               fcb       0,0,15,255,248
+               fcb       0,0,7,255,254
+               fcb       0,0,4,0,0
+L1382          fcb       14,18,20,162,187,64
+               fcb       230,45,54,25,98,233
+               fcb       0,16,63,0,57
 
-RND        clrw
-           STW   <$4C
-           clr   ,-s
-           LDA   2,Y
-           BEQ   L1312
-           LDB   5,Y
-           BITB  #1
-           BNE   L1314
-           COM   ,S
-           BRA   L1312
+RND            clrw      
+               stw       <$4C
+               clr       ,-s
+               lda       2,Y
+               beq       L1312
+               ldb       5,Y
+               bitb      #1
+               bne       L1314
+               com       ,S
+               bra       L1312
 
-L1314      ADDB  #$FE
-           ADDB  1,Y
-           LDA   4,Y
-           STD   <$52
-           LDD   2,Y
-           STD   <$50
-L1312      LDA   <$53
-           LDB   <$57
-           MUL
-           STD   <$4E
-           tfr   a,f
-           LDA   <$52
-           LDB   <$57
-           MUL
-           addr  d,w
-           BCC   L1316
-           INC   <$4C
-L1316      LDA   <$53
-           LDB   <$56
-           MUL
-           addr  d,w
-           BCC   L1318
-           INC   <$4C
-L1318      stw   <$4D
-           ldw   <$4C
-           LDA   <$51
-           LDB   <$57
-           MUL
-           addr  d,w
-           LDA   <$52
-           LDB   <$56
-           MUL
-           addr  d,w
-           LDA   <$53
-           LDB   <$55
-           MUL
-           addr  d,w
-           LDA   <$50
-           LDB   <$57
-           MUL
-           addr  b,e
-           LDA   <$51
-           LDB   <$56
-           MUL
-           addr  b,e
-           LDA   <$52
-           LDB   <$55
-           MUL
-           addr  b,e
-           LDA   <$53
-           LDB   <$54
-           MUL
-           addr  b,e
-           LDD   <$4E
-           ADDD  <$5A
-           exg   d,w
-           adcd  <$58
-           STQ   <$50
-           TST   ,S+
-           BNE   L1320
-L1326      CLR   1,Y
-           sta   2,y
-           LDA   #$1F
-           PSHS  A
-           lda   2,y
-           BMI   L1322
-           andcc #^Carry
-L1324      DEC   ,S
-           BEQ   L1322
-           DEC   1,Y
-           rolw
-           rold
-           BPL   L1324
-L1322      STQ   2,Y
+L1314          addb      #$FE
+               addb      1,Y
+               lda       4,Y
+               std       <$52
+               ldd       2,Y
+               std       <$50
+L1312          lda       <$53
+               ldb       <$57
+               mul       
+               std       <$4E
+               tfr       a,f
+               lda       <$52
+               ldb       <$57
+               mul       
+               addr      d,w
+               bcc       L1316
+               inc       <$4C
+L1316          lda       <$53
+               ldb       <$56
+               mul       
+               addr      d,w
+               bcc       L1318
+               inc       <$4C
+L1318          stw       <$4D
+               ldw       <$4C
+               lda       <$51
+               ldb       <$57
+               mul       
+               addr      d,w
+               lda       <$52
+               ldb       <$56
+               mul       
+               addr      d,w
+               lda       <$53
+               ldb       <$55
+               mul       
+               addr      d,w
+               lda       <$50
+               ldb       <$57
+               mul       
+               addr      b,e
+               lda       <$51
+               ldb       <$56
+               mul       
+               addr      b,e
+               lda       <$52
+               ldb       <$55
+               mul       
+               addr      b,e
+               lda       <$53
+               ldb       <$54
+               mul       
+               addr      b,e
+               ldd       <$4E
+               addd      <$5A
+               exg       d,w
+               adcd      <$58
+               stq       <$50
+               tst       ,S+
+               bne       L1320
+L1326          clr       1,Y
+               sta       2,y
+               lda       #$1F
+               pshs      A
+               lda       2,y
+               bmi       L1322
+               andcc     #^Carry
+L1324          dec       ,S
+               beq       L1322
+               dec       1,Y
+               rolw      
+               rold      
+               bpl       L1324
+L1322          stq       2,Y
 *          aim   #$FE,5,y
-           fcb   $62,$fe,$25
-           PULS  PC,B
+               fcb       $62,$fe,$25
+               puls      PC,B
 
-L1320      leay  -6,y
-           rorw
-           clr   ,y
-           rolw  sign           now +
-           BSR   L1326
-           LBRA  RLMUL
+L1320          leay      -6,y
+               rorw      
+               clr       ,y
+               rolw                          sign           now +
+               bsr       L1326
+               lbra      RLMUL
 
-LEN        LDQ   1,Y
-           STD   exprSP
-L1328      STW   1,Y
-           LDA   #1
-           STA   ,Y
-           RTS
+LEN            ldq       1,Y
+               std       exprSP
+L1328          stw       1,Y
+               lda       #1
+               sta       ,Y
+               rts       
 
-ASC        LDD   1,Y
-           STD   exprSP
-           LDF   [1,Y]
-           CLRE
-           BRA   L1328
+ASC            ldd       1,Y
+               std       exprSP
+               ldf       [1,Y]
+               clre      
+               bra       L1328
 
-CHR$       LDD   1,Y
-           TSTA
-           LBNE  err67
-           LDU   exprSP
-           STU   1,Y
-           STB   ,U+
-           LBSR  L1366
-           ldd   #1
-           std   3,y
-           STY   SStop
-           cmpr  y,u
-           LBCC  err47
-           RTS
+CHR$           ldd       1,Y
+               tsta      
+               lbne      err67
+               ldu       exprSP
+               stu       1,Y
+               stb       ,U+
+               lbsr      L1366
+               ldd       #1
+               std       3,y
+               sty       SStop
+               cmpr      y,u
+               lbcc      err47
+               rts       
 
-LEFT$      LDD   1,Y
-           BLE   isNull
-           ADDD  7,Y
-           TFR   D,U            address new end
-           CMPD  exprSP
-           BCC   L1334
-           BSR   L1336          shorten current string
-           ldd   1,y
-           std   9,y
-L1334      LEAY  6,Y
-           RTS
+LEFT$          ldd       1,Y
+               ble       isNull
+               addd      7,Y
+               tfr       D,U                 address new end
+               cmpd      exprSP
+               bcc       L1334
+               bsr       L1336               shorten current string
+               ldd       1,y
+               std       9,y
+L1334          leay      6,Y
+               rts       
 
-isNull     LEAY  6,Y
-           LDU   1,Y
-           clrd
-           std   3,y
-           BRA   L1336
+isNull         leay      6,Y
+               ldu       1,Y
+               clrd      
+               std       3,y
+               bra       L1336
 
-RIGHT$     LDW   1,Y
-           BLE   isNull
-           LDD   exprSP
-           subr  w,d
-           decd  new            starting address
-           CMPD  7,Y            current start address
-           BLS   L1338
-           stw   9,y
-           incw  terminate      also
-           LDU   7,Y
-           tfm   d+,u+
-           STU   exprSP
-L1338      LEAY  6,Y
-           rts
+RIGHT$         ldw       1,Y
+               ble       isNull
+               ldd       exprSP
+               subr      w,d
+               decd                          new            starting address
+               cmpd      7,Y                 current start address
+               bls       L1338
+               stw       9,y
+               incw                          terminate      also
+               ldu       7,Y
+               tfm       d+,u+
+               stu       exprSP
+L1338          leay      6,Y
+               rts       
 
-MID$       LDD   1,Y            size of piece
-           BLE   L1342
-           LDD   7,Y            it's starting offset
-           BGT   L1344
-L1342      LDD   1,Y            = LEFT$
-           LEAY  6,Y
-           STD   1,Y
-           BRA   LEFT$
+MID$           ldd       1,Y                 size of piece
+               ble       L1342
+               ldd       7,Y                 it's starting offset
+               bgt       L1344
+L1342          ldd       1,Y                 = LEFT$
+               leay      6,Y
+               std       1,Y
+               bra       LEFT$
 
-L1344      decd
-           BEQ   L1342
-           ADDD  $0D,Y          start address piece
-           CMPD  exprSP
-           BCS   L1348          piece exists
-           LEAY  6,Y
-           BRA   isNull
+L1344          decd      
+               beq       L1342
+               addd      $0D,Y               start address piece
+               cmpd      exprSP
+               bcs       L1348               piece exists
+               leay      6,Y
+               bra       isNull
 
-L1348      clrw
-           ldf   2,y
-           LEAY  $0C,Y
-           stw   3,y
-           ldu   1,Y
-           tfm   d+,u+
-           bra   L1337
+L1348          clrw      
+               ldf       2,y
+               leay      $0C,Y
+               stw       3,y
+               ldu       1,Y
+               tfm       d+,u+
+               bra       L1337
 
-TRIM$      LDU   exprSP
-           ldw   3,y
-           incw                 adjust for loop struct.
-           LEAU  -1,U
-L1354      decw
-           BEQ   L1336
-           LDA   ,-U
-           CMPA  #$20
-           BEQ   L1354
-           LEAU  1,U
-L1336      stw   3,y
-L1337      LDA   #$FF
-           STA   ,U+
-           STU   exprSP
-           RTS
+TRIM$          ldu       exprSP
+               ldw       3,y
+               incw                          adjust for loop struct.
+               leau      -1,U
+L1354          decw      
+               beq       L1336
+               lda       ,-U
+               cmpa      #$20
+               beq       L1354
+               leau      1,U
+L1336          stw       3,y
+L1337          lda       #$FF
+               sta       ,U+
+               stu       exprSP
+               rts       
 
-SUBSTR     PSHS  Y,X
-           LDW   exprSP
-           SUBW  1,Y
-           ADDW  7,Y
-           incw
-           LDX   7,Y
-           LDY   1,Y
-           bra   L1356
+SUBSTR         pshs      Y,X
+               ldw       exprSP
+               subw      1,Y
+               addw      7,Y
+               incw      
+               ldx       7,Y
+               ldy       1,Y
+               bra       L1356
 
 * compare strings *
-L202       PSHS  Y,X
-L200       LDA   ,X+
-           CMPA  #$FF
-           BEQ   L198
-           CMPA  ,Y+
-           BEQ   L200
-           PULS  Y,X
-           LEAY  1,Y
-L1356      CMPR  W,Y
-           BLS   L202
-           clrd  no             match
-           BRA   L1360
+L202           pshs      Y,X
+L200           lda       ,X+
+               cmpa      #$FF
+               beq       L198
+               cmpa      ,Y+
+               beq       L200
+               puls      Y,X
+               leay      1,Y
+L1356          cmpr      W,Y
+               bls       L202
+               clrd                          no             match
+               bra       L1360
 
-L198       PULS  Y,X
-           TFR   Y,D
-           LDX   2,S
-           SUBD  1,X
-           incd                 starting offset
-L1360      PULS  Y,X
-           LEAY  6,Y
-           STD   1,Y
-           LDA   #1
-           STA   ,Y
-           RTS
+L198           puls      Y,X
+               tfr       Y,D
+               ldx       2,S
+               subd      1,X
+               incd                          starting offset
+L1360          puls      Y,X
+               leay      6,Y
+               std       1,Y
+               lda       #1
+               sta       ,Y
+               rts       
 
-STR$int    LDB   #2
-           BRA   L1362
+STR$int        ldb       #2
+               bra       L1362
 
-STR$rl     LDB   #3
-L1362      LDA   charcoun
-           LDU   Spointer
-           PSHS  U,X,A
-           LBSR  L46
-           BCS   err67
-           LDX   3,S
-           ldu   exprSP
-           leay  -6,y
-           stu   1,y
-           sty   SStop
-           ldw   Spointer
-           subr  x,w
-           tfr   w,d            string length
-           addr  u,d
-           cmpr  y,d
-           lbcc  err47          string too long
-           stw   3,y
-           tfm   x+,u+          copy to expression stack
-           LDA   #$FF
-           STA   ,U+
-L1361      stu   exprSP
-           lda   #4
-           sta   ,y
-           PULS  U,X,A          reset pointers
-           STA   charcoun
-           STU   Spointer
-           RTS
+STR$rl         ldb       #3
+L1362          lda       charcoun
+               ldu       Spointer
+               pshs      U,X,A
+               lbsr      L46
+               bcs       err67
+               ldx       3,S
+               ldu       exprSP
+               leay      -6,y
+               stu       1,y
+               sty       SStop
+               ldw       Spointer
+               subr      x,w
+               tfr       w,d                 string length
+               addr      u,d
+               cmpr      y,d
+               lbcc      err47               string too long
+               stw       3,y
+               tfm       x+,u+               copy to expression stack
+               lda       #$FF
+               sta       ,U+
+L1361          stu       exprSP
+               lda       #4
+               sta       ,y
+               puls      U,X,A               reset pointers
+               sta       charcoun
+               stu       Spointer
+               rts       
 
-err67      LDB   #$43
-           LBRA  L356
+err67          ldb       #$43
+               lbra      L356
 
-TAB        LDW   1,Y
-           BLT   err67
-           STY   SStop
-           LDU   exprSP
-           STU   1,Y
-           ldb   charcoun
-           clra
-           subr  d,w            W = number spaces
-           bhi   L1365
-           clrw
-L1365      stw   3,y
-           beq   L1366
-           tfr   u,d
-           addr  w,d
-           cmpr  y,d
-           lbcc  err47          too big
-           lda   #$20
-           pshs  a
-           tfm   s,u+           assemble string
-           leas  1,s
-L1366      LDA   #$FF
-           STA   ,U+
-           STU   exprSP
-           LDA   #4
-           STA   ,Y
-           rts
+TAB            ldw       1,Y
+               blt       err67
+               sty       SStop
+               ldu       exprSP
+               stu       1,Y
+               ldb       charcoun
+               clra      
+               subr      d,w                 W = number spaces
+               bhi       L1365
+               clrw      
+L1365          stw       3,y
+               beq       L1366
+               tfr       u,d
+               addr      w,d
+               cmpr      y,d
+               lbcc      err47               too big
+               lda       #$20
+               pshs      a
+               tfm       s,u+                assemble string
+               leas      1,s
+L1366          lda       #$FF
+               sta       ,U+
+               stu       exprSP
+               lda       #4
+               sta       ,Y
+               rts       
 
-DATE$      PSHS  X
-           LEAY  -6,Y
-           LEAX  -6,Y
-           LDU   exprSP
-           STU   1,Y
-           ldd   #17
-           std   3,y
-           os9   F$Time
-           BCS   L1371
-           BSR   L1370
-           LDA   #$2F
-           BSR   L1372
-           LDA   #$2F
-           BSR   L1372
-           LDA   #$20
-           BSR   L1372
-           LDA   #$3A
-           BSR   L1372
-           LDA   #$3A
-           BSR   L1372
-L1371      puls  x
-           BRA   L1366
+DATE$          pshs      X
+               leay      -6,Y
+               leax      -6,Y
+               ldu       exprSP
+               stu       1,Y
+               ldd       #17
+               std       3,y
+               os9       F$Time
+               bcs       L1371
+               bsr       L1370
+               lda       #$2F
+               bsr       L1372
+               lda       #$2F
+               bsr       L1372
+               lda       #$20
+               bsr       L1372
+               lda       #$3A
+               bsr       L1372
+               lda       #$3A
+               bsr       L1372
+L1371          puls      x
+               bra       L1366
 
-L1372      STA   ,U+
+L1372          sta       ,U+
 * byte to ascii
-L1370      LDA   ,X+
-           LDB   #$2F
-L1374      INCB
-           SUBA  #$0A
-           BCC   L1374
-           STB   ,U+
-           LDB   #$3A
-L1376      DECB
-           INCA
-           BNE   L1376
-           STB   ,U+
-           RTS
+L1370          lda       ,X+
+               ldb       #$2F
+L1374          incb      
+               suba      #$0A
+               bcc       L1374
+               stb       ,U+
+               ldb       #$3A
+L1376          decb      
+               inca      
+               bne       L1376
+               stb       ,U+
+               rts       
 
-EOF        LDA   2,Y
-           LDB   #6
-           os9   I$GetStt
-           BCC   L1378
-           CMPB  #$D3
-           BNE   L1378
-           LDB   #$FF
-           BRA   L1380
+EOF            lda       2,Y
+               ldb       #6
+               os9       I$GetStt
+               bcc       L1378
+               cmpb      #$D3
+               bne       L1378
+               ldb       #$FF
+               bra       L1380
 
-L1378      LDB   #0
-L1380      CLRA
-           STD   1,Y
-           LDA   #3
-           STA   ,Y
-           RTS
+L1378          ldb       #0
+L1380          clra      
+               std       1,Y
+               lda       #3
+               sta       ,Y
+               rts       
 
-L46        PSHS  PC,X,D
-           ASLB
-           LEAX  <L1398,PC
-           LDD   B,X
-           LEAX  D,X
-           STX   4,S
-           PULS  PC,X,D
+L46            pshs      PC,X,D
+               aslb      
+               leax      <L1398,PC
+               ldd       B,X
+               leax      D,X
+               stx       4,S
+               puls      PC,X,D
 
 * table
-L1398      fdb   WRITLN-L1398
-           fdb   PRintg-L1398
-           fdb   PRintg-L1398
-           fdb   PRreal-L1398
-           fdb   PRbool-L1398
-           fdb   PRstring-L1398
-           fdb   READLN-L1398
-           fdb   L2006-L1398
-           fdb   L2007-L1398
-           fdb   L2008-L1398
-           fdb   L2009-L1398
-           fdb   L2010-L1398
-           fdb   Strterm-L1398
-           fdb   L2012-L1398
-           fdb   setFP-L1398
-           fdb   err48-L1398
-           fdb   L2015-L1398
-           fdb   PRNTUSIN-L1398
-           fdb   L1632-L1398
-           fdb   L2018-L1398
+L1398          fdb       WRITLN-L1398
+               fdb       PRintg-L1398
+               fdb       PRintg-L1398
+               fdb       PRreal-L1398
+               fdb       PRbool-L1398
+               fdb       PRstring-L1398
+               fdb       READLN-L1398
+               fdb       L2006-L1398
+               fdb       L2007-L1398
+               fdb       L2008-L1398
+               fdb       L2009-L1398
+               fdb       L2010-L1398
+               fdb       Strterm-L1398
+               fdb       L2012-L1398
+               fdb       setFP-L1398
+               fdb       err48-L1398
+               fdb       L2015-L1398
+               fdb       PRNTUSIN-L1398
+               fdb       L1632-L1398
+               fdb       L2018-L1398
 
 *
-L1540      fcb   6,2,39,16,3,232,0,100,0,10
-L1490      fcb   4,160,0,0,0
-           fcb   7,200,0,0,0
-           fcb   10,250,0,0,0
-           fcb   14,156,64,0,0
-           fcb   17,195,80,0,0
-           fcb   20,244,36,0,0
-           fcb   24,152,150,128,0
-           fcb   27,190,188,32,0
-           fcb   30,238,107,40,0
-           fcb   34,149,2,249,0
-           fcb   37,186,67,183,64
-           fcb   40,232,212,165,16
-           fcb   44,145,132,231,42
-           fcb   47,181,230,32,244
-           fcb   50,227,95,169,50
-           fcb   54,142,27,201,192
-           fcb   57,177,162,188,46
-           fcb   60,222,11,107,58
-L1486      fcb   64,138,199,35,4
-L1668      fcc   /True/
-           fcb   255
-L1672      fcc   /False/
-           fcb   255
+L1540          fcb       6,2,39,16,3,232,0,100,0,10
+L1490          fcb       4,160,0,0,0
+               fcb       7,200,0,0,0
+               fcb       10,250,0,0,0
+               fcb       14,156,64,0,0
+               fcb       17,195,80,0,0
+               fcb       20,244,36,0,0
+               fcb       24,152,150,128,0
+               fcb       27,190,188,32,0
+               fcb       30,238,107,40,0
+               fcb       34,149,2,249,0
+               fcb       37,186,67,183,64
+               fcb       40,232,212,165,16
+               fcb       44,145,132,231,42
+               fcb       47,181,230,32,244
+               fcb       50,227,95,169,50
+               fcb       54,142,27,201,192
+               fcb       57,177,162,188,46
+               fcb       60,222,11,107,58
+L1486          fcb       64,138,199,35,4
+L1668          fcc       /True/
+               fcb       255
+L1672          fcc       /False/
+               fcb       255
 
-AtoITR     PSHS  U
-           LEAY  -6,Y
+AtoITR         pshs      U
+               leay      -6,Y
 * clear negative,decpoint,digits
-           clrd
-           clrw
-           STQ   expneg
-           STA   decimals
-           STQ   2,Y
-           STA   1,Y
-           LBSR  L1418          check string
-           BCC   L1420
-           LEAX  -1,X
-           CMPA  #$2C           , ??
-           BNE   err59
-           BRA   L1424
+               clrd      
+               clrw      
+               stq       expneg
+               sta       decimals
+               stq       2,Y
+               sta       1,Y
+               lbsr      L1418               check string
+               bcc       L1420
+               leax      -1,X
+               cmpa      #$2C                , ??
+               bne       err59
+               bra       L1424
 
-L1420      CMPA  #$24           hex number?
-           LBEQ  L1426
-           CMPA  #$2B           + ??
-           BEQ   L1428
-           CMPA  #$2D           - ??
-           BNE   L1430
-           INC   negativ
-L1428      LDA   ,X+
-L1430      CMPA  #$2E           . ??
-           BNE   L1432
-           TST   decpoint
-           BNE   err59          only one allowed
-           INC   decpoint
-           BRA   L1428
+L1420          cmpa      #$24                hex number?
+               lbeq      L1426
+               cmpa      #$2B                + ??
+               beq       L1428
+               cmpa      #$2D                - ??
+               bne       L1430
+               inc       negativ
+L1428          lda       ,X+
+L1430          cmpa      #$2E                . ??
+               bne       L1432
+               tst       decpoint
+               bne       err59               only one allowed
+               inc       decpoint
+               bra       L1428
 
-L1432      LBSR  L1434
-           BCS   L1436          not a number
-           PSHS  A
-           INC   digits
-           LDQ   2,Y
-           bita  #$E0
-           bne   L1440
-           rolw
-           rold
-           STQ   2,Y
-           rolw
-           rold
-           rolw
-           rold
-           ADDW  4,Y
-           adcd  2,Y
-           BCS   L1440
-           ADDF  ,S+
-           BCC   L1442
-           adde  #1
-           BCC   L1442
-           incd
-           BEQ   err60
-L1442      STQ   2,Y
-           TST   decpoint
-           BEQ   L1428
-           INC   decimals
-           BRA   L1428
+L1432          lbsr      L1434
+               bcs       L1436               not a number
+               pshs      A
+               inc       digits
+               ldq       2,Y
+               bita      #$E0
+               bne       L1440
+               rolw      
+               rold      
+               stq       2,Y
+               rolw      
+               rold      
+               rolw      
+               rold      
+               addw      4,Y
+               adcd      2,Y
+               bcs       L1440
+               addf      ,S+
+               bcc       L1442
+               adde      #1
+               bcc       L1442
+               incd      
+               beq       err60
+L1442          stq       2,Y
+               tst       decpoint
+               beq       L1428
+               inc       decimals
+               bra       L1428
 
-L1440      LEAS  1,S
-err60      LDB   #$3C
-           BRA   L1448
+L1440          leas      1,S
+err60          ldb       #$3C
+               bra       L1448
 
-err59      LDB   #$3B
-L1448      STB   errcode
-           COMA
-           PULS  PC,U
+err59          ldb       #$3B
+L1448          stb       errcode
+               coma      
+               puls      PC,U
 
-L1436      EORA  #$45           = E
-           ANDA  #$DF
-           BEQ   L1450          exp. number
-           LEAX  -1,X
-           TST   digits
-           BEQ   err59
-           TST   decpoint
-           BNE   L1454          real number
-           LDD   2,Y
-           BNE   L1454          large number
-L1424      LDD   4,Y
-           BMI   L1454          large number
-           TST   negativ
-           BEQ   L1456
-           negd
-L1456      STD   1,Y            integer number
-L1504      LDA   #1
-           LBRA  L1458
+L1436          eora      #$45                = E
+               anda      #$DF
+               beq       L1450               exp. number
+               leax      -1,X
+               tst       digits
+               beq       err59
+               tst       decpoint
+               bne       L1454               real number
+               ldd       2,Y
+               bne       L1454               large number
+L1424          ldd       4,Y
+               bmi       L1454               large number
+               tst       negativ
+               beq       L1456
+               negd      
+L1456          std       1,Y                 integer number
+L1504          lda       #1
+               lbra      L1458
 
 * exponential numbers *
-L1450      LDA   ,X
-           CMPA  #$2B           + ??
-           BEQ   L1460
-           CMPA  #$2D           - ??
-           BNE   L1462
-           INC   expneg
-L1460      LEAX  1,X
-L1462      LBSR  number
-           BCS   err59
-           TFR   A,B
-           LBSR  number
-           BCC   L1466
-           LEAX  -1,X
-           BRA   L1468
-L1466      PSHS  A
-           LDA   #$0A
-           MUL   D*10
-           ADDB  ,S+
-L1468      TST   expneg
-           BNE   L1470
-           NEGB
-L1470      ADDB  decimals
-           STB   decimals
+L1450          lda       ,X
+               cmpa      #$2B                + ??
+               beq       L1460
+               cmpa      #$2D                - ??
+               bne       L1462
+               inc       expneg
+L1460          leax      1,X
+L1462          lbsr      number
+               bcs       err59
+               tfr       A,B
+               lbsr      number
+               bcc       L1466
+               leax      -1,X
+               bra       L1468
+L1466          pshs      A
+               lda       #$0A
+               mul                           D*10
+               addb      ,S+
+L1468          tst       expneg
+               bne       L1470
+               negb      
+L1470          addb      decimals
+               stb       decimals
 * real numbers *
-L1454      LDB   #$20
-           STB   1,Y
-           LDQ   2,Y
-           BNE   L1472          refers to regs.d
-           tstw
-           bne   L1472
-           STA   1,Y            zero!!
-           BRA   L1474
-L1472      TSTA
-           BMI   L1476
-           andcc #^Carry
-L1478      DEC   1,Y
-           rolw
-           rold
-           BPL   L1478
-           stq   2,y
-L1476      CLR   expneg
-           LDB   decimals
-           BEQ   L1480          whole number
-           BPL   L1482
-           NEGB
-           INC   expneg
-L1482      CMPB  #$13
-           BLS   L1484
-           SUBB  #$13
-           PSHS  B
-           LEAU  L1486,PCR
-           BSR   L1488
-           PULS  B
-           LBCS  err60
-L1484      DECB
-           LDA   #5
-           MUL
-           LEAU  L1490,PCR
-           LEAU  B,U
-           BSR   L1488
-           LBCS  err60
-L1480      LDA   5,Y            add sign
-           ANDA  #$FE
-           ORA   negativ
-           STA   5,Y
-L1474      LDA   #2             real number
-L1458      STA   ,Y
-           ANDCC #$FE
-           PULS  PC,U
-L1488      LEAY  -6,Y
-           LDQ   ,U
-           STQ   1,Y
-           LDB   4,U
-           STB   5,Y
-           LDA   expneg
-           LBEQ  RLDIV
-           LBRA  RLMUL
+L1454          ldb       #$20
+               stb       1,Y
+               ldq       2,Y
+               bne       L1472               refers to regs.d
+               tstw      
+               bne       L1472
+               sta       1,Y                 zero!!
+               bra       L1474
+L1472          tsta      
+               bmi       L1476
+               andcc     #^Carry
+L1478          dec       1,Y
+               rolw      
+               rold      
+               bpl       L1478
+               stq       2,y
+L1476          clr       expneg
+               ldb       decimals
+               beq       L1480               whole number
+               bpl       L1482
+               negb      
+               inc       expneg
+L1482          cmpb      #$13
+               bls       L1484
+               subb      #$13
+               pshs      B
+               leau      L1486,PCR
+               bsr       L1488
+               puls      B
+               lbcs      err60
+L1484          decb      
+               lda       #5
+               mul       
+               leau      L1490,PCR
+               leau      B,U
+               bsr       L1488
+               lbcs      err60
+L1480          lda       5,Y                 add sign
+               anda      #$FE
+               ora       negativ
+               sta       5,Y
+L1474          lda       #2                  real number
+L1458          sta       ,Y
+               andcc     #$FE
+               puls      PC,U
+L1488          leay      -6,Y
+               ldq       ,U
+               stq       1,Y
+               ldb       4,U
+               stb       5,Y
+               lda       expneg
+               lbeq      RLDIV
+               lbra      RLMUL
 * convert hex to decimal *
-L1426      LBSR  number
-           BCC   L1496          0-9
-           anda  #$DF
-           CMPA  #$41           A ??
-           BCS   L1500
-           CMPA  #$46           F ??
-           BHI   L1500
-           SUBA  #$37           conversion
-L1496      INC   digits
-           tfr   a,e
-           ldd   1,y
-           bita  #$F0
-           lbne  err60
-           asld
-           asld
-           asld
-           asld
-           addr  e,b
-           std   1,y
-           BRA   L1426
-L1500      LEAX  -1,X
-           TST   digits
-           LBEQ  err59
-           LBRA  L1504
+L1426          lbsr      number
+               bcc       L1496               0-9
+               anda      #$DF
+               cmpa      #$41                A ??
+               bcs       L1500
+               cmpa      #$46                F ??
+               bhi       L1500
+               suba      #$37                conversion
+L1496          inc       digits
+               tfr       a,e
+               ldd       1,y
+               bita      #$F0
+               lbne      err60
+               asld      
+               asld      
+               asld      
+               asld      
+               addr      e,b
+               std       1,y
+               bra       L1426
+L1500          leax      -1,X
+               tst       digits
+               lbeq      err59
+               lbra      L1504
 * ----------------- *
-L2008      PSHS  X
-           LDX   Spointer
-           LBSR  AtoITR
-           BCC   L1508
-L1518      PULS  PC,X
-L1508      CMPA  #2
-           BEQ   L1510
-           LBSR  FLOAT
-L1510      LBSR  L1514
-           BCS   L1516
-           LDB   #$3D           error 61
-           STB   errcode
-           COMA
-           PULS  PC,X
-L1516      STX   Spointer
-           CLRA
-           PULS  PC,X
-L2006      PSHS  X
-           LDX   Spointer
-           LBSR  AtoITR
-           BCS   L1518
-           CMPA  #1
-           BNE   err58
-           TST   1,Y
-           BEQ   L1510
-           BRA   err58
-L2007      PSHS  X
-           LDX   Spointer
-           LBSR  AtoITR
-           BCS   L1518
-           CMPA  #1
-           BEQ   L1510
-err58      LDB   #$3A
-           STB   errcode
-           COMA
-           PULS  PC,X
+L2008          pshs      X
+               ldx       Spointer
+               lbsr      AtoITR
+               bcc       L1508
+L1518          puls      PC,X
+L1508          cmpa      #2
+               beq       L1510
+               lbsr      FLOAT
+L1510          lbsr      L1514
+               bcs       L1516
+               ldb       #$3D                error 61
+               stb       errcode
+               coma      
+               puls      PC,X
+L1516          stx       Spointer
+               clra      
+               puls      PC,X
+L2006          pshs      X
+               ldx       Spointer
+               lbsr      AtoITR
+               bcs       L1518
+               cmpa      #1
+               bne       err58
+               tst       1,Y
+               beq       L1510
+               bra       err58
+L2007          pshs      X
+               ldx       Spointer
+               lbsr      AtoITR
+               bcs       L1518
+               cmpa      #1
+               beq       L1510
+err58          ldb       #$3A
+               stb       errcode
+               coma      
+               puls      PC,X
 *  verify string  *
-L2010      PSHS  U,X
-           LEAY  -6,Y
-           LDU   exprBase
-           STU   1,Y
-           LDA   #4
-           STA   ,Y
-           clrb
-           LDX   Spointer
-L1526      LDA   ,X+
-           BSR   L1522
-           BCS   L1524
-           STA   ,U+
-           incb
-           BRA   L1526
-L1524      STX   Spointer
-           LDA   #$FF
-           STA   ,U+
-           STU   exprSP
-           CLRA
-           std   3,y
-           PULS  PC,U,X
+L2010          pshs      U,X
+               leay      -6,Y
+               ldu       exprBase
+               stu       1,Y
+               lda       #4
+               sta       ,Y
+               clrb      
+               ldx       Spointer
+L1526          lda       ,X+
+               bsr       L1522
+               bcs       L1524
+               sta       ,U+
+               incb      
+               bra       L1526
+L1524          stx       Spointer
+               lda       #$FF
+               sta       ,U+
+               stu       exprSP
+               clra      
+               std       3,y
+               puls      PC,U,X
 * Boolean -> internal repr. *
-L2009      PSHS  X
-           LEAY  -6,Y
-           LDA   #3
-           STA   ,Y
-           CLR   2,Y
-           LDX   Spointer
-           BSR   L1418
-           BCS   L1528
-           leax  3,x
-           anda  #$DF
-           CMPA  #$54           = T(rue)
-           BEQ   L1530
-           leax  1,x
-           EORA  #$46           = F(alse)
-           BEQ   L1532
-           bra   err58
-L1530      COM   2,Y
-L1532      BSR   L1418
-L1528      STX   Spointer
-           CLRA
-           PULS  PC,X
+L2009          pshs      X
+               leay      -6,Y
+               lda       #3
+               sta       ,Y
+               clr       2,Y
+               ldx       Spointer
+               bsr       L1418
+               bcs       L1528
+               leax      3,x
+               anda      #$DF
+               cmpa      #$54                = T(rue)
+               beq       L1530
+               leax      1,x
+               eora      #$46                = F(alse)
+               beq       L1532
+               bra       err58
+L1530          com       2,Y
+L1532          bsr       L1418
+L1528          stx       Spointer
+               clra      
+               puls      PC,X
 * validate characters *
-L1514      LDA   ,X+
-           CMPA  #$20           = space?
-           BNE   L1522
-           BSR   L1418
-           BCC   L1534
-           BRA   L1536
-L1418      LDA   ,X+
-           CMPA  #$20           = space?
-           BEQ   L1418          skip them
-L1522      CMPA  <$DD
-           BEQ   L1536
-           CMPA  #$0D           = CR?
-           BEQ   L1534
-           CMPA  #$FF           = end of string?
-           BEQ   L1534
-           ANDCC #$FE
-           RTS
-L1534      LEAX  -1,X
-L1536      ORCC  #1
-           RTS
+L1514          lda       ,X+
+               cmpa      #$20                = space?
+               bne       L1522
+               bsr       L1418
+               bcc       L1534
+               bra       L1536
+L1418          lda       ,X+
+               cmpa      #$20                = space?
+               beq       L1418               skip them
+L1522          cmpa      <$DD
+               beq       L1536
+               cmpa      #$0D                = CR?
+               beq       L1534
+               cmpa      #$FF                = end of string?
+               beq       L1534
+               andcc     #$FE
+               rts       
+L1534          leax      -1,X
+L1536          orcc      #1
+               rts       
 
 * integer to ASCII *
-ItoA       PSHS  U,X
-           clrw
-           STE   digits
-           STE   negativ
-           LDA   #4
-           STA   <$7E
-           LDD   1,Y
-           BPL   L1538
-           negd
-           INC   negativ
-L1538      LEAU  L1540,PC
-L1552      clrf
-           LEAU  2,U
-L1544      SUBD  ,U
-           BCS   L1542
-           incf
-           BRA   L1544
+ItoA           pshs      U,X
+               clrw      
+               ste       digits
+               ste       negativ
+               lda       #4
+               sta       <$7E
+               ldd       1,Y
+               bpl       L1538
+               negd      
+               inc       negativ
+L1538          leau      L1540,PC
+L1552          clrf      
+               leau      2,U
+L1544          subd      ,U
+               bcs       L1542
+               incf      
+               bra       L1544
 
-L1542      ADDD  ,U
-           tstw
-           BEQ   L1548
-L1546      ince
-           addf  #$30           convert to ASCII
-           stf   ,x+
-           inc   digits
-L1548      DEC   <$7E
-           BNE   L1552
-           orb   #$30           convert to ASCII
-           stb   ,x
-           inc   digits
-           LEAY  6,Y
-           PULS  PC,U,X
+L1542          addd      ,U
+               tstw      
+               beq       L1548
+L1546          ince      
+               addf      #$30                convert to ASCII
+               stf       ,x+
+               inc       digits
+L1548          dec       <$7E
+               bne       L1552
+               orb       #$30                convert to ASCII
+               stb       ,x
+               inc       digits
+               leay      6,Y
+               puls      PC,U,X
 
 * real to ASCII *
-RtoA       PSHS  U,X
-           clrw
-           stw   expneg         + digits
-           stw   negativ        + decimals
-           stw   <$7B
-           LEAU  ,X
-           ldb   #$30           ASCII 0
-           pshs  b
-           ldw   #10            Fill buffer with 10 of them
-           tfm   s,u+
-           leas  1,s
-           LDD   1,Y
-           BNE   L1556
-           INCA
-           LBRA  L1558
+RtoA           pshs      U,X
+               clrw      
+               stw       expneg              + digits
+               stw       negativ             + decimals
+               stw       <$7B
+               leau      ,X
+               ldb       #$30                ASCII 0
+               pshs      b
+               ldw       #10                 Fill buffer with 10 of them
+               tfm       s,u+
+               leas      1,s
+               ldd       1,Y
+               bne       L1556
+               inca      
+               lbra      L1558
 
-L1556      LDB   5,Y
-           BITB  #1
-           BEQ   L1560
-           STB   negativ
-           ANDB  #$FE
-           STB   5,Y
-L1560      LDD   1,Y
-           BPL   L1562
-           INC   expneg
-           NEGA
-L1562      CMPA  #3
-           BLS   L1564
-           LDB   #$9A
-           MUL
-           LSRA
-           TFR   A,B
-           TST   expneg
-           BEQ   L1566
-           NEGB
-L1566      STB   decimals
-           CMPA  #$13
-           BLS   L1568
-           PSHS  A
-           LEAU  L1486,PC
-           LBSR  L1488
-           PULS  A
-           SUBA  #$13
-L1568      LEAU  L1490,PC
-           DECA
-           LDB   #5
-           MUL
-           LEAU  D,U
-           LBSR  L1488
-L1564      LDQ   2,Y
-           TST   1,Y
-           BEQ   L1580
-           BPL   L1572
-L1574      lsrd
-           rorw
-           ROR   <$7C
-           INC   1,Y
-           BNE   L1574
-           BRA   L1580
+L1556          ldb       5,Y
+               bitb      #1
+               beq       L1560
+               stb       negativ
+               andb      #$FE
+               stb       5,Y
+L1560          ldd       1,Y
+               bpl       L1562
+               inc       expneg
+               nega      
+L1562          cmpa      #3
+               bls       L1564
+               ldb       #$9A
+               mul       
+               lsra      
+               tfr       A,B
+               tst       expneg
+               beq       L1566
+               negb      
+L1566          stb       decimals
+               cmpa      #$13
+               bls       L1568
+               pshs      A
+               leau      L1486,PC
+               lbsr      L1488
+               puls      A
+               suba      #$13
+L1568          leau      L1490,PC
+               deca      
+               ldb       #5
+               mul       
+               leau      D,U
+               lbsr      L1488
+L1564          ldq       2,Y
+               tst       1,Y
+               beq       L1580
+               bpl       L1572
+L1574          lsrd      
+               rorw      
+               ror       <$7C
+               inc       1,Y
+               bne       L1574
+               bra       L1580
 
-L1572      andcc #^Carry
-           rolw
-           rold
-           ROL   <$7B
-           DEC   1,Y
-           BNE   L1572
-           STA   2,Y
-           INC   decimals
-           LDA   <$7B
-           BSR   L1550
-           LDA   2,Y
-L1580      CLR   <$7B
-           rolw
-           rold
-           rol   <$7B
-           STQ   2,Y
-           LDA   <$7B
-           STA   <$7C
-           lda   2,y
-           rolw
-           rold
-           ROL   <$7B
-           rolw
-           rold
-           ROL   <$7B
-           ADDW  4,Y
-           adcd  2,Y
-           PSHS  A
-           LDA   <$7B
-           ADCA  <$7C
-           BSR   L1550
-           LDA   digits
-           CMPA  #9
-           PULS  A
-           BEQ   L1578
-           tstd
-           BNE   L1580
-           tstw
-           BNE   L1580
-L1578      STA   ,Y
-           LDA   digits
-           CMPA  #9
-           BCS   L1582
-           LDB   ,Y
-           BPL   L1582
-L1584      LDA   ,-X
-           INCA
-           STA   ,X
-           CMPA  #$39           = 9?
-           BLS   L1582
-           LDA   #$30           =0
-           STA   ,X
-           CMPX  ,S
-           BNE   L1584
-           INC   ,X
-           INC   decimals
-L1582      LDA   #9
-L1558      STA   digits
-           LEAY  6,Y
-           PULS  PC,U,X
+L1572          andcc     #^Carry
+               rolw      
+               rold      
+               rol       <$7B
+               dec       1,Y
+               bne       L1572
+               sta       2,Y
+               inc       decimals
+               lda       <$7B
+               bsr       L1550
+               lda       2,Y
+L1580          clr       <$7B
+               rolw      
+               rold      
+               rol       <$7B
+               stq       2,Y
+               lda       <$7B
+               sta       <$7C
+               lda       2,y
+               rolw      
+               rold      
+               rol       <$7B
+               rolw      
+               rold      
+               rol       <$7B
+               addw      4,Y
+               adcd      2,Y
+               pshs      A
+               lda       <$7B
+               adca      <$7C
+               bsr       L1550
+               lda       digits
+               cmpa      #9
+               puls      A
+               beq       L1578
+               tstd      
+               bne       L1580
+               tstw      
+               bne       L1580
+L1578          sta       ,Y
+               lda       digits
+               cmpa      #9
+               bcs       L1582
+               ldb       ,Y
+               bpl       L1582
+L1584          lda       ,-X
+               inca      
+               sta       ,X
+               cmpa      #$39                = 9?
+               bls       L1582
+               lda       #$30                =0
+               sta       ,X
+               cmpx      ,S
+               bne       L1584
+               inc       ,X
+               inc       decimals
+L1582          lda       #9
+L1558          sta       digits
+               leay      6,Y
+               puls      PC,U,X
 
-L1550      ORA   #$30           to ASCII
-           STA   ,X+
-           INC   digits
-           RTS
+L1550          ora       #$30                to ASCII
+               sta       ,X+
+               inc       digits
+               rts       
 
-READLN     PSHS  Y,X
-           LDX   Sstack
-           STX   Spointer
-           LDA   #1
-           STA   charcoun
-           LDY   #$0100
-           LDA   IOpath
-           os9   I$ReadLn
-           BRA   L1586
+READLN         pshs      Y,X
+               ldx       Sstack
+               stx       Spointer
+               lda       #1
+               sta       charcoun
+               ldy       #$0100
+               lda       IOpath
+               os9       I$ReadLn
+               bra       L1586
 
-WRITLN     PSHS  Y,X
-           LDX   Sstack
-           LDY   Spointer
-           subr  x,y
-           beq   L1588
-           STX   Spointer
-           LDA   IOpath
-           os9   I$WritLn
-L1586      BCC   L1588
-           STB   errcode
-L1588      PULS  PC,Y,X
+WRITLN         pshs      Y,X
+               ldx       Sstack
+               ldy       Spointer
+               subr      x,y
+               beq       L1588
+               stx       Spointer
+               lda       IOpath
+               os9       I$WritLn
+L1586          bcc       L1588
+               stb       errcode
+L1588          puls      PC,Y,X
 
-setFP      PSHS  U,X
-           LDD   ,Y             type of filepointer
-           CMPA  #2
-           BEQ   L1590          real
-           LDU   1,Y            integer
-           BRA   L1592
+setFP          pshs      U,X
+               ldd       ,Y                  type of filepointer
+               cmpa      #2
+               beq       L1590               real
+               ldu       1,Y                 integer
+               bra       L1592
 
-L1590      tstb                 If exponent is <=0, Seek to 0
-           BGT   L1594          Positive value, go calculate longint for SEEK
-           LDU   #0             seek #0
-L1592      LDX   #0
-           BRA   L1596
+L1590          tstb                          If exponent is <=0, Seek to 0
+               bgt       L1594               Positive value, go calculate longint for SEEK
+               ldu       #0                  seek #0
+L1592          ldx       #0
+               bra       L1596
 
-L1594      SUBB  #$20           Only up to 2^32 allowed
-           BCS   L1597          Good, continue
-           LDB   #$4E           error 78 (seek error)
-           COMA
-           BRA   L1600
+L1594          subb      #$20                Only up to 2^32 allowed
+               bcs       L1597               Good, continue
+               ldb       #$4E                error 78 (seek error)
+               coma      
+               bra       L1600
 
-L1597      lda   #$FF           Force Value to -1 to -32
-           tfr   d,x            Move into X for counter
-           ldq   2,y            Get mantissa
-L1598      lsrd                 Calculate to power of exponent
-           rorw
-           leax  1,x            Do until done
-           BNE   L1598
-           tfr   d,x            Move 32 bit result to proper regs for SEEK
-           tfr   w,u
-L1596      LDA   IOpath         Do the seek
-           os9   I$Seek
-           BCC   L1602
-L1600      STB   errcode
-L1602      PULS  PC,U,X
+L1597          lda       #$FF                Force Value to -1 to -32
+               tfr       d,x                 Move into X for counter
+               ldq       2,y                 Get mantissa
+L1598          lsrd                          Calculate to power of exponent
+               rorw      
+               leax      1,x                 Do until done
+               bne       L1598
+               tfr       d,x                 Move 32 bit result to proper regs for SEEK
+               tfr       w,u
+L1596          lda       IOpath              Do the seek
+               os9       I$Seek
+               bcc       L1602
+L1600          stb       errcode
+L1602          puls      PC,U,X
 
 * print real numbers *
-PRreal     PSHS  U,X
-           LEAS  -10,S
-           LEAX  ,S
-           LBSR  RtoA
-           PSHS  X
-           LDA   #9
-           LEAX  9,X
-L1608      LDB   ,-X
-           CMPB  #$30
-           BNE   L1606
-           DECA
-           CMPA  #1
-           BNE   L1608          skip 0s
-L1606      STA   digits
-           PULS  X
-           LDB   decimals
-           BGT   L1610
-           NEGB
-           TFR   B,A
-           CMPB  #9
-           BHI   L1612
-           ADDB  digits
-           CMPB  #9
-           BHI   L1612
+PRreal         pshs      U,X
+               leas      -10,S
+               leax      ,S
+               lbsr      RtoA
+               pshs      X
+               lda       #9
+               leax      9,X
+L1608          ldb       ,-X
+               cmpb      #$30
+               bne       L1606
+               deca      
+               cmpa      #1
+               bne       L1608               skip 0s
+L1606          sta       digits
+               puls      X
+               ldb       decimals
+               bgt       L1610
+               negb      
+               tfr       B,A
+               cmpb      #9
+               bhi       L1612
+               addb      digits
+               cmpb      #9
+               bhi       L1612
 *  0 < x < 1  *
-           PSHS  A
-           LBSR  L1614
-           CLRA
-           LBSR  L1616
-           PULS  B
-           TSTB
-           BEQ   L1618
-           LBSR  L1620
-L1618      LDA   digits
-           BRA   L1622
+               pshs      A
+               lbsr      L1614
+               clra      
+               lbsr      L1616
+               puls      B
+               tstb      
+               beq       L1618
+               lbsr      L1620
+L1618          lda       digits
+               bra       L1622
 
 *  real number  *
-L1610      CMPB  #9
-           BHI   L1612
-           LBSR  L1614
-           TFR   B,A
-           BSR   L1624
-           LBSR  L1616
-           LDA   digits
-           SUBA  decimals
-           BLS   L1626
-L1622      BSR   L1624
-L1626      LEAS  10,S
-           CLRA
-           PULS  PC,U,X
+L1610          cmpb      #9
+               bhi       L1612
+               lbsr      L1614
+               tfr       B,A
+               bsr       L1624
+               lbsr      L1616
+               lda       digits
+               suba      decimals
+               bls       L1626
+L1622          bsr       L1624
+L1626          leas      10,S
+               clra      
+               puls      PC,U,X
 
 *  exponential number  *
-L1612      LBSR  L1614
-           LDA   #1
-           BSR   L1624
-           BSR   L1616
-           LDA   digits
-           DECA
-           BNE   L1628
-           INCA
-L1628      BSR   L1624
-           BSR   L1630
-           BRA   L1626
+L1612          lbsr      L1614
+               lda       #1
+               bsr       L1624
+               bsr       L1616
+               lda       digits
+               deca      
+               bne       L1628
+               inca      
+L1628          bsr       L1624
+               bsr       L1630
+               bra       L1626
 
 *  exponent  *
-L1630      LDE   #$45           = E
-           LDA   decimals
-           DECA
-           PSHS  A
-           BPL   L1634
-           NEG   ,S
-           ldf   #$2D           = -
-           BRA   L1638
+L1630          lde       #$45                = E
+               lda       decimals
+               deca      
+               pshs      A
+               bpl       L1634
+               neg       ,S
+               ldf       #$2D                = -
+               bra       L1638
 
-L1634      ldf   #$2B           = +
-L1638      PULS  B
-           CLRA
-L1644      SUBB  #$0A
-           BCS   L1642
-           INCA
-           BRA   L1644
-L1642      ADDB  #$0A           exp. in D
-           addd  #$3030         -> ASCII
-           pshs  d
-           pshsw                exp. on stack
-           ldb   #4
-           bsr   L1650
-           cmpw  #4             space left to print it?
-           beq   L1646
-           leas  4,s            no, clean up stack
-           rts
+L1634          ldf       #$2B                = +
+L1638          puls      B
+               clra      
+L1644          subb      #$0A
+               bcs       L1642
+               inca      
+               bra       L1644
+L1642          addb      #$0A                exp. in D
+               addd      #$3030              -> ASCII
+               pshs      d
+               pshsw                         exp. on stack
+               ldb       #4
+               bsr       L1650
+               cmpw      #4                  space left to print it?
+               beq       L1646
+               leas      4,s                 no, clean up stack
+               rts       
 
-L1646      tfm   s+,d+
-           std   Spointer
-           rts
-
-*
-L1624      TFR   A,B
-L1625      TSTB
-           BEQ   L1648
-           bsr   L1650
-           tfm   x+,d+
-L1649      std   Spointer
-L1648      RTS
+L1646          tfm       s+,d+
+               std       Spointer
+               rts       
 
 *
-L1650      tfr   s,w
-           subw  #64
-           subw  Spointer       w holds max. length
-           clra
-           cmpr  w,d
-           bhs   L1651          too long: truncate
-           tfr   d,w
-L1651      ldb   charcoun
-           addr  f,b            update counter
-           stb   charcoun
-           ldd   Spointer       destination
-           rts
+L1624          tfr       A,B
+L1625          tstb      
+               beq       L1648
+               bsr       L1650
+               tfm       x+,d+
+L1649          std       Spointer
+L1648          rts       
+
+*
+L1650          tfr       s,w
+               subw      #64
+               subw      Spointer            w holds max. length
+               clra      
+               cmpr      w,d
+               bhs       L1651               too long: truncate
+               tfr       d,w
+L1651          ldb       charcoun
+               addr      f,b                 update counter
+               stb       charcoun
+               ldd       Spointer            destination
+               rts       
 
 * ---------------- *
-L1660      LDA   #$20           = space
-           BRA   L1632
+L1660          lda       #$20                = space
+               bra       L1632
 
-L1616      LDA   #$2E           = .
-L1632      PSHS  U,A
-           LEAU  <-$40,S
-           CMPU  Spointer
-           BHI   L1652          space left!!
-           CMPA  #$0D           CR ??
-           BEQ   L1652
-           LDA   #47            error 47
-           STA   errcode
-           coma
-           BRA   L1654
+L1616          lda       #$2E                = .
+L1632          pshs      U,A
+               leau      <-$40,S
+               cmpu      Spointer
+               bhi       L1652               space left!!
+               cmpa      #$0D                CR ??
+               beq       L1652
+               lda       #47                 error 47
+               sta       errcode
+               coma      
+               bra       L1654
 
-L1652      LDU   Spointer
-           STA   ,U+
-           STU   Spointer
-           INC   charcoun
-L1654      PULS  PC,U,A
+L1652          ldu       Spointer
+               sta       ,U+
+               stu       Spointer
+               inc       charcoun
+L1654          puls      PC,U,A
 
 *
-spacing    LDA   #$20           = space
-L1662      TSTB                 0 chars?
-           BEQ   L1656          Yes, return
-           pshs  a
-           bsr   L1650
-           tfm   s,d+
-           leas  1,s
-           std   Spointer
-L1656      RTS
+spacing        lda       #$20                = space
+L1662          tstb                          0 chars?
+               beq       L1656               Yes, return
+               pshs      a
+               bsr       L1650
+               tfm       s,d+
+               leas      1,s
+               std       Spointer
+L1656          rts       
 
 * NOTE: Should use LDA <negative, faster, and A not required
-L1800      TST   negativ
-           BEQ   L1660
-L1614      TST   negativ
-           BEQ   L1656
-L1636      LDA   #$2D           = -
-           BRA   L1632
+L1800          tst       negativ
+               beq       L1660
+L1614          tst       negativ
+               beq       L1656
+L1636          lda       #$2D                = -
+               bra       L1632
 
-L1640      LDA   #$2B           = +
-           BRA   L1632
+L1640          lda       #$2B                = +
+               bra       L1632
 
-L1620      LDA   #$30           = 0
-           BRA   L1662
+L1620          lda       #$30                = 0
+               bra       L1662
 
 *  print string  *
-PRstring   PSHS  X
-           LDX   1,Y
-           ldd   3,y
-L1670      bsr   L1625
-           CLRA
-           PULS  PC,X
+PRstring       pshs      X
+               ldx       1,Y
+               ldd       3,y
+L1670          bsr       L1625
+               clra      
+               puls      PC,X
 
 * value of boolean variable *
-PRbool     PSHS  X
-           LEAX  L1668,PC       = TRUE
-           ldb   #4             # chars to print
-           LDA   2,Y
-           BNE   L1670
-           LEAX  L1672,PC       = FALSE
-           incb                 5 chars to print
-           BRA   L1670
+PRbool         pshs      X
+               leax      L1668,PC            = TRUE
+               ldb       #4                  # chars to print
+               lda       2,Y
+               bne       L1670
+               leax      L1672,PC            = FALSE
+               incb                          5 chars to print
+               bra       L1670
 
 * print integers *
-PRintg     PSHS  X
-           ldx   #$26           var.space in DP
-           LBSR  ItoA
-           tst   negativ        NOTE: USE LDB instead
-           beq   L1711
-           lda   #$2D           = -
-           sta   ,-x
-           inc   digits
-L1711      LDB   digits
-           bra   L1670
+PRintg         pshs      X
+               ldx       #$26                var.space in DP
+               lbsr      ItoA
+               tst       negativ             NOTE: USE LDB instead
+               beq       L1711
+               lda       #$2D                = -
+               sta       ,-x
+               inc       digits
+L1711          ldb       digits
+               bra       L1670
 
 * pad with spaces (TAB) *
-L2015      TFR   A,B
-L1712      SUBB  charcoun
-           BLS   L1676
-           BSR   spacing
-L1676      CLRA
-           RTS
+L2015          tfr       A,B
+L1712          subb      charcoun
+               bls       L1676
+               bsr       spacing
+L1676          clra      
+               rts       
 
 * pad field with spaces *
-L2012      LDA   charcoun
-           ANDA  #$0F
-           ldb   #17            16 chars/field
-           subr  a,b
-           BRA   spacing
+L2012          lda       charcoun
+               anda      #$0F
+               ldb       #17                 16 chars/field
+               subr      a,b
+               bra       spacing
 
 * terminate string *
-Strterm    LDA   #$0D           /CR/
-           CLR   charcoun
-           LBSR  L1632
-L1680      CLRA
-           RTS
+Strterm        lda       #$0D                /CR/
+               clr       charcoun
+               lbsr      L1632
+L1680          clra      
+               rts       
 
 * justification of print using
-L1744      CLRB
-           STB   justify
-           CMPA  #$3C           = <
-           BEQ   L1688
-           CMPA  #$3E           = >
-           BNE   L1690
-           INCB
-           BRA   L1688
+L1744          clrb      
+               stb       justify
+               cmpa      #$3C                = <
+               beq       L1688
+               cmpa      #$3E                = >
+               bne       L1690
+               incb      
+               bra       L1688
 
-L1690      CMPA  #$5E           = ^
-           BNE   ckmarker
-           DECB
-L1688      STB   justify
-           LDA   ,X+
-ckmarker   CMPA  #$2C           = ,
-           BEQ   L1694
-           CMPA  #$FF
-           BNE   L1696
-           LDA   <$94
-           BEQ   L1698
-           LEAX  -1,X
-           BRA   L1700
+L1690          cmpa      #$5E                = ^
+               bne       ckmarker
+               decb      
+L1688          stb       justify
+               lda       ,X+
+ckmarker       cmpa      #$2C                = ,
+               beq       L1694
+               cmpa      #$FF
+               bne       L1696
+               lda       <$94
+               beq       L1698
+               leax      -1,X
+               bra       L1700
 
-L1698      LDX   <$8E
-           TST   <$DC
-           BEQ   L1702
-           CLR   <$DC
-           BRA   L1694
+L1698          ldx       <$8E
+               tst       <$DC
+               beq       L1702
+               clr       <$DC
+               bra       L1694
 
-L1696      CMPA  #$29           = )
-           BEQ   L1704
-L1702      ORCC  #1
-           RTS
+L1696          cmpa      #$29                = )
+               beq       L1704
+L1702          orcc      #1
+               rts       
 
-L1704      LDA   <$94
-           BEQ   L1702
-L1700      DEC   <$92
-           BNE   L1706
-           LDU   userSP
-           PULU  Y,A
-           STA   <$92
-           STY   <$90
-           STU   userSP
-           LDA   ,X+
-           DEC   <$94
-           BRA   ckmarker
+L1704          lda       <$94
+               beq       L1702
+L1700          dec       <$92
+               bne       L1706
+               ldu       userSP
+               pulu      Y,A
+               sta       <$92
+               sty       <$90
+               stu       userSP
+               lda       ,X+
+               dec       <$94
+               bra       ckmarker
 
-L1706      LDX   <$90
-L1694      STX   <$8C
-           ANDCC #$FE
-           RTS
+L1706          ldx       <$90
+L1694          stx       <$8C
+               andcc     #$FE
+               rts       
 
 * chars recognized by PRINT USING
-L1726      fcb   73             Integer
-           fdb   L2050-L1726
-L2051Bas   equ   *
-           fcb   72             Hexadecimal
-           fdb   L2051
-L2052Bas   equ   *
-           fcb   82             Real
-           fdb   L2052
-L2053Bas   equ   *
-           fcb   69             Exponential
-           fdb   L2053
-L2054Bas   equ   *
-           fcb   83             String
-           fdb   L2054
-L2055Bas   equ   *
-           fcb   66             Boolean
-           fdb   L2055
-L2056Bas   equ   *
-           fcb   84             Tab
-           fdb   L2056
-L2057Bas   equ   *
-           fcb   88             X - space
-           fdb   L2057
-L2058Bas   equ   *
-           fcb   39             ' - literal string
-           fdb   L2058
-           fcb   0              end of table
+L1726          fcb       73                  Integer
+               fdb       L2050-L1726
+L2051Bas       equ       *
+               fcb       72                  Hexadecimal
+               fdb       L2051
+L2052Bas       equ       *
+               fcb       82                  Real
+               fdb       L2052
+L2053Bas       equ       *
+               fcb       69                  Exponential
+               fdb       L2053
+L2054Bas       equ       *
+               fcb       83                  String
+               fdb       L2054
+L2055Bas       equ       *
+               fcb       66                  Boolean
+               fdb       L2055
+L2056Bas       equ       *
+               fcb       84                  Tab
+               fdb       L2056
+L2057Bas       equ       *
+               fcb       88                  X - space
+               fdb       L2057
+L2058Bas       equ       *
+               fcb       39                  ' - literal string
+               fdb       L2058
+               fcb       0                   end of table
 
 * Tab function
-L2056      equ   *-L2056Bas
-           BSR   ckmarker
-           BCS   err63
-           LDB   fieldwid
-           LBSR  L1712
-           BRA   L1714
+L2056          equ       *-L2056Bas
+               bsr       ckmarker
+               bcs       err63
+               ldb       fieldwid
+               lbsr      L1712
+               bra       L1714
 
 * print spaces (X) *
-L2057      equ   *-L2057Bas
-           BSR   ckmarker
-           BCS   err63
-           LDB   fieldwid
-           LBSR  spacing
-           BRA   L1714
+L2057          equ       *-L2057Bas
+               bsr       ckmarker
+               bcs       err63
+               ldb       fieldwid
+               lbsr      spacing
+               bra       L1714
 
 * print literal string *
-L2058      equ   *-L2058Bas
-           pshs  x
-           clrb
-L1718      CMPA  #$FF
-           BEQ   err63
-           CMPA  #$27           = '
-           beq   L1716
-           incb
-           LDA   ,X+
-           BRA   L1718
-L1716      puls  x
-           leax  -1,x
-           lbsr  L1625
-           leax  1,x
-           LDA   ,X+
-           LBSR  ckmarker
-           BCS   err63
-           BRA   L1714
+L2058          equ       *-L2058Bas
+               pshs      x
+               clrb      
+L1718          cmpa      #$FF
+               beq       err63
+               cmpa      #$27                = '
+               beq       L1716
+               incb      
+               lda       ,X+
+               bra       L1718
+L1716          puls      x
+               leax      -1,x
+               lbsr      L1625
+               leax      1,x
+               lda       ,X+
+               lbsr      ckmarker
+               bcs       err63
+               bra       L1714
 
-PRNTUSIN   PSHS  Y,X
-           CLR   <$DC
-           INC   <$DC
-L1714      LDX   <$8C
-           BSR   L1720
-           BCS   L1722
-           CMPA  #$28
-           BNE   err62
-           LDA   <$92
-           STB   <$92
-           BEQ   err62
-           INC   <$94
-           LDU   userSP
-           LDY   <$90
-           PSHU  Y,A
-           STU   userSP
-           STX   <$90
-           LDA   ,X+
-L1722      LEAY  <L1726,PC
-           CLRB
-L1730      PSHS  A
-           EORA  ,Y
-           ANDA  #$DF
-           PULS  A
-           BEQ   L1728
-           LEAY  3,Y
-           INCB
-           TST   ,Y
-           BNE   L1730
-err63      LDB   #$3F
-           BRA   L1732
+PRNTUSIN       pshs      Y,X
+               clr       <$DC
+               inc       <$DC
+L1714          ldx       <$8C
+               bsr       L1720
+               bcs       L1722
+               cmpa      #$28
+               bne       err62
+               lda       <$92
+               stb       <$92
+               beq       err62
+               inc       <$94
+               ldu       userSP
+               ldy       <$90
+               pshu      Y,A
+               stu       userSP
+               stx       <$90
+               lda       ,X+
+L1722          leay      <L1726,PC
+               clrb      
+L1730          pshs      A
+               eora      ,Y
+               anda      #$DF
+               puls      A
+               beq       L1728
+               leay      3,Y
+               incb      
+               tst       ,Y
+               bne       L1730
+err63          ldb       #$3F
+               bra       L1732
 
-err62      LDB   #$3E
-L1732      STB   errcode
-           COMA
-           PULS  PC,Y,X
+err62          ldb       #$3E
+L1732          stb       errcode
+               coma      
+               puls      PC,Y,X
 
-L1728      STB   subrcode
-           LDD   1,Y
-           LEAY  D,Y
-           BSR   L1720
-           BCC   L1734
-           LDB   #1
-L1734      STB   fieldwid
-           JMP   ,Y
+L1728          stb       subrcode
+               ldd       1,Y
+               leay      D,Y
+               bsr       L1720
+               bcc       L1734
+               ldb       #1
+L1734          stb       fieldwid
+               jmp       ,Y
 
 * calculate field width
-L1720      BSR   number
-           BCS   L1736
-           TFR   A,B
-           BSR   number
-           BCS   L1738
-           BSR   L1740
-           BSR   number
-           BCS   L1738
-           BSR   L1740
-           TSTA
-           BEQ   L1742
-           CLRB
-L1742      LDA   ,X+
-           BRA   L1738
+L1720          bsr       number
+               bcs       L1736
+               tfr       A,B
+               bsr       number
+               bcs       L1738
+               bsr       L1740
+               bsr       number
+               bcs       L1738
+               bsr       L1740
+               tsta      
+               beq       L1742
+               clrb      
+L1742          lda       ,X+
+               bra       L1738
 
-number     LDA   ,X+
-L1434      CMPA  #$30           = 0?
-           BCS   L1736
-           CMPA  #$39           = 9?
-           BHI   L1736
-           SUBA  #$30           ASCII -> dec.
-L1738      ANDCC #$FE
-           RTS
+number         lda       ,X+
+L1434          cmpa      #$30                = 0?
+               bcs       L1736
+               cmpa      #$39                = 9?
+               bhi       L1736
+               suba      #$30                ASCII -> dec.
+L1738          andcc     #$FE
+               rts       
 
-L1736      ORCC  #1
-           RTS
+L1736          orcc      #1
+               rts       
 
-L1740      PSHS  A
-           LDA   #10
-           MUL                  10*B+A
-           ADDB  ,S+
-           ADCA  #0
-           RTS
+L1740          pshs      A
+               lda       #10
+               mul                           10*B+A
+               addb      ,S+
+               adca      #0
+               rts       
 
-L2052      equ   *-L2052Bas
-L2053      equ   *-L2053Bas
-           CMPA  #$2E           format as real or exp.
-           BNE   err63
-           BSR   L1720
-           BCS   err63
-           STB   <$89
+L2052          equ       *-L2052Bas
+L2053          equ       *-L2053Bas
+               cmpa      #$2E                format as real or exp.
+               bne       err63
+               bsr       L1720
+               bcs       err63
+               stb       <$89
 
-L2051      equ   *-L2051Bas
-L2054      equ   *-L2054Bas
-L2055      equ   *-L2055Bas
-L2050      LBSR  L1744          Int, Hex, String, Boolean
-           BCS   err63
-           PULS  Y,X
-           INC   <$DC
-L2018      LDB   subrcode
-           LBEQ  FMTint
-           DECB
-           BEQ   FMThex
-           DECB
-           LBEQ  FMTreal
-           DECB
-           LBEQ  FMTexp
-           DECB
-           LBEQ  FMTstr
-           LBRA  FMTbool
+L2051          equ       *-L2051Bas
+L2054          equ       *-L2054Bas
+L2055          equ       *-L2055Bas
+L2050          lbsr      L1744               Int, Hex, String, Boolean
+               bcs       err63
+               puls      Y,X
+               inc       <$DC
+L2018          ldb       subrcode
+               lbeq      FMTint
+               decb      
+               beq       FMThex
+               decb      
+               lbeq      FMTreal
+               decb      
+               lbeq      FMTexp
+               decb      
+               lbeq      FMTstr
+               lbra      FMTbool
 
-FMThex     JSR   table4
-           pshs  y
-           CMPA  #4
-           BCS   L1758
-           LDU   1,Y            source: string
-           ldd   3,y
-           bra   L1686
+FMThex         jsr       table4
+               pshs      y
+               cmpa      #4
+               bcs       L1758
+               ldu       1,Y                 source: string
+               ldd       3,y
+               bra       L1686
 
-L1758      LEAU  1,Y
-           LDA   ,Y
-           CMPA  #2
-           BNE   L1764
-           LDB   #5             source: real number
-           BRA   L1686
+L1758          leau      1,Y
+               lda       ,Y
+               cmpa      #2
+               bne       L1764
+               ldb       #5                  source: real number
+               bra       L1686
 
-L1764      CMPA  #1
-           BNE   L1766
-           LDB   #2             source: integer
-           CMPB  fieldwid
-           BCS   L1768
-L1766      LDB   #1             byte, boolean
-           LEAU  1,U
-L1768      TFR   B,A
-           ASLA
-           CMPA  fieldwid
-           BLS   L1686
-           ANDA  #$0F
-           CMPA  #9
-           BLS   L1784
-           ADDA  #7
-L1784      LBSR  L1646
-           DEC   fieldwid
-           bra   L1782
+L1764          cmpa      #1
+               bne       L1766
+               ldb       #2                  source: integer
+               cmpb      fieldwid
+               bcs       L1768
+L1766          ldb       #1                  byte, boolean
+               leau      1,U
+L1768          tfr       B,A
+               asla      
+               cmpa      fieldwid
+               bls       L1686
+               anda      #$0F
+               cmpa      #9
+               bls       L1784
+               adda      #7
+L1784          lbsr      L1646
+               dec       fieldwid
+               bra       L1782
 
-L1686      TST   justify
-           pshs  b
-           BEQ   L1776          left justify
-           BMI   L1774          center digits
-           ASLB  right          justify
-           PSHS  B
-           LDB   fieldwid
-           SUBB  ,S+
-           BCS   L1776
-           BRA   L1778
+L1686          tst       justify
+               pshs      b
+               beq       L1776               left justify
+               bmi       L1774               center digits
+               aslb                          right          justify
+               pshs      B
+               ldb       fieldwid
+               subb      ,S+
+               bcs       L1776
+               bra       L1778
 
-L1774      ASLB
-           PSHS  B
-           LDB   fieldwid
-           SUBB  ,S+
-           BCS   L1776
-           ASRB
-L1778      LDA   fieldwid
-           subr  b,a
-           STA   fieldwid
-           LBSR  spacing
-L1776      ldb   fieldwid
-           lbsr  L1650
-           tfr   d,y
-           PULS  B
-L1772      LDA   ,U
-           LSRA
-           LSRA
-           LSRA
-           LSRA
-           cmpa  #9
-           bls   L1773
-           adda  #7
-L1773      adda  #$30
-           sta   ,y+
-           decw
-           BEQ   L1782
-L1770      LDA   ,U+
-           anda  #15
-           cmpa  #9
-           bls   L1771
-           adda  #7
-L1771      adda  #$30
-           sta   ,y+
-           decw
-           BEQ   L1782
-           DECB
-           BNE   L1772
-           lda   #$20       Space
-           pshs  a
-           tfm   s,y+
-           leas  1,s
-L1782      sty   Spointer
-           puls  y
-           CLRA
-           sta   fieldwid
-           RTS
+L1774          aslb      
+               pshs      B
+               ldb       fieldwid
+               subb      ,S+
+               bcs       L1776
+               asrb      
+L1778          lda       fieldwid
+               subr      b,a
+               sta       fieldwid
+               lbsr      spacing
+L1776          ldb       fieldwid
+               lbsr      L1650
+               tfr       d,y
+               puls      B
+L1772          lda       ,U
+               lsra      
+               lsra      
+               lsra      
+               lsra      
+               cmpa      #9
+               bls       L1773
+               adda      #7
+L1773          adda      #$30
+               sta       ,y+
+               decw      
+               beq       L1782
+L1770          lda       ,U+
+               anda      #15
+               cmpa      #9
+               bls       L1771
+               adda      #7
+L1771          adda      #$30
+               sta       ,y+
+               decw      
+               beq       L1782
+               decb      
+               bne       L1772
+               lda       #$20                Space
+               pshs      a
+               tfm       s,y+
+               leas      1,s
+L1782          sty       Spointer
+               puls      y
+               clra      
+               sta       fieldwid
+               rts       
 
-L1788      COMA
-           RTS
+L1788          coma      
+               rts       
 
-FMTint     JSR   table4
-           CMPA  #2
-           BCS   L1786
-           BNE   L1788          wrong var. type
-           LBSR  FIX
-L1786      PSHS  U,X
-           LEAS  -5,S
-           LEAX  ,S
-           LBSR  ItoA
-           LDB   fieldwid
-           DECB
-           SUBB  digits
-           BPL   L1792
-           LEAS  5,S
-           PULS  U,X
-           LBRA  ovflow
+FMTint         jsr       table4
+               cmpa      #2
+               bcs       L1786
+               bne       L1788               wrong var. type
+               lbsr      FIX
+L1786          pshs      U,X
+               leas      -5,S
+               leax      ,S
+               lbsr      ItoA
+               ldb       fieldwid
+               decb      
+               subb      digits
+               bpl       L1792
+               leas      5,S
+               puls      U,X
+               lbra      ovflow
 
-L1792      TST   justify
-           BEQ   L1796          left justify
-           BMI   L1798          leading zeroes
-           LBSR  spacing        right justify
-           LBSR  L1800
-           BRA   L1802
+L1792          tst       justify
+               beq       L1796               left justify
+               bmi       L1798               leading zeroes
+               lbsr      spacing             right justify
+               lbsr      L1800
+               bra       L1802
 
-L1796      LBSR  L1800
-           PSHS  B
-           LDA   digits
-           LBSR  L1624
-           PULS  B
-           LBSR  spacing
-           BRA   L1804
+L1796          lbsr      L1800
+               pshs      B
+               lda       digits
+               lbsr      L1624
+               puls      B
+               lbsr      spacing
+               bra       L1804
 
-L1798      LBSR  L1800
-           LBSR  L1620
-L1802      LDA   digits
-           LBSR  L1624
-L1804      LEAS  5,S
-           CLRA
-           PULS  PC,U,X
+L1798          lbsr      L1800
+               lbsr      L1620
+L1802          lda       digits
+               lbsr      L1624
+L1804          leas      5,S
+               clra      
+               puls      PC,U,X
 
-FMTbool    JSR   table4
-           CMPA  #3
-           BNE   L1788          wrong type
-           PSHS  U,X
-           LEAX  L1668,PC
-           LDB   #4
-           LDA   2,Y
-           BNE   L1806
-           LEAX  L1672,PC
-           LDB   #5
-           BRA   L1806
+FMTbool        jsr       table4
+               cmpa      #3
+               bne       L1788               wrong type
+               pshs      U,X
+               leax      L1668,PC
+               ldb       #4
+               lda       2,Y
+               bne       L1806
+               leax      L1672,PC
+               ldb       #5
+               bra       L1806
 
-FMTstr     JSR   table4
-           CMPA  #4
-           BNE   L1788          wrong type
-           PSHS  U,X
-           LDX   1,Y
-           ldd   3,y
-           TSTA
-           BNE   L1808
-L1806      CMPB  fieldwid
-           BLS   L1810
-L1808      LDB   fieldwid
-L1810      TFR   B,A
-           NEGB
-           ADDB  fieldwid
-           TST   justify
-           BEQ   L1812          left justify
-           BMI   L1814          center text
-           PSHS  A              right justify
-           LBSR  spacing
-           PULS  A
-           LBSR  L1624
-           BRA   L1816
+FMTstr         jsr       table4
+               cmpa      #4
+               bne       L1788               wrong type
+               pshs      U,X
+               ldx       1,Y
+               ldd       3,y
+               tsta      
+               bne       L1808
+L1806          cmpb      fieldwid
+               bls       L1810
+L1808          ldb       fieldwid
+L1810          tfr       B,A
+               negb      
+               addb      fieldwid
+               tst       justify
+               beq       L1812               left justify
+               bmi       L1814               center text
+               pshs      A                   right justify
+               lbsr      spacing
+               puls      A
+               lbsr      L1624
+               bra       L1816
 
-L1812      PSHS  B
-           BRA   L1818
+L1812          pshs      B
+               bra       L1818
 
-L1814      LSRB
-           BCC   L1820
-           INCB
-L1820      PSHS  d
-           LBSR  spacing
-           PULS  A
-L1818      LBSR  L1624
-           PULS  B
-           LBSR  spacing
-L1816      CLRA
-           PULS  PC,U,X
+L1814          lsrb      
+               bcc       L1820
+               incb      
+L1820          pshs      d
+               lbsr      spacing
+               puls      A
+L1818          lbsr      L1624
+               puls      B
+               lbsr      spacing
+L1816          clra      
+               puls      PC,U,X
 
-FMTreal    JSR   table4
-           CMPA  #2
-           BEQ   L1822
-           LBCC  L1788          wrong type
-           LBSR  FLOAT
-L1822      PSHS  U,X
-           LEAS  -$0A,S
-           LEAX  ,S
-           LBSR  RtoA
-           LDA   decimals
-           CMPA  #9
-           BGT   L1824
-           LBSR  L1826
-           LDA   fieldwid
-           SUBA  #2
-           BMI   L1824
-           SUBA  <$89
-           BMI   L1824
-           SUBA  <$8A
-           BPL   L1828
-L1824      LEAS  $0A,S
-           PULS  U,X
-           BRA   ovflow
+FMTreal        jsr       table4
+               cmpa      #2
+               beq       L1822
+               lbcc      L1788               wrong type
+               lbsr      FLOAT
+L1822          pshs      U,X
+               leas      -$0A,S
+               leax      ,S
+               lbsr      RtoA
+               lda       decimals
+               cmpa      #9
+               bgt       L1824
+               lbsr      L1826
+               lda       fieldwid
+               suba      #2
+               bmi       L1824
+               suba      <$89
+               bmi       L1824
+               suba      <$8A
+               bpl       L1828
+L1824          leas      $0A,S
+               puls      U,X
+               bra       ovflow
 
-L1828      STA   <$88
-           LEAX  ,S
-           LDB   justify
-           BEQ   L1830          left justify
-           BMI   L1832          fin. format
-           BSR   L1834          right justify
-           BSR   L1836
-           BRA   L1838
+L1828          sta       <$88
+               leax      ,S
+               ldb       justify
+               beq       L1830               left justify
+               bmi       L1832               fin. format
+               bsr       L1834               right justify
+               bsr       L1836
+               bra       L1838
 
-L1830      BSR   L1836
-           BSR   L1834
-           BRA   L1838
+L1830          bsr       L1836
+               bsr       L1834
+               bra       L1838
 
-L1832      BSR   L1834
-           BSR   L1840
-           LBSR  L1800
-L1838      LEAS  $0A,S
-           CLRA
-           PULS  PC,U,X
+L1832          bsr       L1834
+               bsr       L1840
+               lbsr      L1800
+L1838          leas      $0A,S
+               clra      
+               puls      PC,U,X
 
-L1836      LBSR  L1800
-L1840      LDA   <$8A
-           LBSR  L1624
-           LBSR  L1616
-           LDB   decimals
-           BPL   L1842
-           NEGB
-           CMPB  <$89
-           BLS   L1844
-           LDB   <$89
-L1844      PSHS  B
-           LBSR  L1620
-           LDB   <$89
-           SUBB  ,S+
-           STB   <$89
-           LDA   <$8B
-           CMPA  <$89
-           BLS   L1846      NOTE: SHOULD BE BLS L1848
-           LDA   <$89
-L1846      BRA   L1848
+L1836          lbsr      L1800
+L1840          lda       <$8A
+               lbsr      L1624
+               lbsr      L1616
+               ldb       decimals
+               bpl       L1842
+               negb      
+               cmpb      <$89
+               bls       L1844
+               ldb       <$89
+L1844          pshs      B
+               lbsr      L1620
+               ldb       <$89
+               subb      ,S+
+               stb       <$89
+               lda       <$8B
+               cmpa      <$89
+               bls       L1846               NOTE: SHOULD BE BLS L1848
+               lda       <$89
+L1846          bra       L1848
 
-L1834      LDB   <$88
-           LBRA  spacing
-L1862      LBSR  L1800
-           LDA   <$8A
-           LBSR  L1624
-           LBSR  L1616
-L1842      LDA   <$8B
-L1848      LBSR  L1624
-           LDB   <$89
-           SUBB  <$8B
-           BLE   L1850
-           LBRA  L1620
+L1834          ldb       <$88
+               lbra      spacing
+L1862          lbsr      L1800
+               lda       <$8A
+               lbsr      L1624
+               lbsr      L1616
+L1842          lda       <$8B
+L1848          lbsr      L1624
+               ldb       <$89
+               subb      <$8B
+               ble       L1850
+               lbra      L1620
 
-ovflow     LDB   fieldwid
-           LDA   #$2A           = *
-           LBSR  L1662
-           CLRA
-L1850      RTS
+ovflow         ldb       fieldwid
+               lda       #$2A                = *
+               lbsr      L1662
+               clra      
+L1850          rts       
 
-FMTexp     JSR   table4
-           CMPA  #2
-           BEQ   L1852
-           LBCC  L1788          wrong type
-           LBSR  FLOAT
-L1852      PSHS  U,X
-           LEAS  -$0A,S
-           LEAX  ,S
-           LBSR  RtoA
-           LDA   decimals
-           PSHS  A
-           LDA   #1
-           STA   decimals
-           BSR   L1826
-           PULS  A
-           LDB   decimals
-           CMPB  #1
-           BEQ   L1854
-           INCA
-L1854      LDB   #1
-           STB   <$8A
-           STA   decimals
-           LDA   fieldwid
-           SUBA  #6
-           BMI   L1856
-           SUBA  <$89
-           BMI   L1856
-           SUBA  <$8A
-           BPL   L1858
-L1856      LEAS  $0A,S
-           PULS  U,X
-           BRA   ovflow
+FMTexp         jsr       table4
+               cmpa      #2
+               beq       L1852
+               lbcc      L1788               wrong type
+               lbsr      FLOAT
+L1852          pshs      U,X
+               leas      -$0A,S
+               leax      ,S
+               lbsr      RtoA
+               lda       decimals
+               pshs      A
+               lda       #1
+               sta       decimals
+               bsr       L1826
+               puls      A
+               ldb       decimals
+               cmpb      #1
+               beq       L1854
+               inca      
+L1854          ldb       #1
+               stb       <$8A
+               sta       decimals
+               lda       fieldwid
+               suba      #6
+               bmi       L1856
+               suba      <$89
+               bmi       L1856
+               suba      <$8A
+               bpl       L1858
+L1856          leas      $0A,S
+               puls      U,X
+               bra       ovflow
 
-L1858      STA   <$88
-           LDB   justify
-           BEQ   L1860          left justify
-           BSR   L1834          right justify
-           BSR   L1862
-           LBSR  L1630
-           BRA   L1864
+L1858          sta       <$88
+               ldb       justify
+               beq       L1860               left justify
+               bsr       L1834               right justify
+               bsr       L1862
+               lbsr      L1630
+               bra       L1864
 
-L1860      BSR   L1862
-           LBSR  L1630
-L1864      LBRA  L1838
+L1860          bsr       L1862
+               lbsr      L1630
+L1864          lbra      L1838
 
-L1826      PSHS  X
-           LDA   decimals
-           ADDA  <$89
-           BNE   L1866
-           LDA   ,X
-           CMPA  #$35
-           BCC   L1868
-L1866      DECA
-           BMI   L1870
-           CMPA  #7
-           BHI   L1870
-           LEAX  A,X
-           LDB   1,X
-           CMPB  #$35
-           BCS   L1870
-L1872      INC   ,X
-           LDB   ,X
-           CMPB  #$39
-L1310      BLS   L1870
-L1868      LDB   #$30
-           STB   ,X
-           LEAX  -1,X
-           CMPX  ,S
-           BCC   L1872
-           LDX   ,S
-           LEAX  8,X
-L1874      LDA   ,-X
-           STA   1,X
-           CMPX  ,S
-           BHI   L1874
-           LDA   #$31
-           STA   ,X
-           INC   decimals
-L1870      PULS  X
-           LDA   decimals
-           BPL   L1876
-           CLRA
-L1876      STA   <$8A
-           NEGA
-           ADDA  #9
-           BPL   L1878
-           CLRA
-L1878      CMPA  <$89
-           BLS   L1880
-           LDA   <$89
-L1880      STA   <$8B
-           RTS
+L1826          pshs      X
+               lda       decimals
+               adda      <$89
+               bne       L1866
+               lda       ,X
+               cmpa      #$35
+               bcc       L1868
+L1866          deca      
+               bmi       L1870
+               cmpa      #7
+               bhi       L1870
+               leax      A,X
+               ldb       1,X
+               cmpb      #$35
+               bcs       L1870
+L1872          inc       ,X
+               ldb       ,X
+               cmpb      #$39
+L1310          bls       L1870
+L1868          ldb       #$30
+               stb       ,X
+               leax      -1,X
+               cmpx      ,S
+               bcc       L1872
+               ldx       ,S
+               leax      8,X
+L1874          lda       ,-X
+               sta       1,X
+               cmpx      ,S
+               bhi       L1874
+               lda       #$31
+               sta       ,X
+               inc       decimals
+L1870          puls      X
+               lda       decimals
+               bpl       L1876
+               clra      
+L1876          sta       <$8A
+               nega      
+               adda      #9
+               bpl       L1878
+               clra      
+L1878          cmpa      <$89
+               bls       L1880
+               lda       <$89
+L1880          sta       <$8B
+               rts       
 
-err48      LDB   #$30
-           STB   errcode
-           COMA
-           RTS
+err48          ldb       #$30
+               stb       errcode
+               coma      
+               rts       
 
-           emod
-MODEND     equ   *
-           end
+               emod      
+MODEND         equ       *
+               end       
 
